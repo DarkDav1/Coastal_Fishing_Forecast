@@ -1,0 +1,47 @@
+You are working in:
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/coastal-fishing-forecast
+
+This is the generic public-product track for a coastal saltwater and estuary fishing forecast engine.
+
+Important boundaries:
+- This is not the Derwent personal-use engine.
+- Do not copy Derwent spot-specific assumptions directly.
+- v1 supports coastal and tidal water only.
+- Do not add inland river or lake forecasting.
+
+Read these files first:
+1. /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/coastal-fishing-forecast/README.md
+2. /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/coastal-fishing-forecast/docs/product_scope_and_engine_split_2026-04-22.md
+3. /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/coastal-fishing-forecast/docs/web_handoff_generic_app_2026-04-22.md
+4. /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/coastal-fishing-forecast/docs/new_session_bootstrap_2026-04-22.md
+
+Your first goal is not to build the whole engine.
+Your first goal is to build the first useful generic preview path for searched coordinates.
+
+Required first milestone:
+- accept coordinates
+- reject inland / unsupported locations clearly
+- infer broad nearby water types
+- return a structured preview response suitable for app/web
+
+Target output shape should support:
+- overall recommendation
+- nearby beach score
+- nearby rocks score
+- nearby jetty score
+- nearby bay or estuary-edge score
+
+Use these four score concepts as the long-term target:
+- resident_opportunity
+- roaming_opportunity
+- trip_quality
+- overall_recommendation
+
+But do not fake local certainty.
+Searched-coordinate output should be lower-confidence than curated hot spots.
+
+Work pragmatically:
+- create a minimal backend structure first
+- verify what you build
+- keep the project generic
+- avoid dragging Derwent local tuning into this codebase

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "coastal-fishing-forecast"
+version = "0.1.0"
+description = "Generic coastal and estuary fishing forecast engine"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "global-land-mask>=1.0.0",
+    "numpy>=2.0.0",
+]
+
+[project.scripts]
+coastal-preview = "coastal_fishing_forecast.cli:main"
+coastal-forecast = "coastal_fishing_forecast.forecast_cli:main"
+coastal-api-forecast = "coastal_fishing_forecast.api_cli:main"
+coastal-place-search = "coastal_fishing_forecast.place_cli:main"
+coastal-search-forecast = "coastal_fishing_forecast.search_forecast_cli:main"
+coastal-regression-replay = "coastal_fishing_forecast.regression_replay_cli:main"
+coastal-verify = "coastal_fishing_forecast.verify:main"
+
+[tool.setuptools.packages.find]
+include = ["coastal_fishing_forecast*"]

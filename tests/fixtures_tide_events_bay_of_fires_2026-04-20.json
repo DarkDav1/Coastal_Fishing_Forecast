@@ -1,0 +1,21 @@
+{
+  "station": "generic_demo_bay_of_fires",
+  "source": "synthetic_regression_fixture",
+  "events": [
+    {
+      "time": "2026-04-20T05:00:00+10:00",
+      "type": "low",
+      "height_m": 0.2
+    },
+    {
+      "time": "2026-04-20T11:00:00+10:00",
+      "type": "high",
+      "height_m": 1.1
+    },
+    {
+      "time": "2026-04-20T17:30:00+10:00",
+      "type": "low",
+      "height_m": 0.3
+    }
+  ]
+}
