@@ -8,3 +8,7 @@ __pycache__/
 apps/web/node_modules/
 apps/web/dist/
 apps/web/tsconfig.tsbuildinfo
+
+# User feedback collection (Phase A of empirical calibration loop).
+# Per-deployment data; should never be committed to the repo.
+data/

@@ -21,6 +21,7 @@ coastal-place-search = "coastal_fishing_forecast.place_cli:main"
 coastal-search-forecast = "coastal_fishing_forecast.search_forecast_cli:main"
 coastal-regression-replay = "coastal_fishing_forecast.regression_replay_cli:main"
 coastal-verify = "coastal_fishing_forecast.verify:main"
+coastal-feedback = "coastal_fishing_forecast.feedback_cli:main"
 
 [tool.setuptools.packages.find]
 include = ["coastal_fishing_forecast*"]
