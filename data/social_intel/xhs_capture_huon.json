@@ -1,0 +1,430 @@
+{
+  "keyword": "Huon 钓鱼",
+  "count": 51,
+  "logs": [
+    {
+      "ts": 1775997400476,
+      "kind": "xhr",
+      "method": "GET",
+      "url": "https://pages.xiaohongshu.com/data/sem_sdk",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"code\":0,\"success\":true,\"data\":{\"allowKey\":{\"gt_ki\":\"growth_keywordid\",\"gt_ui\":\"growth_userid\",\"gt_pi\":\"growth_planid\",\"gt_uni\":\"growth_unitid\",\"gt_ci\":\"growth_creativeid\",\"gt_mt\":\"growth_matchtype\",\"gt_dt\":\"growth_dongtai\",\"gt_of\":\"growth_ocpc\",\"gt_cpi\":\"growth_crowdid\",\"gt_kw\":\"growth_kw\",\"utm_source\":\"utm_source\",\"utm_campaign\":\"utm_campaign\",\"bd_vid\":\"growth_bd_vid\",\"sg_vid\":\"growth_sg_vid\",\"qhclickid\":\"growth_qh_id\",\"clickid\":\"growth_sm_id\",\"qz_gdt\":\"qz_gdt\",\"gdt_vid\":\"gdt_vid\",\"callback\":\"growth_ks_id\"},\"clickId\":{\"baidu_sem\":\"growth_bd_vid\",\"baidu_feeds\":\"growth_bd_vid\",\"sogou_sem\":\"growth_sg_vid\",\"360_sem\":\"growth_qh_id\",\"shenma_sem\":\"growth_sm_id\",\"tencent_gdt\":\"growth_sm_id\",\"kuaishou\":\"growth_ks_id\",\"uc_huichuan\":\"uctrackid\",\"iqiyi\":\"impress_id\"}}}"
+    },
+    {
+      "ts": 1775997400593,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "//edith.xiaohongshu.com/api/redcaptcha/v2/getconfig",
+      "status": 200,
+      "requestBody": "{}",
+      "body": "{\"data\":{\"sdkUrl\":\"https://fe-video-qc.xhscdn.com/fe-platform-file/104101b831trq1u4vn876an4b0q2g0000000001fh0c3ce\"},\"code\":0,\"success\":true,\"msg\":\"成功\"}\n"
+    },
+    {
+      "ts": 1775997400805,
+      "kind": "xhr",
+      "method": "GET",
+      "url": "//edith.xiaohongshu.com/api/sns/web/v2/user/me",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"code\":-100,\"success\":false,\"msg\":\"登录已过期\",\"data\":{}}"
+    },
+    {
+      "ts": 1775997400805,
+      "kind": "xhr",
+      "method": "GET",
+      "url": "//edith.xiaohongshu.com/api/sns/web/v1/system/config",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"code\":-100,\"success\":false,\"msg\":\"登录已过期\",\"data\":{}}"
+    },
+    {
+      "ts": 1775997400862,
+      "kind": "xhr",
+      "method": "GET",
+      "url": "//edith.xiaohongshu.com/api/sns/web/v1/zones",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"code\":0,\"success\":true,\"msg\":\"成功\",\"data\":{\"hot\":[\"中国大陆\",\"美国\",\"中国香港\",\"日本\",\"中国台湾\",\"澳大利亚\",\"加拿大\",\"英国\",\"韩国\",\"新加坡\",\"法国\",\"德国\"],\"data\":[{\"name_mapping\":{\"CN\":\"阿富汗\",\"FR\":\"Afghanistan\",\"US\":\"Afghanistan\",\"ES\":\"Afganistán\",\"TW\":\"阿富汗\",\"RU\":\"Афганистан\",\"JP\":\"アフガニスタン\",\"KR\":\"아프가니스탄\"},\"abbreviation\":\"AF\",\"code\":93},{\"name_mapping\":{\"RU\":\"Албания\",\"JP\":\"アルバニア\",\"KR\":\"알바니아\",\"CN\":\"阿尔巴尼亚\",\"FR\":\"Albanie\",\"US\":\"Albania\",\"ES\":\"Albania\",\"TW\":\"阿爾巴尼亞\"},\"abbreviation\":\"AL\",\"code\":355},{\"name_mapping\":{\"RU\":\"Алжир\",\"JP\":\"アルジェリア\",\"KR\":\"알제리\",\"CN\":\"阿尔及利亚\",\"FR\":\"Algérie\",\"US\":\"Algeria\",\"ES\":\"Argelia\",\"TW\":\"阿爾及利亞\"},\"abbreviation\":\"DZ\",\"code\":213},{\"name_mapping\":{\"TW\":\"美屬薩摩亞\",\"RU\":\"Американское Самоа\",\"JP\":\"米国領サモア\",\"KR\":\"미국령 사모아\",\"CN\":\"美属萨摩亚\",\"FR\":\"Samoa américaines\",\"US\":\"American Samoa\",\"ES\":\"Samoa Americana\"},\"abbreviation\":\"AS\",\"code\":1684},{\"name_mapping\":{\"RU\":\"Андорра\",\"JP\":\"アンドラ\",\"KR\":\"안도라\",\"CN\":\"安道尔\",\"FR\":\"Andorre\",\"US\":\"Andorra\",\"ES\":\"Andorra\",\"TW\":\"安道爾\"},\"abbreviation\":\"AD\",\"code\":376},{\"name_mapping\":{\"ES\":\"Angola\",\"TW\":\"安哥拉\",\"RU\":\"Ангола\",\"JP\":\"アンゴラ\",\"KR\":\"앙골라\",\"CN\":\"安哥拉\",\"FR\":\"Angola\",\"US\":\"Angola\"},\"abbreviation\":\"AO\",\"code\":244},{\"name_mapping\":{\"ES\":\"Anguila\",\"TW\":\"安圭拉\",\"RU\":\"Ангилья\",\"JP\":\"アンギラ\",\"KR\":\"앙귈라\",\"CN\":\"安圭拉\",\"FR\":\"Anguilla\",\"US\":\"Anguilla\"},\"abbreviation\":\"AI\",\"code\":1264},{\"code\":1268,\"name_mapping\":{\"JP\":\"アンティグア・バーブーダ\",\"KR\":\"앤티가 바부다\",\"CN\":\"安提瓜和巴布达\",\"FR\":\"Antigua-et-Barbuda\",\"US\":\"Antigua and Barbuda\",\"ES\":\"Antigua y Barbuda\",\"TW\":\"安提瓜和巴布達\",\"RU\":\"Антигуа и Барбуда\"},\"abbreviation\":\"AG\"},{\"name_mapping\":{\"KR\":\"아르헨티나\",\"CN\":\"阿根廷\",\"FR\":\"Argentine\",\"US\":\"Argentina\",\"ES\":\"Argentina\",\"TW\":\"阿根廷\",\"RU\":\"Аргентина\",\"JP\":\"アルゼンチン\"},\"abbreviation\":\"AR\",\"code\":54},{\"abbreviation\":\"AM\",\"code\":374,\"name_mapping\":{\"FR\":\"Arménie\",\"US\":\"Armenia\",\"ES\":\"Armenia\",\"TW\":\"亞美尼亞\",\"RU\":\"Армения\",\"JP\":\"アルメニア\",\"KR\":\"아르메니아\",\"CN\":\"亚美尼亚\"}},{\"name_mapping\":{\"RU\":\"Аруба\",\"JP\":\"アルバ\",\"KR\":\"아루바\",\"CN\":\"阿鲁巴\",\"FR\":\"Aruba\",\"US\":\"Aruba\",\"ES\":\"Aruba\",\"TW\":\"阿魯巴\"},\"abbreviation\":\"AW\",\"code\":297},{\"name_mapping\":{\"FR\":\"Île d'Ascension\",\"US\":\"Ascension Island\",\"ES\":\"Isla de Ascensión\",\"TW\":\"阿森松島\",\"RU\":\"Остров Вознесения\",\"JP\":\"アセンション島\",\"KR\":\"어센션 섬\",\"CN\":\"阿森松岛\"},\"abbreviation\":\"AC\",\"code\":247},{\"name_mapping\":{\"ES\":\"Australia\",\"TW\":\"澳大利亞\",\"RU\":\"Австралия\",\"JP\":\"オーストラリア\",\"KR\":\"호주\",\"CN\":\"澳大利亚\",\"FR\":\"Australie\",\"US\":\"Australia\"},\"abbreviation\":\"AU\",\"code\":61},{\"abbreviation\":\"AT\",\"code\":43,\"name_mapping\":{\"US\":\"Austria\",\"ES\":\"Austria\",\"TW\":\"奧地利\",\"RU\":\"Австрия\",\"JP\":\"オーストリア\",\"KR\":\"오스트리아\",\"CN\":\"奥地利\",\"FR\":\"Autriche\"}},{\"name_mapping\":{\"JP\":\"アゼルバイジャン\",\"KR\":\"아제르바이잔\",\"CN\":\"阿塞拜疆\",\"FR\":\"Azerbaïdjan\",\"US\":\"Azerbaijan\",\"ES\":\"Azerbaiyán\",\"TW\":\"亞塞拜然\",\"RU\":\"Азербайджан\"},\"abbreviation\":\"AZ\",\"code\":994},{\"code\":1242,\"name_mapping\":{\"FR\":\"Bahamas\",\"US\":\"Bahamas\",\"ES\":\"Bahamas\",\"TW\":\"巴哈馬\",\"RU\":\"Багамские Острова\",\"JP\":\"バハマ\",\"KR\":\"바하마\",\"CN\":\"巴哈马\"},\"abbreviation\":\"BS\"},{\"name_mapping\":{\"RU\":\"Бахрейн\",\"JP\":\"バーレーン\",\"KR\":\"바레인\",\"CN\":\"巴林\",\"FR\":\"Bahreïn\",\"US\":\"Bahrain\",\"ES\":\"Baréin\",\"TW\":\"巴林\"},\"abbreviation\":\"BH\",\"code\":973},{\"name_mapping\":{\"FR\":\"Bangladesh\",\"US\":\"Bangladesh\",\"ES\":\"Bangladés\",\"TW\":\"孟加拉國\",\"RU\":\"Бангладеш\",\"JP\":\"バングラデシュ\",\"KR\":\"방글라데시\",\"CN\":\"孟加拉国\"},\"abbreviation\":\"BD\",\"code\":880},{\"name_mapping\":{\"TW\":\"巴貝多\",\"RU\":\"Барбадос\",\"JP\":\"バルバドス\",\"KR\":\"바베이도스\",\"CN\":\"巴巴多斯\",\"FR\":\"Barbade\",\"US\":\"Barbados\",\"ES\":\"Barbados\"},\"abbreviation\":\"BB\",\"code\":1246},{\"name_mapping\":{\"FR\":\"Biélorussie\",\"US\":\"Belarus\",\"ES\":\"Bielorrusia\",\"TW\":\"白俄羅斯\",\"RU\":\"Беларусь\",\"JP\":\"ベラルーシ\",\"KR\":\"밸라루스\",\"CN\":\"白俄罗斯\"},\"abbreviation\":\"BY\",\"code\":375},{\"name_mapping\":{\"US\":\"Belgium\",\"ES\":\"Bélgica\",\"TW\":\"比利時\",\"RU\":\"Бельгия\",\"JP\":\"ベルギー\",\"KR\":\"벨기에\",\"CN\":\"比利时\",\"FR\":\"Belgique\"},\"abbreviation\":\"BE\",\"code\":32},{\"name_mapping\":{\"RU\":\"Белиз\",\"JP\":\"ベリーズ\",\"KR\":\"벨리즈\",\"CN\":\"伯利兹\",\"FR\":\"Belize\",\"US\":\"Belize\",\"ES\":\"Belice\",\"TW\":\"貝里斯\"},\"abbreviation\":\"BZ\",\"code\":501},{\"name_mapping\":{\"CN\":\"贝宁\",\"FR\":\"Bénin\",\"US\":\"Benin\",\"ES\":\"Benín\",\"TW\":\"貝南\",\"RU\":\"Бенин\",\"JP\":\"ベナン\",\"KR\":\"베냉\"},\"abbreviation\":\"BJ\",\"code\":229},{\"name_mapping\":{\"ES\":\"Bermudas\",\"TW\":\"百慕達\",\"RU\":\"Бермуды\",\"JP\":\"バミューダ\",\"KR\":\"버뮤다\",\"CN\":\"百慕大\",\"FR\":\"Bermudes\",\"US\":\"Bermuda\"},\"abbreviation\":\"BM\",\"code\":1441},{\"code\":975,\"name_mapping\":{\"TW\":\"不丹\",\"RU\":\"Бутан\",\"JP\":\"ブータン\",\"KR\":\"부탄\",\"CN\":\"不丹\",\"FR\":\"Bhoutan\",\"US\":\"Bhutan\",\"ES\":\"Bután\"},\"abbreviation\":\"BT\"},{\"code\":591,\"name_mapping\":{\"TW\":\"玻利維亞\",\"RU\":\"Боливия\",\"JP\":\"ボリビア\",\"KR\":\"볼리비아\",\"CN\":\"玻利维亚\",\"FR\":\"Bolivie\",\"US\":\"Bolivia\",\"ES\":\"Bolivia\"},\"abbreviation\":\"BO\"},{\"code\":387,\"name_mapping\":{\"JP\":\"ボスニア・ヘルツェゴビナ\",\"KR\":\"보스니아 헤르체고비나\",\"CN\":\"波斯尼亚和黑塞哥维那\",\"FR\":\"Bosnie-Herzégovine\",\"US\":\"Bosnia and Herzegovina\",\"ES\":\"Bosnia y Herzegovina\",\"TW\":\"波士尼亞與赫塞哥維納\",\"RU\":\"Босния и Герцеговина\"},\"abbreviation\":\"BA\"},{\"name_mapping\":{\"JP\":\"ボツワナ\",\"KR\":\"보츠와나\",\"CN\":\"博茨瓦纳\",\"FR\":\"Botswana\",\"US\":\"Botswana\",\"ES\":\"Botsuana\",\"TW\":\"波札那\",\"RU\":\"Ботсвана\"},\"abbreviation\":\"BW\",\"code\":267},{\"name_mapping\":{\"US\":\"Brazil\",\"ES\":\"Brasil\",\"TW\":\"巴西\",\"RU\":\"Бразилия\",\"JP\":\"ブラジル\",\"KR\":\"브라질\",\"CN\":\"巴西\",\"FR\":\"Brésil\"},\"abbreviation\":\"BR\",\"code\":55},{\"name_mapping\":{\"CN\":\"英属印度洋领地\",\"FR\""
+    },
+    {
+      "ts": 1775997401069,
+      "kind": "xhr",
+      "method": "GET",
+      "url": "//edith.xiaohongshu.com/api/sns/web/v2/user/me",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"code\":-100,\"success\":false,\"msg\":\"登录已过期\",\"data\":{}}"
+    },
+    {
+      "ts": 1775997401277,
+      "kind": "xhr",
+      "method": "GET",
+      "url": "//edith.xiaohongshu.com/api/sns/web/v1/search/recommend?keyword=Huon+%E9%92%93%E9%B1%BC",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"code\":-101,\"success\":false,\"msg\":\"无登录信息，或登录信息为空\",\"data\":{}}"
+    },
+    {
+      "ts": 1775997401361,
+      "kind": "xhr",
+      "method": "GET",
+      "url": "//edith.xiaohongshu.com/api/sns/web/v1/board/user?user_id=&num=15&page=1",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"code\":-101,\"success\":false,\"msg\":\"无登录信息，或登录信息为空\",\"data\":{}}"
+    },
+    {
+      "ts": 1775997401499,
+      "kind": "xhr",
+      "method": "GET",
+      "url": "//edith.xiaohongshu.com/api/sns/web/v2/user/me",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"code\":-101,\"success\":false,\"msg\":\"无登录信息，或登录信息为空\",\"data\":{}}"
+    },
+    {
+      "ts": 1775997401534,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "//edith.xiaohongshu.com/api/sns/web/v1/login/activate",
+      "status": 200,
+      "requestBody": "{}",
+      "body": "{\"code\":0,\"success\":true,\"msg\":\"成功\",\"data\":{\"session\":\"030037aee6f823ab4a9f95d7a32e4a54ea3309\",\"secure_session\":\"X9254csession.030037aee6f823ab4a9f95d7a32e4a54ea3309\",\"user_id\":\"69d5ac570000000033030fe8\"}}\n"
+    },
+    {
+      "ts": 1775997401600,
+      "kind": "xhr",
+      "method": "GET",
+      "url": "https://fe-video-qc.xhscdn.com/fe-platform/24efe715cd80441a3571b1202e87c152dbfbc160.json?attname=fe-platform/24efe715cd80441a3571b1202e87c152dbfbc160.json.json",
+      "status": 200,
+      "requestBody": "",
+      "body": ""
+    },
+    {
+      "ts": 1775997401826,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "hgXsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwARIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyAwiNGTprCiQ2YzdiYTI3ZS1mMzQxLTRhMjMtOWViZC1iYmZhMTE1MDA0NmIwiQJKATFY8OD08anokwN4+qYCiAKm88aN2DPKAiRmZmJmZmJkMi0zOTU0LTRmZDctOGJmYS0yYTM2OGViNzk2ZDXQAgFCU0JRaHR0cHM6Ly93d3cueGlhb2hvbmdzaHUuY29tL3NlYXJjaF9yZXN1bHQ/a2V5d29yZD1IdW9uKyVFOSU5MiU5MyVFOSVCMSVCQyZ0eXBlPTUxSvABCiQ5MjYzMmUxYi04OWY3LTQ3ZDYtYjNmYy01NzAwZmU5NzIxNDASZU1vemlsbGEvNS4wIChYMTE7IExpbnV4IHg4Nl82NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzE0Ny4wLjAuMCBTYWZhcmkvNTM3LjM2GlFodHRwczovL3d3dy54aWFvaG9uZ3NodS5jb20vc2VhcmNoX3Jlc3VsdD9rZXl3b3JkPUh1b24rJUU5JTkyJTkzJUU5JUIxJUJDJnR5cGU9NTEiDi9zZWFyY2hfcmVzdWx0",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997401826,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "sgTsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwBhIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyAwj7FzpqCiQxNWM2ZmQwNy1lZGNlLTQxMDAtYTI1OS0xMjhiZGQxOWM3YWIwAUoBNljA8PTxqeiTA3jx+wKIAqjzxo3YM8oCJGZmYmZmYmQyLTM5NTQtNGZkNy04YmZhLTJhMzY4ZWI3OTZkNdACBkrwAQokOTI2MzJlMWItODlmNy00N2Q2LWIzZmMtNTcwMGZlOTcyMTQwEmVNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xNDcuMC4wLjAgU2FmYXJpLzUzNy4zNhpRaHR0cHM6Ly93d3cueGlhb2hvbmdzaHUuY29tL3NlYXJjaF9yZXN1bHQ/a2V5d29yZD1IdW9uKyVFOSU5MiU5MyVFOSVCMSVCQyZ0eXBlPTUxIg4vc2VhcmNoX3Jlc3VsdFoA",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997401833,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "uwTsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwAhIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyAwiNGTpqCiQ1OWFjNDQ4ZS04NmEzLTRjY2ItODgyNS0zYTRmYjM1NjcyOTQwAUoBMljA8PTxqeiTA3iT7QGIAqjzxo3YM8oCJGZmYmZmYmQyLTM5NTQtNGZkNy04YmZhLTJhMzY4ZWI3OTZkNdACAkrwAQokOTI2MzJlMWItODlmNy00N2Q2LWIzZmMtNTcwMGZlOTcyMTQwEmVNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xNDcuMC4wLjAgU2FmYXJpLzUzNy4zNhpRaHR0cHM6Ly93d3cueGlhb2hvbmdzaHUuY29tL3NlYXJjaF9yZXN1bHQ/a2V5d29yZD1IdW9uKyVFOSU5MiU5MyVFOSVCMSVCQyZ0eXBlPTUxIg4vc2VhcmNoX3Jlc3VsdNoNCBIGc2VhcmNo",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997401836,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "ywTsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwBxIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyBQiSGXABOmoKJDNjN2E5ZWUxLTVkY2QtNGRjMS04MzRhLTk3OThhNjg4MWM2MzASSgE3WKj49PGp6JMDeJHtAYgCqfPGjdgzygIkZmZiZmZiZDItMzk1NC00ZmQ3LThiZmEtMmEzNjhlYjc5NmQ10AIHQgUSA2FsbErwAQokOTI2MzJlMWItODlmNy00N2Q2LWIzZmMtNTcwMGZlOTcyMTQwEmVNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xNDcuMC4wLjAgU2FmYXJpLzUzNy4zNhpRaHR0cHM6Ly93d3cueGlhb2hvbmdzaHUuY29tL3NlYXJjaF9yZXN1bHQ/a2V5d29yZD1IdW9uKyVFOSU5MiU5MyVFOSVCMSVCQyZ0eXBlPTUxIg4vc2VhcmNoX3Jlc3VsdPIBDxoLSHVvbiDpkpPpsbwgMw==",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997401842,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "swTsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwBBIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyAwiNGTpqCiRhNjNjNGM2Ni1lMWU5LTQ0NGItODhjNy01YmZmZjQwMzE2MTEwAUoBNFjA8PTxqeiTA3iz8AGIAqjzxo3YM8oCJGZmYmZmYmQyLTM5NTQtNGZkNy04YmZhLTJhMzY4ZWI3OTZkNdACBErwAQokOTI2MzJlMWItODlmNy00N2Q2LWIzZmMtNTcwMGZlOTcyMTQwEmVNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xNDcuMC4wLjAgU2FmYXJpLzUzNy4zNhpRaHR0cHM6Ly93d3cueGlhb2hvbmdzaHUuY29tL3NlYXJjaF9yZXN1bHQ/a2V5d29yZD1IdW9uKyVFOSU5MiU5MyVFOSVCMSVCQyZ0eXBlPTUxIg4vc2VhcmNoX3Jlc3VsdNoNAA==",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997401853,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "ygTsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwChIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyAwjPFzprCiQ3MTUyZjJmYS0yZWQ4LTRjYmMtYTBlNi0yOGEzMmY0ZWIxMjQwAUoCMTBY2OL28anokwN4hL8BiALH88aN2DPKAiRmZmJmZmJkMi0zOTU0LTRmZDctOGJmYS0yYTM2OGViNzk2ZDXQAgpCDHoKc2VhcmNoX2JveErwAQokOTI2MzJlMWItODlmNy00N2Q2LWIzZmMtNTcwMGZlOTcyMTQwEmVNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xNDcuMC4wLjAgU2FmYXJpLzUzNy4zNhpRaHR0cHM6Ly93d3cueGlhb2hvbmdzaHUuY29tL3NlYXJjaF9yZXN1bHQ/a2V5d29yZD1IdW9uKyVFOSU5MiU5MyVFOSVCMSVCQyZ0eXBlPTUxIg4vc2VhcmNoX3Jlc3VsdNoNCBIGc2VhcmNo",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997401854,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "sQTsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwCRIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyAwi/ITprCiQ5Y2IzZWI5Ny0yOTA4LTRlOTUtYWU2Zi1mMTc5YTkzZjlhY2Qwy09KATlYqPj08anokwN49LEFiAKp88aN2DPKAiRmZmJmZmJkMi0zOTU0LTRmZDctOGJmYS0yYTM2OGViNzk2ZDXQAglK8AEKJDkyNjMyZTFiLTg5ZjctNDdkNi1iM2ZjLTU3MDBmZTk3MjE0MBJlTW96aWxsYS81LjAgKFgxMTsgTGludXggeDg2XzY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTQ3LjAuMC4wIFNhZmFyaS81MzcuMzYaUWh0dHBzOi8vd3d3LnhpYW9ob25nc2h1LmNvbS9zZWFyY2hfcmVzdWx0P2tleXdvcmQ9SHVvbislRTklOTIlOTMlRTklQjElQkMmdHlwZT01MSIOL3NlYXJjaF9yZXN1bHQ=",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997401916,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "//as.xiaohongshu.com/api/p/pj",
+      "status": 200,
+      "requestBody": "{\"callFrom\":\"xhs-pc-web\"}",
+      "body": "{\"success\":true,\"msg\":\"成功\",\"data\":{\"data\":\"function _0x28ef(){var _0x672815=['OxKVD','fZVtN','RDcQd','BpEWG','pop','LECPA','Ubzny','MWaXm','101218AczBBg','WRdUs','1239610ZPMMYl','hasOwnProperty','fromCharCode','QuTrM','bGPcu','41580UrnKkG','eVFrI','DbCzz','_ace_a0744','reduce','cpnIy','147dGiQHY','nrLPQ','_ace_545d','xtEVb','xnqnA','CNoTl','LZtwv','imEYB','skIkG','QXFXd','bZwtm','zfwkG','indexOf','RksIp','rCPTW','QwsEs','charAt','ROvsk','join','DXHHh','myUIv','aGqaT','FsjIp','2774008txQVDK','slice','RegExp','SYuJQ','vCRLb','dQddZ','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"
+    },
+    {
+      "ts": 1775997401921,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "//as.xiaohongshu.com/api/sec/v1/scripting",
+      "status": 200,
+      "requestBody": "{\"callFrom\":\"web\",\"callback\":\"\",\"type\":\"ds\",\"appId\":\"xhs-pc-web\"}",
+      "body": "{\"data\":{\"data\":\"function getdss() { return '1774426317860'; };\\n\\n\\n\\n\\n\\n\\nvar _0x341b=['KiPMi','KYOYJ','svzrL','__proto__','plHoS','UirlK','IΙΙ','MAyQD','bind','zIGrU','wTuGj','tQwMy','dUvxg','WqSCh','aXYbU','aIQKs','apply','iOiXN','tFvfX','IΙI','eXlMM','setPrototypeOf','KbRfp','2869054COIcFt','XoaJp','mqyXD','AXkMd','dIdJF','XlZRv','fAeaR','bHvwZ','Invalid\\\\x20attempt\\\\x20to\\\\x20spread\\\\x20non-iterable\\\\x20instance','DXZKe','rgFDo','_BHjFmfUMEtxhI','KPLCP','yEAPv','PdIZI','AwEzy','dZaEW','xJHdx','294533hdASDc','zrQSt','call','cJrwQ','MDvWl','OTZka','Bleng','push','jWQXv','sIMvk','1vTWnSs','WxAuS','sviut','HNQkb','cTBAW','oBcBw','XdTry','kzApx','PRwfO','loVEd','AtNza','nSGde','ΙII','BTTtl','atVyM','TzzAb','IvKhR','hTIwL','79911NVrkuN','jyqld','BBDch','isArray','LNVYP','aCSui','CBSFl','uVyAn','gupAu','ofhwr','fMfaC','ICGTz','pvqDD','uPGcu','LlDCn','slYgQ','932536dXUvUS','RxzgE','__bc','cMdEZ','CqOfp','LSDRe','MtyaU','eVPjZ','ZZNlu','kquzW','undefined','hKIgv','keys','ommCb','ylKBf','hiQXs','pvpCQ','uUlAP','873536DjYRMR','abQbd','1076712GOYPEM','nHyri','hngMp','tVDgk','pSREd','weyvc','fPUfS','3|5|0|4|1|2','fSfrD','OnyPT','zuJjJ','ajGpD','err-209e10:\\\\x20+\\\\x20','ayOqy','GThbn','MUCjn','MrTDA','paGTj','VTKBBQFM','bTyoe','err:d93135:','KdWmZ','fromCharCode','XLvWZ','CUTnP','toString','slice','construct','LGFLa','UYPHZ','34387YtEtXF','zinis','cxrrV','MSuvz','KzcqC','zTTUP','URXWH','prototype','ApSrn','HvpCN','nYhRA','CyKDv','xIVze','FqPQn','NmoLf','from','IIΙ','rnTPg','kPxvY','1IFHsMj','PXCGU','uNrco','cYmRx','29KuFTNg','VZKCL','KyIdf','ΙIΙ','QGNbn','RCdRI','1uhbJdU','XPgam','dLuvX','sxqRa','bJUso','wcuqI','MAppL','vdkHm','tIwIM','uTAMz','length','URMgD','QeRPY','EZsnz','ImHDp','lvXja','pcEyU','vUaLA','[object\\\\x20Arguments]','function','XPOoS','QDacf','hmLJb','tKFOd','mJRqp','hhvHC','GSrQM','VbBue','nEhmX','jmbqG'];var _0x1769=function(_0x1e6d9f,_0x341be1){_0x1e6d9f=_0x1e6d9f-0x0;var _0x1769e7=_0x341b[_0x1e6d9f];return _0x1769e7;};var _0x12372b=_0x1769;(function(_0x231545,_0x13bcf8){var _0x799b3c=_0x1769;while(!![]){try{var _0x510799=parseInt(_0x799b3c(0x4b))*-parseInt(_0x799b3c(0xbc))+parseInt(_0x799b3c(0x77))*-parseInt(_0x799b3c(0x55))+-parseInt(_0x799b3c(0x8b))+parseInt(_0x799b3c(0xc0))*parseInt(_0x799b3c(0xa9))+-parseInt(_0x799b3c(0x4))*-parseInt(_0x799b3c(0x67))+-parseInt(_0x799b3c(0x89))+parseInt(_0x799b3c(0x39));if(_0x510799===_0x13bcf8)break;else _0x231545['push'](_0x231545['shift']());}catch(_0x2fa719){_0x231545['push'](_0x231545['shift']());}}}(_0x341b,0xbbb67));var glb=_0x12372b(0x81)==typeof window?global:window;glb[_0x12372b(0x44)]=function(_0x3c396a,_0xe5cc21,_0x4ab9d0){var _0x258f3a=_0x12372b,_0x4e2823={'vdkHm':function(_0x2410f6,_0x25cc7f){return _0x2410f6==_0x25cc7f;},'gupAu':_0x258f3a(0x81),'LNVYP':function(_0x2930b1,_0x578a67){return _0x2930b1==_0x578a67;},'XoaJp':function(_0x5ab939,_0x5e6dc8){return _0x5ab939===_0x5e6dc8;},'loVEd':function(_0x1d4a99,_0x49f070){return _0x1d4a99!==_0x49f070;},'XPOoS':function(_0x348971,_0x30fde9){return _0x348971+_0x30fde9;},'hngMp':'xJHdx','eVPjZ':function(_0x1b483f,_0x4fd6f7){return _0x1b483f<_0x4fd6f7;},'jnKcJ':function(_0x121e9c,_0x57b19c,_0x1689d3){return _0x121e9c(_0x57b19c,_0x1689d3);},'tQwMy':function(_0x5c3827,_0xa9b78e){return _0x5c3827 in _0xa9b78e;},'nEhmX':_0x258f3a(0x8e),'MUCjn':function(_0x42da91,_0x52d5d9){return _0x42da91==_0x52d5d9;},'SQFLz':function(_0x31df30,_0x2854ed){return _0x31df30>>_0x2854ed;},'sviut':function(_0x118cd8,_0x592681){return _0x118cd8==_0x592681;},'plHoS':function(_0x28d9af,_0xff7780){return _0x28d9af>>_0xff7780;},'KzcqC':'SmWJq','uTAMz':function(_0x1eabce,_0x1de19e,_0x2cccaf){return _0x1eabce(_0x1de19e,_0x2cccaf);},'MSuvz':function(_0x32d56a,_0x4454b7){return _0x32d56a+_0x4454b7;},'URMgD':function(_0x10c1fa,_0x1e2427){return _0x10c1fa>_0x1e2427;},'XlZRv':function(_0x5ed27d,_0x2c3cd0){return _0x5ed27d-_0x2c3cd0;},'zuJjJ':function(_0x1152ce,_0x274b55){return _0x1152ce+_0x274b55;},'cATvH':_0x258f3a(0x43),'oCTAM':function(_0x91214e,_0x117a12){return _0x91214e+_0x117a12;},'bHvwZ':function(_0x6a2185,_0x3f16e7){return _0x6a2185+_0x3f16e7;},'OnyPT':function(_0x133c12,_0x260394){return _0x133c12+_0x260394;},'PdIZI':function(_0x42e665,_0x1c2d45){return _0x42e665+_0x1c2d45;},'rnTPg':function(_0x58dc59,_0x581cfb){return _0x58dc59+_0x581cfb;},'zTTUP':function(_0x116a4b,_0x2a78c2){return _0x116a4b+_0x2a78c2;},'ooLna':function(_0x3fb211,_0x216c8e){return _0x3fb211!==_0x216c8e;},'aXYbU':'uUlAP','GGreg':function(_0x608310,_0x4c9073){return _0x608310+_0x4c9073;},'dUvxg':function(_0x794f18,_0x5829e5){return _0x794f18+_0x5829e5;},'eMwlD':function(_0x3126b0,_0x107f74){return _0x3126b0+_0x107f74;},'atVyM':function(_0x1bf5c4,_0x59761e){return _0x1bf5c4+_0x59761e;},'XPgam':function(_0x448ae1,_0x136025){return _0x448ae1+_0x136025;},'mlOXl':function(_0x1fbd7c,_0xfbe0b9,_0x186fbd){return _0x1fbd7c(_0xfbe0b9,_0x186fbd);},'cxrrV':function(_0x4b086c,_0x5ba2c2){return _0x4b086c+_0x5ba2c2;},'nSGde':function(_0x7e6ff6,_0x15c60c){return _0x7e6ff6==_0x1"
+    },
+    {
+      "ts": 1775997401923,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "//as.xiaohongshu.com/api/sec/v1/sbtsource",
+      "status": 200,
+      "requestBody": "{\"callFrom\":\"web\",\"appId\":\"xhs-pc-web\"}",
+      "body": "{\"msg\":\"成功\",\"data\":{\"desVersion\":\"2\",\"validate\":true,\"signVersion\":\"1\",\"xhsTokenUrl\":\"https://fe-static.xhscdn.com/as/v1/3e44/public/bf7d4e32677698655a5cadc581fd09b3.js\",\"reportUrl\":\"/api/sec/v1/shield/webprofile\",\"commonPatch\":[\"/fe_api/burdock/v2/note/post\",\"/api/sns/web/v1/comment/post\",\"/api/sns/web/v1/note/like\",\"/api/sns/web/v1/note/collect\",\"/api/sns/web/v1/user/follow\",\"/api/sns/web/v1/feed\",\"/api/sns/web/v1/login/activate\",\"/api/sns/web/v1/note/metrics_report\",\"/api/redcaptcha\",\"/api/store/jpd/main\",\"/phoenix/api/strategy/getAppStrategy\",\"/web_api/sns/v2/note\"],\"signUrl\":\"https://fe-static.xhscdn.com/as/v1/f218/a15/public/04b29480233f4def5c875875b6bdc3b1.js\",\"extraInfo\":\"{\\\"dsUrl\\\":\\\"https://fe-static.xhscdn.com/as/v2/ds/6545c70e73d7e06896b3c574a70b5438.js\\\"}\",\"url\":\"https://fe-static.xhscdn.com/as/v2/fp/37e62403b0c497730e7e846a0e319120.js\"},\"code\":0,\"success\":true}\n"
+    },
+    {
+      "ts": 1775997402022,
+      "kind": "xhr",
+      "method": "GET",
+      "url": "//so.xiaohongshu.com/web/lib?user_id=69d5ac570000000033030fe8",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"code\":-104,\"success\":false,\"msg\":\"您当前登录的账号没有权限访问\",\"data\":{}}"
+    },
+    {
+      "ts": 1775997402166,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "//edith.xiaohongshu.com/api/sns/web/racing_get",
+      "status": 200,
+      "requestBody": "{\"racing_info\":[{\"user_id\":\"69d5ac570000000033030fe8\",\"domain\":\"web_user\"}],\"source\":\"web\",\"app\":\"\"}",
+      "body": "{\"code\":0,\"success\":true,\"msg\":\"成功\",\"data\":{\"diversion_results\":[{\"diversions\":[{\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"SHARED\",\"exp_id\":135010,\"dimension\":1,\"layer_id\":37085},{\"id\":257230,\"code\":\"exp_135499_var_257230\",\"domain\":\"SHARED\",\"exp_id\":135499,\"dimension\":1,\"layer_id\":37587,\"type\":1},{\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\",\"exp_id\":121286,\"dimension\":1,\"layer_id\":23010},{\"exp_id\":121634,\"dimension\":1,\"layer_id\":23382,\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\"},{\"layer_id\":23534,\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\",\"exp_id\":121787,\"dimension\":1},{\"dimension\":1,\"layer_id\":23549,\"type\":1,\"id\":196701,\"code\":\"基准桶-写cache\",\"domain\":\"redbutton\",\"exp_id\":121802},{\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\",\"exp_id\":121803,\"dimension\":1,\"layer_id\":23550,\"type\":4},{\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\",\"exp_id\":121873,\"dimension\":1,\"layer_id\":23622},{\"id\":287572,\"code\":\"exp_141614_var_287572\",\"domain\":\"redbutton\",\"exp_id\":141614,\"dimension\":1,\"layer_id\":43905,\"type\":1},{\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\",\"exp_id\":142957,\"dimension\":1,\"layer_id\":45297},{\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\",\"exp_id\":142960,\"dimension\":1,\"layer_id\":45301},{\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\",\"exp_id\":146752,\"dimension\":1,\"layer_id\":49151},{\"code\":\"exp_148989_var_326573\",\"domain\":\"redbutton\",\"exp_id\":148989,\"dimension\":1,\"layer_id\":51487,\"type\":1,\"id\":326573},{\"domain\":\"redbutton\",\"exp_id\":149759,\"dimension\":1,\"layer_id\":52286,\"type\":1,\"id\":329464,\"code\":\"exp_149759_var_329464\"},{\"layer_id\":53046,\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\",\"exp_id\":150497,\"dimension\":1},{\"id\":424214,\"code\":\"exp_168128_var_424214\",\"domain\":\"redbutton\",\"exp_id\":168128,\"dimension\":1,\"layer_id\":71195,\"type\":1},{\"dimension\":1,\"layer_id\":71739,\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\",\"exp_id\":168655},{\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\",\"exp_id\":171521,\"dimension\":1,\"layer_id\":74743},{\"exp_id\":172425,\"dimension\":1,\"layer_id\":75690,\"type\":1,\"id\":447442,\"code\":\"exp_172425_var_447442\",\"domain\":\"redbutton\"},{\"type\":1,\"id\":464800,\"code\":\"exp_175402_var_464800\",\"domain\":\"redbutton\",\"exp_id\":175402,\"dimension\":1,\"layer_id\":78757},{\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"redbutton\",\"exp_id\":175448,\"dimension\":1,\"layer_id\":78803,\"type\":4,\"id\":-1},{\"id\":142229,\"code\":\"exp_109683_var_142229\",\"domain\":\"web_g\",\"exp_id\":109683,\"dimension\":1,\"layer_id\":11211,\"type\":1},{\"dimension\":1,\"layer_id\":12767,\"type\":1,\"id\":149502,\"code\":\"直播助手版本实验-对照组\",\"domain\":\"web_g\",\"exp_id\":111210},{\"layer_id\":13000,\"type\":1,\"id\":150425,\"code\":\"exp_111430_var_150425\",\"domain\":\"web_g\",\"exp_id\":111430,\"dimension\":1},{\"dimension\":1,\"layer_id\":13004,\"type\":1,\"id\":150447,\"code\":\"exp_111434_var_150447\",\"domain\":\"web_g\",\"exp_id\":111434},{\"dimension\":1,\"layer_id\":13007,\"type\":1,\"id\":150469,\"code\":\"exp_111436_var_150469\",\"domain\":\"web_g\",\"exp_id\":111436},{\"exp_id\":141457,\"dimension\":1,\"layer_id\":43745,\"type\":1,\"id\":286790,\"code\":\"exp_141457_var_286790\",\"domain\":\"web_g\"},{\"type\":1,\"id\":489270,\"code\":\"exp_179739_var_489270\",\"domain\":\"web_g\",\"exp_id\":179739,\"dimension\":1,\"layer_id\":83119},{\"id\":119131,\"code\":\"exp_104485_var_119131\",\"domain\":\"web_user\",\"exp_id\":104485,\"dimension\":1,\"layer_id\":6017,\"type\":1},{\"exp_id\":172383,\"dimension\":1,\"layer_id\":75650,\"type\":4,\"id\":-1,\"code\":\"#UNUSED_BUCKETS#\",\"domain\":\"web_user\"},{\"dimension\":1,\"layer_id\":79606,\"type\":1,\"id\":469374,\"code\":\"exp_176222_var_469374\",\"domain\":\"web_user\",\"exp_id\":176222},{\"id\":11616,\"code\":\"exp_178846_var_484419\",\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0,\"layer_id\":0,\"type\":2},{\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0,\"layer_id\":0,\"type\":2,\"id\":11615,\"code\":\"exp_178155_var_481232\"},{\"layer_id\":0,\"type\":2,\"id\":11422,\"code\":\"exp_175581_var_465820\",\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0},{\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0,\"layer_id\":0,\"type\":2,\"id\":10679,\"code\":\"exp_171138_var_440011\"},{\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0,\"layer_id\":0,\"type\":2,\"id\":10628,\"code\":\"exp_168255_var_424926\"},{\"id\":10389,\"code\":\"exp_166890_var_417419\",\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0,\"layer_id\":0,\"type\":2},{\"type\":2,\"id\":10388,\"code\":\"exp_166224_var_414085\",\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0,\"layer_id\":0},{\"type\":2,\"id\":10136,\"code\":\"exp_163112_var_397681\",\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0,\"layer_id\":0},{\"layer_id\":0,\"type\":2,\"id\":5084,\"code\":\"有任意门\",\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0},{\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0,\"layer_id\":0,\"type\":2,\"id\":5024,\"code\":\"exp_124743_var_211709\"},{\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0,\"layer_id\":0,\"type\":2,\"id\":4829,\"code\":\"exp_123976_var_207765\"},{\"layer_id\":0,\"type\":2,\"id\":2111,\"code\":\"exp_121506_var_195100\",\"domain\":\"web_user\",\"exp_id\":0,\"dimension\":0},{\"id\":1250,"
+    },
+    {
+      "ts": 1775997402242,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "//edith.xiaohongshu.com/api/sns/web/v1/login/qrcode/create",
+      "status": 200,
+      "requestBody": "{\"qr_type\":1}",
+      "body": "{\"code\":0,\"success\":true,\"msg\":\"成功\",\"data\":{\"multi_flag\":0,\"qr_id\":\"580311775997402150\",\"code\":\"851737\",\"url\":\"https://www.xiaohongshu.com/mobile/login?qrId=580311775997402150&ruleId=4&xhs_code=851737&timestamp=1775997402164&channel_type=web&component_id=37412a6864dd147fca69ab94ac1b60f5\"}}\n"
+    },
+    {
+      "ts": 1775997402243,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "rQbsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwCxIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyAwjDGjprCiRiZTllNzYwYy01MmY0LTRlMDctYjdkYy1lZDQ2Y2M2YjNmNTkwAkoCMTFY+LyN8qnokwN4uokFiAK79saN2DPKAiRmZmJmZmJkMi0zOTU0LTRmZDctOGJmYS0yYTM2OGViNzk2ZDXQAgtC+QHSAvUBeyJ1cmwiOiIvYXBpL3Nucy93ZWIvdjEvbG9naW4vcXJjb2RlL2NyZWF0ZSIsImlzQ2FjaGUiOnRydWUsImhlYWRlcnMiOnsieC14cmF5LXRyYWNlaWQiOiJjZWMwZDhkY2UyMzYzMDM0MTM5MTU1NmRjYWNkOTUzNiJ9LCJpc0Jyb3dzZXJFbnZWYWxpZCI6dHJ1ZSwib3JpZ2luSW5mbyI6IkFBRHZSTWJzSUdYaWxyenlkdGdVSnRud0lWNnFhT3FNQ25FWVVUZG00L0MxMWc9PSIsIm5hdmlnYXRpb25TdGFydCI6MTc3NTk5NzM5ODgyNn1K8AEKJDkyNjMyZTFiLTg5ZjctNDdkNi1iM2ZjLTU3MDBmZTk3MjE0MBJlTW96aWxsYS81LjAgKFgxMTsgTGludXggeDg2XzY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTQ3LjAuMC4wIFNhZmFyaS81MzcuMzYaUWh0dHBzOi8vd3d3LnhpYW9ob25nc2h1LmNvbS9zZWFyY2hfcmVzdWx0P2tleXdvcmQ9SHVvbislRTklOTIlOTMlRTklQjElQkMmdHlwZT01MSIOL3NlYXJjaF9yZXN1bHQ=",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997402401,
+      "kind": "xhr",
+      "method": "GET",
+      "url": "//edith.xiaohongshu.com/api/sns/web/v2/user/me",
+      "status": 200,
+      "requestBody": "",
+      "body": "{\"code\":-101,\"success\":false,\"msg\":\"无登录信息，或登录信息为空\",\"data\":{}}"
+    },
+    {
+      "ts": 1775997402543,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "ywTsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwDBIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyAwjPFzprCiRjNmFmZWZhZC1jYmI2LTQ0N2MtYjg5MC1lMDI2ZmRjOThiZDYwAUoCMTJY6K+h8qnokwN4gL8BiAKB+caN2DPKAiRmZmJmZmJkMi0zOTU0LTRmZDctOGJmYS0yYTM2OGViNzk2ZDXQAgxCDFoKdW5fc2Nhbm5lZErwAQokOTI2MzJlMWItODlmNy00N2Q2LWIzZmMtNTcwMGZlOTcyMTQwEmVNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xNDcuMC4wLjAgU2FmYXJpLzUzNy4zNhpRaHR0cHM6Ly93d3cueGlhb2hvbmdzaHUuY29tL3NlYXJjaF9yZXN1bHQ/a2V5d29yZD1IdW9uKyVFOSU5MiU5MyVFOSVCMSVCQyZ0eXBlPTUxIg4vc2VhcmNoX3Jlc3VsdNILCSoHZGVmYXVsdA==",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997402600,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "uwTsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwCBIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyAwiNGTpqCiQ2OWYxNTA0Yy1hMTdmLTRmYmItODYxNC1hZGQ4Y2U1ZWM3NmYwAUoBOFio+PTxqeiTA3iulQKIAqnzxo3YM8oCJGZmYmZmYmQyLTM5NTQtNGZkNy04YmZhLTJhMzY4ZWI3OTZkNdACCErwAQokOTI2MzJlMWItODlmNy00N2Q2LWIzZmMtNTcwMGZlOTcyMTQwEmVNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xNDcuMC4wLjAgU2FmYXJpLzUzNy4zNhpRaHR0cHM6Ly93d3cueGlhb2hvbmdzaHUuY29tL3NlYXJjaF9yZXN1bHQ/a2V5d29yZD1IdW9uKyVFOSU5MiU5MyVFOSVCMSVCQyZ0eXBlPTUxIg4vc2VhcmNoX3Jlc3VsdNoNCBIGc2VhcmNo",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997402623,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://edith.xiaohongshu.com/api/sns/web/racing_report",
+      "status": 200,
+      "requestBody": "{\"racing_info\":[{\"web_id\":\"37412a6864dd147fca69ab94ac1b60f5\",\"domain\":\"web_ab\"},{\"user_id\":\"69d5ac570000000033030fe8\",\"domain\":\"web_user\"},{\"web_id\":\"97c2428a-6a2b-500b-af6a-4dc8d97c6443\",\"domain\":\"web_g\"}],\"source\":\"web\",\"app\":\"xhs-pc-web\"}",
+      "body": "{\"msg\":\"成功\",\"code\":0,\"success\":true}\n"
+    },
+    {
+      "ts": 1775997403051,
+      "kind": "fetch",
+      "url": "http://127.0.0.1:54345",
+      "error": "TypeError: Failed to fetch"
+    },
+    {
+      "ts": 1775997403051,
+      "kind": "fetch",
+      "url": "chrome-extension://dhjaibcmgocbpegmejfphjhhpaphmkpp/is.js",
+      "error": "TypeError: Failed to fetch"
+    },
+    {
+      "ts": 1775997403051,
+      "kind": "fetch",
+      "url": "chrome-extension://beeaddblkeeialcohiolkkoiifhgjooj/manifest.json",
+      "error": "TypeError: Failed to fetch"
+    },
+    {
+      "ts": 1775997403051,
+      "kind": "fetch",
+      "url": "chrome-extension://ddgooekaaihgnbfbgalfiooiicdnmnia/js/js-index.ts.js",
+      "error": "TypeError: Failed to fetch"
+    },
+    {
+      "ts": 1775997403051,
+      "kind": "fetch",
+      "url": "chrome-extension://keeelahekhhgkpaipdodgjnmgkfcdpde/inject.6070000c.js",
+      "error": "TypeError: Failed to fetch"
+    },
+    {
+      "ts": 1775997403052,
+      "kind": "fetch",
+      "url": "chrome-extension://dbichmdlbjdeplpkhcejgkakobjbjalc/content-scripts/xiaohongshu.css",
+      "error": "TypeError: Failed to fetch"
+    },
+    {
+      "ts": 1775997403052,
+      "kind": "fetch",
+      "url": "chrome-extension://piejlhcmefdepbgalcongckfomfobokb/worker.js",
+      "error": "TypeError: Failed to fetch"
+    },
+    {
+      "ts": 1775997403052,
+      "kind": "fetch",
+      "url": "chrome-extension://lenndnnbdichpjlfmfadcjpaenmiflan/inject.bundle.js",
+      "error": "TypeError: Failed to fetch"
+    },
+    {
+      "ts": 1775997403052,
+      "kind": "fetch",
+      "url": "chrome-extension://hmeohemhimcjlegdjloglnkfablbneif/inject.bundle.js",
+      "error": "TypeError: Failed to fetch"
+    },
+    {
+      "ts": 1775997403172,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "/ATsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwBRIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyAwiNGTprCiQ5ZWZhNWQwMC00MDhhLTQ4MjktYmE0ZC04YmI2ZmYyYmI2MmIwiQJKATVYwPD08anokwN4rqMCiAKo88aN2DPKAiRmZmJmZmJkMi0zOTU0LTRmZDctOGJmYS0yYTM2OGViNzk2ZDXQAgVK8AEKJDkyNjMyZTFiLTg5ZjctNDdkNi1iM2ZjLTU3MDBmZTk3MjE0MBJlTW96aWxsYS81LjAgKFgxMTsgTGludXggeDg2XzY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTQ3LjAuMC4wIFNhZmFyaS81MzcuMzYaUWh0dHBzOi8vd3d3LnhpYW9ob25nc2h1LmNvbS9zZWFyY2hfcmVzdWx0P2tleXdvcmQ9SHVvbislRTklOTIlOTMlRTklQjElQkMmdHlwZT01MSIOL3NlYXJjaF9yZXN1bHTaDUgqIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1OiQ5N2MyNDI4YS02YTJiLTUwMGItYWY2YS00ZGM4ZDk3YzY0NDM=",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997403205,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "sATsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwAxIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyAwizIjpqCiQ2M2FiOWZiMS0wZTM3LTQzZWQtYjZmMC1hMWVhNDJhYWYxYzEwAUoBM1jA8PTxqeiTA3jo1gWIAqjzxo3YM8oCJGZmYmZmYmQyLTM5NTQtNGZkNy04YmZhLTJhMzY4ZWI3OTZkNdACA0rwAQokOTI2MzJlMWItODlmNy00N2Q2LWIzZmMtNTcwMGZlOTcyMTQwEmVNb3ppbGxhLzUuMCAoWDExOyBMaW51eCB4ODZfNjQpIEFwcGxlV2ViS2l0LzUzNy4zNiAoS0hUTUwsIGxpa2UgR2Vja28pIENocm9tZS8xNDcuMC4wLjAgU2FmYXJpLzUzNy4zNhpRaHR0cHM6Ly93d3cueGlhb2hvbmdzaHUuY29tL3NlYXJjaF9yZXN1bHQ/a2V5d29yZD1IdW9uKyVFOSU5MiU5MyVFOSVCMSVCQyZ0eXBlPTUxIg4vc2VhcmNoX3Jlc3VsdA==",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997403271,
+      "kind": "fetch",
+      "url": "https://apm-fe.xiaohongshu.com/api/data",
+      "status": 200,
+      "ok": true,
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997404044,
+      "kind": "fetch",
+      "url": "https://apm-fe.xiaohongshu.com/api/data",
+      "status": 200,
+      "ok": true,
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997404346,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "rAXsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwDRIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyBgi/IdgBAzpsCiRkZmI3N2IxYi1jZDQyLTQ2ZDAtOGQ4OC0wN2U2NThkNjgwNzcwh1FKAjEzWMi9j/Op6JMDeO2xBYgCjYfHjdgzygIkZmZiZmZiZDItMzk1NC00ZmQ3LThiZmEtMmEzNjhlYjc5NmQ10AINSvABCiQ5MjYzMmUxYi04OWY3LTQ3ZDYtYjNmYy01NzAwZmU5NzIxNDASZU1vemlsbGEvNS4wIChYMTE7IExpbnV4IHg4Nl82NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzE0Ny4wLjAuMCBTYWZhcmkvNTM3LjM2GlFodHRwczovL3d3dy54aWFvaG9uZ3NodS5jb20vc2VhcmNoX3Jlc3VsdD9rZXl3b3JkPUh1b24rJUU5JTkyJTkzJUU5JUIxJUJDJnR5cGU9NTEiDi9zZWFyY2hfcmVzdWx00gl0ai5EQVVfM19XRUJfNzI1NTNjMjgtNTM4YS00NDQxLTkzYzEtYTNmZmMyN2Q3ZGJkejYvc2VhcmNoX3Jlc3VsdD9rZXl3b3JkPUh1b24rJUU5JTkyJTkzJUU5JUIxJUJDJnR5cGU9NTGCAQEviAGe68aN2DM=",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997405455,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "//as.xiaohongshu.com/api/sec/v1/shield/webprofile",
+      "status": 200,
+      "requestBody": "{\"platform\":\"Linux\",\"sdkVersion\":\"4.3.4\",\"svn\":\"2\",\"profileData\":\"c058828ff50a429ae90a3cdb598d3a5945dc32e1a032b897f789a92f69d1d940ed3d25955f5de9143d0feed9b8daee8b02e7eb26e0cbf14d7bbe30e612665e776893123c5a2ae5f9b9e9552d17a62631a50e2cc2a860c2736b79322442faeb2f06506c7953e847785384d9d6de306bfd41e30699882a4ba887108d08f287b6ffae477449b72d2052ad89bd8cdf7eaecf664c815dc8d15abdad07c02370524f7f68633bf1e0c2983d\"}",
+      "body": "{\"code\":0,\"success\":true,\"msg\":\"ok\",\"data\":{\"st\":1775997405321}}\n"
+    },
+    {
+      "ts": 1775997405898,
+      "kind": "fetch",
+      "url": "https://apm-fe.xiaohongshu.com/api/data",
+      "status": 200,
+      "ok": true,
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997405899,
+      "kind": "fetch",
+      "url": "https://apm-fe.xiaohongshu.com/api/data",
+      "status": 200,
+      "ok": true,
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997405899,
+      "kind": "fetch",
+      "url": "https://apm-fe.xiaohongshu.com/api/data",
+      "status": 200,
+      "ok": true,
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997405899,
+      "kind": "fetch",
+      "url": "https://apm-fe.xiaohongshu.com/api/data",
+      "status": 200,
+      "ok": true,
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997406364,
+      "kind": "xhr",
+      "method": "POST",
+      "url": "https://t2.xiaohongshu.com/api/v2/collect",
+      "status": 200,
+      "requestBody": "rAXsthBdCjUIBRITZGlzY292ZXJ5LXVuZGVmaW5lZBoFMC4wLjAwBzoKeGhzLXBjLXdlYkIFNi41LjFwDhIAGm0KIDM3NDEyYTY4NjRkZDE0N2ZjYTY5YWI5NGFjMWI2MGY1igFIeWpmSzAwajJqMjBqeWpmSzAwanF5dUtoSzhTUzI5eWZZNGhoa1N4M2ZsMkkxbDQ4dVR2NFZDODg4SjIyOEo0ODRZSnlmSnlkIhoKGDY5ZDVhYzU3MDAwMDAwMDAzMzAzMGZlOCoCCAQyBgi/IdgBBTpsCiQzNTE3MDlmMS05NjVhLTQxMWYtYTI2OS04MjNjMDcyNzk3Mzcwh1FKAjE0WLDOifSp6JMDeO2xBYgC3pbHjdgzygIkZmZiZmZiZDItMzk1NC00ZmQ3LThiZmEtMmEzNjhlYjc5NmQ10AIOSvABCiQ5MjYzMmUxYi04OWY3LTQ3ZDYtYjNmYy01NzAwZmU5NzIxNDASZU1vemlsbGEvNS4wIChYMTE7IExpbnV4IHg4Nl82NCkgQXBwbGVXZWJLaXQvNTM3LjM2IChLSFRNTCwgbGlrZSBHZWNrbykgQ2hyb21lLzE0Ny4wLjAuMCBTYWZhcmkvNTM3LjM2GlFodHRwczovL3d3dy54aWFvaG9uZ3NodS5jb20vc2VhcmNoX3Jlc3VsdD9rZXl3b3JkPUh1b24rJUU5JTkyJTkzJUU5JUIxJUJDJnR5cGU9NTEiDi9zZWFyY2hfcmVzdWx00gl0ai5EQVVfNV9XRUJfMTVmYmZiNzktN2EwMy00N2UwLTlhOWMtODI4NTg4MDhjMzQxejYvc2VhcmNoX3Jlc3VsdD9rZXl3b3JkPUh1b24rJUU5JTkyJTkzJUU5JUIxJUJDJnR5cGU9NTGCAQEviAGe68aN2DM=",
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997407129,
+      "kind": "fetch",
+      "url": "https://apm-fe.xiaohongshu.com/api/data",
+      "status": 200,
+      "ok": true,
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    },
+    {
+      "ts": 1775997407973,
+      "kind": "fetch",
+      "url": "https://apm-fe.xiaohongshu.com/api/data",
+      "status": 200,
+      "ok": true,
+      "body": "{\"code\":0,\"msg\":\"Success\",\"success\":true}"
+    }
+  ]
+}

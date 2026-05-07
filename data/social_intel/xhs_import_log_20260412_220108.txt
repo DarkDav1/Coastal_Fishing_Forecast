@@ -1,0 +1,5 @@
+xhs_search_霍巴特钓鱼_20260412_220113.json: imported=0 skipped=11
+xhs_search_塔州钓鱼_20260412_220117.json: imported=0 skipped=11
+xhs_search_霍巴特路亚_20260412_220122.json: imported=1 skipped=6
+xhs_search_塔斯马尼亚海钓_20260412_220126.json: imported=0 skipped=7
+TOTAL imported=1 skipped=35

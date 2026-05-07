@@ -1,0 +1,10 @@
+xhs_search_霍巴特钓鱼_20260415_114819.json: imported=0 skipped=8
+xhs_search_塔州钓鱼_20260415_114824.json: imported=1 skipped=6
+xhs_search_霍巴特路亚_20260415_114828.json: imported=0 skipped=7
+xhs_search_塔斯马尼亚海钓_20260415_114833.json: imported=0 skipped=13
+xhs_search_德文特河_钓鱼_20260415_114837.json: imported=0 skipped=14
+xhs_search_塔斯曼大桥_钓鱼_20260415_114842.json: imported=1 skipped=12
+xhs_search_South_Arm_钓鱼_20260415_114847.json: imported=2 skipped=12
+xhs_search_Kangaroo_Bluff_钓鱼_20260415_114851.json: imported=3 skipped=8
+xhs_search_澳洲三文鱼_钓鱼_20260415_114856.json: imported=3 skipped=14
+TOTAL imported=10 skipped=94

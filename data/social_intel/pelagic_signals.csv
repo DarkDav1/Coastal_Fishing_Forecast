@@ -1,0 +1,132 @@
+date,area_family,area_family_label,contributing_areas,pelagic_score,pelagic_signal_count,primary_pelagic_count,secondary_pelagic_count,schooling_boost_count,surface_boost_count,high_confidence_count,medium_confidence_count,low_confidence_count,shore_reports,boat_reports,top_species,pulse_level,weak_label
+2023-11-21,tasmania_broad,Tasmania (broad),tasmania,0.0,2,0.0,0.0,0.0,0.0,0,2,0,0,0,,none,no pelagic signal detected
+2024-01-10,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,wrasse,none,no pelagic signal detected
+2024-03-20,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.0,1,0.0,0.0,0.0,0.0,0,1,0,1,0,,none,no pelagic signal detected
+2024-03-23,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,5.6,4,5.6,0.0,0.0,0.0,0,4,0,0,0,kingfish,high,strong pelagic pulse — kingfish — Derwent Bridge / Hobart CBD
+2024-03-23,tasmania_broad,Tasmania (broad),tasmania,2.8,2,2.8,0.0,0.0,0.0,0,2,0,0,0,kingfish,medium,moderate pelagic activity — kingfish — Tasmania (broad)
+2024-06-23,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,bream,none,no pelagic signal detected
+2024-09-11,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.0,3,0.0,0.0,0.0,0.0,0,0,3,0,0,,none,no pelagic signal detected
+2025-01-13,derwent_bridge,Derwent Bridge / Hobart CBD,tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,1,trout,none,no pelagic signal detected
+2025-01-15,central_lakes,Central Highland Lakes,woods_lake,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-01-15,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-01-28,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,1,squid,none,no pelagic signal detected
+2025-02-03,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,0,1,0,0,,none,no pelagic signal detected
+2025-02-07,tasmania_broad,Tasmania (broad),tasmania,0.0,2,0.0,0.0,0.0,0.0,0,2,0,0,0,trout,none,no pelagic signal detected
+2025-02-09,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,1,shark,none,no pelagic signal detected
+2025-02-10,east_coast,East Coast Tasmania,tasmania,1.4,1,1.4,0.0,0.0,0.0,0,1,0,0,0,kingfish,low,weak pelagic signal — kingfish — East Coast Tasmania
+2025-02-10,estuary,Tamar / Kelso Estuary,launceston,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-02-12,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.0,2,0.0,0.0,0.0,0.0,0,0,2,0,0,,none,no pelagic signal detected
+2025-02-12,tasmania_broad,Tasmania (broad),tasmania,0.0,2,0.0,0.0,0.0,0.0,0,0,2,0,0,,none,no pelagic signal detected
+2025-02-16,tasmania_broad,Tasmania (broad),tasmania,0.6,1,0.0,0.0,0.6,0.0,0,1,0,0,0,trout,low,weak pelagic signal — trout — Tasmania (broad)
+2025-02-27,tasmania_broad,Tasmania (broad),tasmania,1.4,1,1.4,0.0,0.0,0.0,0,1,0,0,0,kingfish,low,weak pelagic signal — kingfish — Tasmania (broad)
+2025-02-28,derwent_bridge,Derwent Bridge / Hobart CBD,derwent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,,none,no pelagic signal detected
+2025-02-28,east_coast,East Coast Tasmania,tasmania,2.8,1,2.8,0.0,0.0,0.0,0,1,0,1,0,"kingfish,tuna",medium,"moderate pelagic activity — kingfish, tuna — East Coast Tasmania"
+2025-03-12,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,squid,none,no pelagic signal detected
+2025-03-23,estuary,Tamar / Kelso Estuary,tasmania,0.3,1,0.0,0.0,0.0,0.3,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-03-25,north_coast,North / West Coast,tasmania,1.3,1,0.0,0.7,0.6,0.0,0,1,0,0,0,australian_salmon,low,weak pelagic signal — australian_salmon — North / West Coast
+2025-03-27,tasmania_broad,Tasmania (broad),tasmania,2.8,1,2.8,0.0,0.0,0.0,0,1,0,0,1,"jack_mackerel,mackerel,shark",medium,"moderate pelagic activity — jack_mackerel, mackerel — Tasmania (broad)"
+2025-04-27,tasmania_broad,Tasmania (broad),tasmania,1.4,2,1.4,0.0,0.0,0.0,0,2,0,0,0,"tuna,bream",low,"weak pelagic signal — tuna, bream — Tasmania (broad)"
+2025-04-28,central_lakes,Central Highland Lakes,lake_huntsman,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,1,trout,none,no pelagic signal detected
+2025-04-28,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,,none,no pelagic signal detected
+2025-04-29,derwent_bridge,Derwent Bridge / Hobart CBD,bellerive,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,bream,none,no pelagic signal detected
+2025-04-29,tasmania_broad,Tasmania (broad),tasmania,1.4,1,1.4,0.0,0.0,0.0,0,1,0,1,0,tuna,low,weak pelagic signal — tuna — Tasmania (broad)
+2025-04-30,east_coast,East Coast Tasmania,tasmania,1.3,2,0.0,0.7,0.6,0.0,0,2,0,0,0,"striped_trumpeter,flathead",low,"weak pelagic signal — striped_trumpeter, flathead — East Coast Tasmania"
+2025-05-22,derwent_bridge,Derwent Bridge / Hobart CBD,derwent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,1,shark,none,no pelagic signal detected
+2025-06-03,central_lakes,Central Highland Lakes,great_lake,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-06-08,derwent_bridge,Derwent Bridge / Hobart CBD,derwent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,1,trout,none,no pelagic signal detected
+2025-06-18,tasmania_broad,Tasmania (broad),tasmania,0.7,1,0.0,0.7,0.0,0.0,0,1,0,0,0,australian_salmon,low,weak pelagic signal — australian_salmon — Tasmania (broad)
+2025-06-23,east_coast,East Coast Tasmania,eaglehawk_neck,0.7,1,0.0,0.7,0.0,0.0,0,1,0,0,1,striped_trumpeter,low,weak pelagic signal — striped_trumpeter — East Coast Tasmania
+2025-06-29,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,bream,none,no pelagic signal detected
+2025-06-30,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,,none,no pelagic signal detected
+2025-07-06,derwent_bridge,Derwent Bridge / Hobart CBD,derwent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-07-16,tasmania_broad,Tasmania (broad),tasmania,0.6,1,0.0,0.0,0.6,0.0,0,1,0,0,0,trout,low,weak pelagic signal — trout — Tasmania (broad)
+2025-08-17,tasmania_broad,Tasmania (broad),four_springs,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-08-23,central_lakes,Central Highland Lakes,camden_dam,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-08-24,central_lakes,Central Highland Lakes,lake_plimsoll,0.0,2,0.0,0.0,0.0,0.0,0,2,0,0,0,trout,none,no pelagic signal detected
+2025-08-24,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-08-27,tasmania_broad,Tasmania (broad),tasmania,0.0,2,0.0,0.0,0.0,0.0,0,2,0,0,0,trout,none,no pelagic signal detected
+2025-08-28,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-08-30,derwent_west,Derwent West (Sandy Bay / Taroona),new_norfolk,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-08-30,tasmania_broad,Tasmania (broad),tasmania,0.0,2,0.0,0.0,0.0,0.0,0,2,0,0,0,trout,none,no pelagic signal detected
+2025-09-02,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-09-04,estuary,Tamar / Kelso Estuary,tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,,none,no pelagic signal detected
+2025-09-06,central_lakes,Central Highland Lakes,bradys_lake,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-09-07,derwent_bridge,Derwent Bridge / Hobart CBD,derwent,0.6,1,0.0,0.0,0.6,0.0,0,1,0,0,0,,low,weak pelagic signal —  — Derwent Bridge / Hobart CBD
+2025-09-07,tasmania_broad,Tasmania (broad),tasmania,0.0,3,0.0,0.0,0.0,0.0,0,3,0,0,0,,none,no pelagic signal detected
+2025-09-10,central_lakes,Central Highland Lakes,lake_crescent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,1,0,,none,no pelagic signal detected
+2025-10-22,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-10-24,derwent_bridge,Derwent Bridge / Hobart CBD,derwent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,,none,no pelagic signal detected
+2025-10-26,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-10-28,tasmania_broad,Tasmania (broad),tasmania,0.0,2,0.0,0.0,0.0,0.0,0,2,0,0,0,,none,no pelagic signal detected
+2025-10-29,tasmania_broad,Tasmania (broad),tasmania,1.4,2,1.4,0.0,0.0,0.0,0,2,0,1,1,tuna,low,weak pelagic signal — tuna — Tasmania (broad)
+2025-11-04,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-11-05,north_coast,North / West Coast,tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-11-06,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,bream,none,no pelagic signal detected
+2025-12-02,tasmania_broad,Tasmania (broad),tasmania,1.5,4,0.0,0.0,1.1,0.3,0,4,0,0,0,trout,low,weak pelagic signal — trout — Tasmania (broad)
+2025-12-04,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.0,3,0.0,0.0,0.0,0.0,0,0,3,0,0,,none,no pelagic signal detected
+2025-12-06,estuary,Tamar / Kelso Estuary,tamar_river,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,snapper,none,no pelagic signal detected
+2025-12-06,tasmania_broad,Tasmania (broad),tasmania,1.4,1,1.4,0.0,0.0,0.0,0,1,0,0,0,kingfish,low,weak pelagic signal — kingfish — Tasmania (broad)
+2025-12-07,tasmania_broad,Tasmania (broad),tasmania,0.6,1,0.0,0.0,0.6,0.0,0,1,0,0,0,trout,low,weak pelagic signal — trout — Tasmania (broad)
+2025-12-08,east_coast,East Coast Tasmania,eaglehawk_neck,2.0,1,1.4,0.0,0.6,0.0,0,1,0,0,1,tuna,medium,moderate pelagic activity — tuna — East Coast Tasmania
+2025-12-09,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,squid,none,no pelagic signal detected
+2025-12-09,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,squid,none,no pelagic signal detected
+2025-12-20,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,1,,none,no pelagic signal detected
+2025-12-21,central_lakes,Central Highland Lakes,great_lake,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,,none,no pelagic signal detected
+2025-12-23,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,snapper,none,no pelagic signal detected
+2025-12-28,central_lakes,Central Highland Lakes,lake_crescent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2025-12-28,derwent_bridge,Derwent Bridge / Hobart CBD,derwent,0.7,1,0.0,0.7,0.0,0.0,0,1,0,0,0,trevally,low,weak pelagic signal — trevally — Derwent Bridge / Hobart CBD
+2025-12-28,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,,none,no pelagic signal detected
+2025-12-29,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.0,1,0.0,0.0,0.0,0.0,0,1,0,1,0,trout,none,no pelagic signal detected
+2025-12-29,tasmania_broad,Tasmania (broad),tasmania,0.7,2,0.0,0.7,0.0,0.0,0,2,0,0,0,"australian_salmon,trout",low,"weak pelagic signal — australian_salmon, trout — Tasmania (broad)"
+2025-12-31,tasmania_broad,Tasmania (broad),tasmania,2.1,2,1.4,0.7,0.0,0.0,0,2,0,0,1,"tuna,australian_salmon,bream",medium,"moderate pelagic activity — tuna, australian_salmon — Tasmania (broad)"
+2026-01-02,central_lakes,Central Highland Lakes,great_lake,0.6,1,0.0,0.0,0.6,0.0,0,1,0,0,0,trout,low,weak pelagic signal — trout — Central Highland Lakes
+2026-01-03,central_lakes,Central Highland Lakes,great_lake,0.6,1,0.0,0.0,0.6,0.0,0,1,0,0,0,trout,low,weak pelagic signal — trout — Central Highland Lakes
+2026-01-05,derwent_bridge,Derwent Bridge / Hobart CBD,derwent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,bream,none,no pelagic signal detected
+2026-01-07,estuary,Tamar / Kelso Estuary,kelso,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,squid,none,no pelagic signal detected
+2026-01-09,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2026-01-11,central_lakes,Central Highland Lakes,lake_macintosh,0.0,1,0.0,0.0,0.0,0.0,0,1,0,1,0,trout,none,no pelagic signal detected
+2026-01-14,north_coast,North / West Coast,penguin,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2026-01-21,central_lakes,Central Highland Lakes,lake_plimsoll,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2026-01-26,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.0,1,0.0,0.0,0.0,0.0,0,0,1,0,0,wrasse,none,no pelagic signal detected
+2026-01-26,tasmania_broad,Tasmania (broad),lake_leake,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2026-01-28,east_coast,East Coast Tasmania,east_coast_tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,bream,none,no pelagic signal detected
+2026-02-04,central_lakes,Central Highland Lakes,lake_crescent,0.6,1,0.0,0.0,0.6,0.0,0,1,0,0,0,trout,low,weak pelagic signal — trout — Central Highland Lakes
+2026-02-09,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.0,1,0.0,0.0,0.0,0.0,0,0,1,0,0,snapper,none,no pelagic signal detected
+2026-02-14,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,snapper,none,no pelagic signal detected
+2026-02-18,central_lakes,Central Highland Lakes,lake_crescent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2026-02-22,central_lakes,Central Highland Lakes,lake_macintosh,0.6,1,0.0,0.0,0.6,0.0,0,1,0,0,0,trout,low,weak pelagic signal — trout — Central Highland Lakes
+2026-02-27,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,1,0,snapper,none,no pelagic signal detected
+2026-02-28,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.6,1,0.0,0.0,0.6,0.0,0,1,0,0,1,flathead,low,weak pelagic signal — flathead — Derwent Bridge / Hobart CBD
+2026-03-03,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.0,2,0.0,0.0,0.0,0.0,0,1,1,0,0,squid,none,no pelagic signal detected
+2026-03-03,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,0,1,0,0,squid,none,no pelagic signal detected
+2026-03-07,derwent_bridge,Derwent Bridge / Hobart CBD,derwent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,1,bream,none,no pelagic signal detected
+2026-03-07,east_coast,East Coast Tasmania,east_coast_tasmania,1.3,1,0.0,0.7,0.6,0.0,0,1,0,1,0,australian_salmon,low,weak pelagic signal — australian_salmon — East Coast Tasmania
+2026-03-08,east_coast,East Coast Tasmania,white_beach,0.7,1,0.0,0.7,0.0,0.0,0,1,0,1,0,"australian_salmon,squid",low,"weak pelagic signal — australian_salmon, squid — East Coast Tasmania"
+2026-03-11,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,2.4,1,1.4,0.7,0.0,0.3,0,1,0,0,1,"kingfish,striped_trumpeter",medium,"moderate pelagic activity — kingfish, striped_trumpeter — Derwent Bridge / Hobart CBD"
+2026-03-15,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,1.0,2,0.0,0.7,0.0,0.3,0,2,0,0,1,"australian_salmon,flathead",low,"weak pelagic signal — australian_salmon, flathead — Derwent Bridge / Hobart CBD"
+2026-03-16,north_coast,North / West Coast,arthur_river,1.3,1,0.0,0.7,0.6,0.0,0,1,0,0,0,australian_salmon,low,weak pelagic signal — australian_salmon — North / West Coast
+2026-03-17,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,squid,none,no pelagic signal detected
+2026-03-18,central_lakes,Central Highland Lakes,lake_crescent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2026-03-20,central_lakes,Central Highland Lakes,great_lake,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2026-03-20,tasmania_broad,Tasmania (broad),tasmania,0.7,1,0.0,0.7,0.0,0.0,0,1,0,0,0,australian_salmon,low,weak pelagic signal — australian_salmon — Tasmania (broad)
+2026-03-22,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,1.3,1,0.0,0.7,0.6,0.0,0,1,0,0,0,"australian_salmon,bream",low,"weak pelagic signal — australian_salmon, bream — Derwent Bridge / Hobart CBD"
+2026-03-24,tasmania_broad,Tasmania (broad),tasmania,1.4,2,1.4,0.0,0.0,0.0,0,1,1,0,0,mackerel,low,weak pelagic signal — mackerel — Tasmania (broad)
+2026-03-25,central_lakes,Central Highland Lakes,lake_crescent,0.9,1,0.0,0.0,0.6,0.3,0,1,0,0,0,trout,low,weak pelagic signal — trout — Central Highland Lakes
+2026-03-30,derwent_west,Derwent West (Sandy Bay / Taroona),taroona,0.4,1,0.0,0.3,0.0,0.1,0,0,1,0,0,australian_salmon,none,no pelagic signal detected
+2026-03-30,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,trout,none,no pelagic signal detected
+2026-03-31,derwent_bridge,Derwent Bridge / Hobart CBD,derwent|hobart,3.4,2,1.4,0.7,0.6,0.7,0,2,0,1,1,"tuna,trevally",medium,"moderate pelagic activity — tuna, trevally — Derwent Bridge / Hobart CBD"
+2026-04-01,central_lakes,Central Highland Lakes,lake_crescent,0.0,1,0.0,0.0,0.0,0.0,0,1,0,1,0,trout,none,no pelagic signal detected
+2026-04-01,estuary,Tamar / Kelso Estuary,kelso,1.3,1,0.0,0.7,0.6,0.0,0,1,0,0,1,australian_salmon,low,weak pelagic signal — australian_salmon — Tamar / Kelso Estuary
+2026-04-02,tasmania_broad,Tasmania (broad),tasmania,0.7,1,0.0,0.7,0.0,0.0,0,1,0,0,0,"trevally,bream",low,"weak pelagic signal — trevally, bream — Tasmania (broad)"
+2026-04-03,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,1.8,1,1.4,0.0,0.0,0.3,0,1,0,0,1,tuna,low,weak pelagic signal — tuna — Derwent Bridge / Hobart CBD
+2026-04-03,derwent_east,Derwent East (Kangaroo Bluff / Tranmere / South Arm),kangaroo_bluff,1.5,2,1.2,0.3,0.0,0.0,0,0,2,0,0,"mackerel,australian_salmon",low,"weak pelagic signal — mackerel, australian_salmon — Derwent East (Kangaroo Bluff / Tranmere / South Arm)"
+2026-04-03,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,0,1,0,0,,none,no pelagic signal detected
+2026-04-04,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,1.8,1,1.4,0.0,0.0,0.3,0,1,0,0,1,tuna,low,weak pelagic signal — tuna — Derwent Bridge / Hobart CBD
+2026-04-04,east_coast,East Coast Tasmania,eaglehawk_neck,1.4,1,1.4,0.0,0.0,0.0,0,1,0,0,1,tuna,low,weak pelagic signal — tuna — East Coast Tasmania
+2026-04-06,east_coast,East Coast Tasmania,binalong_bay,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,squid,none,no pelagic signal detected
+2026-04-06,tasmania_broad,Tasmania (broad),tasmania,0.7,1,0.0,0.7,0.0,0.0,0,1,0,1,0,australian_salmon,low,weak pelagic signal — australian_salmon — Tasmania (broad)
+2026-04-07,derwent_bridge,Derwent Bridge / Hobart CBD,tasmania,1.6,1,0.0,0.7,0.6,0.3,0,1,0,0,0,australian_salmon,low,weak pelagic signal — australian_salmon — Derwent Bridge / Hobart CBD
+2026-04-08,tasmania_broad,Tasmania (broad),tasmania,0.0,1,0.0,0.0,0.0,0.0,0,1,0,0,0,gummy_shark,none,no pelagic signal detected
+2026-04-10,tasmania_broad,Tasmania (broad),tasmania,0.6,1,0.0,0.0,0.6,0.0,0,1,0,0,0,snapper,low,weak pelagic signal — snapper — Tasmania (broad)
+2026-04-11,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,2.3,1,1.4,0.0,0.6,0.3,0,1,0,0,1,tuna,medium,moderate pelagic activity — tuna — Derwent Bridge / Hobart CBD
+2026-04-12,derwent_bridge,Derwent Bridge / Hobart CBD,hobart,3.7,2,2.8,0.0,0.6,0.3,0,2,0,0,2,tuna,medium,moderate pelagic activity — tuna — Derwent Bridge / Hobart CBD

@@ -1,0 +1,33 @@
+{
+  "generated_at": "2026-04-14T04:31:59.062560+10:00",
+  "queries_executed": 5,
+  "total_posts_found": 0,
+  "subreddits_active": [],
+  "search_results": [
+    {
+      "query": "Tasmania Derwent fishing report",
+      "error": "parse_failed",
+      "raw": ""
+    },
+    {
+      "query": "Hobart salmon fishing",
+      "error": "parse_failed",
+      "raw": ""
+    },
+    {
+      "query": "Tasmania flathead kingfish",
+      "error": "parse_failed",
+      "raw": ""
+    },
+    {
+      "query": "Derwent River fishing catch",
+      "error": "parse_failed",
+      "raw": ""
+    },
+    {
+      "query": "Tasmania fishing Hobart",
+      "error": "parse_failed",
+      "raw": ""
+    }
+  ]
+}

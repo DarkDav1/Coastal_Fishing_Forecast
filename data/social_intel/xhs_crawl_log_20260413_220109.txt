@@ -1,0 +1,20 @@
+Query: 霍巴特钓鱼
+Opened tab: 7D614CE3FDD70C2A7EDE43257DEDA51D
+Extracted 0 fishing result cards
+CSV: /home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_霍巴特钓鱼_20260413_220114.csv
+JSON: /home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_霍巴特钓鱼_20260413_220114.json
+Query: 塔州钓鱼
+Opened tab: C7C6F870766F192B392B48B0FEDF6BD3
+Extracted 0 fishing result cards
+CSV: /home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_塔州钓鱼_20260413_220118.csv
+JSON: /home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_塔州钓鱼_20260413_220118.json
+Query: 霍巴特路亚
+Opened tab: BA3DCA05B18AFA6A7D8FD69AE7C8C439
+Extracted 0 fishing result cards
+CSV: /home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_霍巴特路亚_20260413_220122.csv
+JSON: /home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_霍巴特路亚_20260413_220122.json
+Query: 塔斯马尼亚海钓
+Opened tab: D6D16A7CFB373192D73B472F7CE3AC0B
+Extracted 0 fishing result cards
+CSV: /home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_塔斯马尼亚海钓_20260413_220126.csv
+JSON: /home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_塔斯马尼亚海钓_20260413_220126.json

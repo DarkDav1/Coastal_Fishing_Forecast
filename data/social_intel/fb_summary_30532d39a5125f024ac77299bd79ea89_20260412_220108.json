@@ -1,0 +1,186 @@
+{
+  "source_url": "https://www.facebook.com/groups/283165128726817/?sorting_setting=CHRONOLOGICAL",
+  "scrolls": 3,
+  "location": "Tasmania",
+  "shore_vs_boat": "unknown",
+  "posts_found": 10,
+  "posts_fetched": 10,
+  "results": [
+    {
+      "url": "https://www.facebook.com/groups/283165128726817/posts/2702338150142824/",
+      "imported": false,
+      "row": null,
+      "signal": {
+        "date": "2026-04-06",
+        "date_confidence": "medium",
+        "author": "Sports Fish Tasmania",
+        "url": "https://www.facebook.com/groups/283165128726817/posts/2702338150142824/",
+        "title": "Sports Fish Tasmania | Few solid squid over the weekend Binalong bay | Facebook",
+        "species": [
+          "squid"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "unknown",
+        "size_signal": "large",
+        "location_text": "Tasmania",
+        "raw_excerpt": "Few solid squid over the weekend Binalong bay. Happy Easter\n查看翻译",
+        "comment_excerpt": "Ron Cooke\nNice catch mate enjoy\n6天\n回复\n查看翻译\n1\nAdrick MacDonald\nVery nice\n5天\n回复\n查看翻译\n1\n提交首条评论…",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/groups/283165128726817/posts/2701417840234855/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/283165128726817/posts/2701298780246761/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/283165128726817/posts/2700231710353468/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/283165128726817/posts/2699791333730839/",
+      "imported": true,
+      "row": {
+        "captured_at": "2026-04-12T22:04:36",
+        "date": "2026-04-03",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "unknown",
+        "species_mentions": "",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "unknown",
+        "method_mentions": "",
+        "evidence_confidence": "low",
+        "raw_excerpt": "Quick drag after setting the pots yiew",
+        "url_or_reference": "https://www.facebook.com/groups/283165128726817/posts/2699791333730839/"
+      },
+      "signal": {
+        "date": "2026-04-03",
+        "date_confidence": "medium",
+        "author": "Sports Fish Tasmania",
+        "url": "https://www.facebook.com/groups/283165128726817/posts/2699791333730839/",
+        "title": "Sports Fish Tasmania | Quick drag after setting the pots yiew | Facebook",
+        "species": [],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "unknown",
+        "size_signal": "unknown",
+        "location_text": "Tasmania",
+        "raw_excerpt": "Quick drag after setting the pots yiew",
+        "comment_excerpt": "Wil King\nOut dart mate ? going Wednesday dont know where the fish are hanging ?\n1周\n回复\n查看翻译\nSebastian Longman\nWil King Eaglehawk man\n1周\n回复\nWil King\nSebastian Longman cheers bro\n1周\n回复\n查看翻译\nThomas John Crawford\nNice work legend\n1周\n回复\n查看翻译\n1\nJosh Saunders\nFkn beast boyz.... Well done\n1周\n回复\n查看翻译\n1\nJarrod Bart Beasley\nJayden Griggs you have any luck?\n1周\n回复",
+        "evidence_confidence": "low"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/groups/283165128726817/posts/2698626910513948/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/283165128726817/posts/2698399387203367/",
+      "imported": true,
+      "row": {
+        "captured_at": "2026-04-12T22:04:36",
+        "date": "2026-04-02",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "unknown",
+        "species_mentions": "bream;trevally",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "unknown",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "Is there any spots in Burnie area to get onto a Bream or a Trevally?",
+        "url_or_reference": "https://www.facebook.com/groups/283165128726817/posts/2698399387203367/"
+      },
+      "signal": {
+        "date": "2026-04-02",
+        "date_confidence": "medium",
+        "author": "Sports Fish Tasmania",
+        "url": "https://www.facebook.com/groups/283165128726817/posts/2698399387203367/",
+        "title": "Sports Fish Tasmania | Is there any spots in Burnie area to get onto a Bream or a Trevally | Facebook",
+        "species": [
+          "bream",
+          "trevally"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "unknown",
+        "size_signal": "unknown",
+        "location_text": "Tasmania",
+        "raw_excerpt": "Is there any spots in Burnie area to get onto a Bream or a Trevally?",
+        "comment_excerpt": "Mitchell Wynwood\nToo many seals around that breakwall\n1周\n回复\n查看翻译\n1\n全部8条回复\nSteve Jones\nCaught my PB bream in the mouth of the Blythe.\n1周\n回复\n查看翻译\n全部2条回复\nJustin Bloom\nIve been getting trevally around the break wall in Burnie but good luck landing them\n1周\n回复\n查看翻译\n全部7条回复\nDylan Maxworthy\nAt Ulverstone breakwall\n1周\n回复\n2\nPeter Scott\nGotta saddle?",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/groups/283165128726817/posts/2698385220538117/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/283165128726817/posts/2697730507270255/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/283165128726817/posts/2695833537459952/",
+      "imported": true,
+      "row": {
+        "captured_at": "2026-04-12T22:04:36",
+        "date": "2026-03-30",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "unknown",
+        "species_mentions": "trout",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "large",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "Maxim Vereshaka 在 Tasmania, Austraila\n3月30日12:24\nFishing for Trophy Trout in Tasmania - up on You Tube #greatestfishingadventures #bigbrowntroutfishing #trophytrout #tasmania #\n查看翻译\n0:00 / 0:19",
+        "url_or_reference": "https://www.facebook.com/groups/283165128726817/posts/2695833537459952/"
+      },
+      "signal": {
+        "date": "2026-03-30",
+        "date_confidence": "medium",
+        "author": "Sports Fish Tasmania",
+        "url": "https://www.facebook.com/groups/283165128726817/posts/2695833537459952/",
+        "title": "Sports Fish Tasmania | Facebook",
+        "species": [
+          "trout"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "unknown",
+        "size_signal": "large",
+        "location_text": "Tasmania",
+        "raw_excerpt": "Maxim Vereshaka 在 Tasmania, Austraila\n3月30日12:24\nFishing for Trophy Trout in Tasmania - up on You Tube #greatestfishingadventures #bigbrowntroutfishing #trophytrout #tasmania #\n查看翻译\n0:00 / 0:19",
+        "comment_excerpt": "Ashley Foster\nDid you land that monster? If so how big was he?\n1周\n回复\n查看翻译\n提交首条评论…",
+        "evidence_confidence": "medium"
+      }
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "source_url": "https://www.facebook.com/groups/365640693613260/?sorting_setting=CHRONOLOGICAL",
+  "scrolls": 3,
+  "location": "Tasmania",
+  "shore_vs_boat": "unknown",
+  "posts_found": 10,
+  "posts_fetched": 10,
+  "results": [
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3441200266057272/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3440555312788434/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3440290876148211/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3439833039527328/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3437554419755190/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3436468159863816/",
+      "imported": true,
+      "status": "imported",
+      "row": {
+        "captured_at": "2026-04-15T11:53:50",
+        "date": "2026-04-11",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "unknown",
+        "species_mentions": "snapper",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "unknown",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "My best snapper this year was the first one of the year caught on 6th October.6lb braid and leader with motor oil on a 2/0 headlock jig head.Heart stopping stuff.Water temp was only 12c a couple of days later.\n查看翻译",
+        "url_or_reference": "https://www.facebook.com/groups/365640693613260/posts/3436468159863816/"
+      },
+      "signal": {
+        "date": "2026-04-11",
+        "date_confidence": "medium",
+        "author": "Fishing in Tasmania",
+        "url": "https://www.facebook.com/groups/365640693613260/posts/3436468159863816/",
+        "title": "(2) Fishing in Tasmania | My best snapper this year was the first one of the year caught on 6th October.6lb braid and leader with motor oil on a 2/0 headlock jig head.Heart sto... | Facebook",
+        "species": [
+          "snapper"
+        ],
+        "capture_count": "2条",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "unknown",
+        "size_signal": "unknown",
+        "location_text": "Tasmania",
+        "raw_excerpt": "My best snapper this year was the first one of the year caught on 6th October.6lb braid and leader with motor oil on a 2/0 headlock jig head.Heart stopping stuff.Water temp was only 12c a couple of days later.\n查看翻译",
+        "comment_excerpt": "Gav Purcell\nYou had a good net boy\n4天\n回复\n查看翻译",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3435668796610419/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3435488473295118/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3434492816728017/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3434407923403173/",
+      "imported": true,
+      "status": "imported",
+      "row": {
+        "captured_at": "2026-04-15T11:53:50",
+        "date": "2026-04-09",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "shore",
+        "species_mentions": "snapper;tuna",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "large",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "Best beaches for mixed bag fishing?\nWill be dropping bait with a drone around 200m+ out\nWould love to get a snapper also reeling in a tuna off the beach would be good\nAnywhere that has big fish\n查看翻译",
+        "url_or_reference": "https://www.facebook.com/groups/365640693613260/posts/3434407923403173/"
+      },
+      "signal": {
+        "date": "2026-04-09",
+        "date_confidence": "medium",
+        "author": "Fishing in Tasmania",
+        "url": "https://www.facebook.com/groups/365640693613260/posts/3434407923403173/",
+        "title": "(2) Fishing in Tasmania | Best beaches for mixed bag fishing | Facebook",
+        "species": [
+          "snapper",
+          "tuna"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "shore",
+        "size_signal": "large",
+        "location_text": "Tasmania",
+        "raw_excerpt": "Best beaches for mixed bag fishing?\nWill be dropping bait with a drone around 200m+ out\nWould love to get a snapper also reeling in a tuna off the beach would be good\nAnywhere that has big fish\n查看翻译",
+        "comment_excerpt": "David Gardiner\nGo out and find where the sand meets the water and just have a go, you know like people used too\n6天\n回复\n查看翻译\n13\n全部2条回复\nJayden Clark\n关注\nWhat drone u using?\n6天\n回复\n查看翻译\n全部2条回复\nCraig Osborne\nwtf with the drone? is it fishing with a drone?\n5天\n回复\n查看翻译",
+        "evidence_confidence": "medium"
+      }
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/fb_probe_74961bdcdaeb645c7b903c6567ed6ab3_20260412_220108.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_001.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_002.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_003.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_004.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_005.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_006.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_007.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_008.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_009.json
+[1/4] Probing page/group for post links...
+Found 9 unique post URLs (limited to 10).
+[2/4] Fetching post details...
+  [1/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid0M4wpzEpTtC1n36azxptW4zdp
+  [2/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid026rX2AK4k2jeyPDao1Z4BbPK
+  [3/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid02F4TQRYCZrxFffeXwGwG3d8x
+  [4/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid027n2mjctJvzvXnaQpJCF7JJc
+  [5/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid02vZuGzgQh5ECQEKJczBodeZJ
+  [6/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid02YF7Bu5upAa7DqfV8wMJe6pZ
+  [7/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid0PUdFbT8DGTtJSkCPeDDa2UT1
+  [8/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid0X5wiwfeaecmwoj2CY6EPcqQh
+  [9/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid02eZWPD33gqqEaqBx5WngRvDG
+[3/4] Converting to signals...
+  IMPORTED: https://www.facebook.com/mrflatheadtasmania/posts/pfbid0M4wpzEpTtC1n36azxptW4zdp
+  IMPORTED: https://www.facebook.com/mrflatheadtasmania/posts/pfbid026rX2AK4k2jeyPDao1Z4BbPK
+  IMPORTED: https://www.facebook.com/mrflatheadtasmania/posts/pfbid02F4TQRYCZrxFffeXwGwG3d8x
+  IMPORTED: https://www.facebook.com/mrflatheadtasmania/posts/pfbid027n2mjctJvzvXnaQpJCF7JJc
+  not_catch_report: https://www.facebook.com/mrflatheadtasmania/posts/pfbid02vZuGzgQh5ECQEKJczBodeZJ
+  IMPORTED: https://www.facebook.com/mrflatheadtasmania/posts/pfbid02YF7Bu5upAa7DqfV8wMJe6pZ
+  IMPORTED: https://www.facebook.com/mrflatheadtasmania/posts/pfbid0PUdFbT8DGTtJSkCPeDDa2UT1
+  IMPORTED: https://www.facebook.com/mrflatheadtasmania/posts/pfbid0X5wiwfeaecmwoj2CY6EPcqQh
+  not_catch_report: https://www.facebook.com/mrflatheadtasmania/posts/pfbid02eZWPD33gqqEaqBx5WngRvDG
+[4/4] Summary written to /home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/fb_summary_74961bdcdaeb645c7b903c6567ed6ab3_20260412_220108.json
+Done. Imported 7/9 signals.
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/fb_probe_30532d39a5125f024ac77299bd79ea89_20260412_220108.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_001.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_002.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_003.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_004.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_005.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_006.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_007.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_008.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_009.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_010.json
+[1/4] Probing page/group for post links...
+Found 10 unique post URLs (limited to 10).
+[2/4] Fetching post details...
+  [1/10] https://www.facebook.com/groups/283165128726817/posts/2702338150142824/
+  [2/10] https://www.facebook.com/groups/283165128726817/posts/2701417840234855/
+  [3/10] https://www.facebook.com/groups/283165128726817/posts/2701298780246761/
+  [4/10] https://www.facebook.com/groups/283165128726817/posts/2700231710353468/
+  [5/10] https://www.facebook.com/groups/283165128726817/posts/2699791333730839/
+  [6/10] https://www.facebook.com/groups/283165128726817/posts/2698626910513948/
+  [7/10] https://www.facebook.com/groups/283165128726817/posts/2698399387203367/
+  [8/10] https://www.facebook.com/groups/283165128726817/posts/2698385220538117/
+  [9/10] https://www.facebook.com/groups/283165128726817/posts/2697730507270255/
+  [10/10] https://www.facebook.com/groups/283165128726817/posts/2695833537459952/
+[3/4] Converting to signals...
+  skipped: https://www.facebook.com/groups/283165128726817/posts/2702338150142824/
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2701417840234855/
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2701298780246761/
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2700231710353468/
+  IMPORTED: https://www.facebook.com/groups/283165128726817/posts/2699791333730839/
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2698626910513948/
+  IMPORTED: https://www.facebook.com/groups/283165128726817/posts/2698399387203367/
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2698385220538117/
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2697730507270255/
+  IMPORTED: https://www.facebook.com/groups/283165128726817/posts/2695833537459952/
+[4/4] Summary written to /home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/fb_summary_30532d39a5125f024ac77299bd79ea89_20260412_220108.json
+Done. Imported 3/10 signals.
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/fb_probe_acb75907057f1e20e16d2802a4d46634_20260412_220108.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_001.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_002.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_003.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_004.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_005.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_006.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_007.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_008.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_009.json
+/home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_010.json
+[1/4] Probing page/group for post links...
+Found 10 unique post URLs (limited to 10).
+[2/4] Fetching post details...
+  [1/10] https://www.facebook.com/groups/365640693613260/posts/3437554419755190/
+  [2/10] https://www.facebook.com/groups/365640693613260/posts/3436468159863816/
+  [3/10] https://www.facebook.com/groups/365640693613260/posts/3435488473295118/
+  [4/10] https://www.facebook.com/groups/365640693613260/posts/3435412099969422/
+  [5/10] https://www.facebook.com/groups/365640693613260/posts/3434479263396039/
+  [6/10] https://www.facebook.com/groups/365640693613260/posts/3434492816728017/
+  [7/10] https://www.facebook.com/groups/365640693613260/posts/3433596820150950/
+  [8/10] https://www.facebook.com/groups/365640693613260/posts/3433230083520957/
+  [9/10] https://www.facebook.com/groups/365640693613260/posts/3432653426911956/
+  [10/10] https://www.facebook.com/groups/365640693613260/posts/3432577543586211/
+[3/4] Converting to signals...
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3437554419755190/
+  IMPORTED: https://www.facebook.com/groups/365640693613260/posts/3436468159863816/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3435488473295118/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3435412099969422/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3434479263396039/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3434492816728017/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3433596820150950/
+  IMPORTED: https://www.facebook.com/groups/365640693613260/posts/3433230083520957/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3432653426911956/
+  IMPORTED: https://www.facebook.com/groups/365640693613260/posts/3432577543586211/
+[4/4] Summary written to /home/kyonccw/.openclaw/workspace-cocky/fishing-forecast/data/social_intel/fb_summary_acb75907057f1e20e16d2802a4d46634_20260412_220108.json
+Done. Imported 3/10 signals.

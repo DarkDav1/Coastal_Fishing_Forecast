@@ -1,0 +1,145 @@
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/fb_probe_b2242996251de30111494607dc1fa4d7_20260415_114815.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_001.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_002.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_003.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_004.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_005.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_006.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_007.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_008.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_009.json
+[1/4] Probing page/group for post links...
+Found 9 unique post URLs (limited to 10).
+[2/4] Fetching post details...
+  [1/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid02QkEXsmUYv9jQpkqkzZZ1nwK
+  [2/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid026gN1sAo1DCeSGfGAiddc335
+  [3/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid02EtJQ8Pvq3UbvrXWwqKoQaUJ
+  [4/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid027bsmSUca7Kscr3Xb4YhCD3q
+  [5/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid0rr75nNWbQddkgz16TzyPDdF6
+  [6/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid02YYuiAbDHAeZFLxv5jsFy5iG
+  [7/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid02T9uxUynJJR567xwWkVYLKCZ
+  [8/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid0WunieXNqq7PyRGMDDtxbh6Fz
+  [9/9] https://www.facebook.com/mrflatheadtasmania/posts/pfbid02esJuUYM9rAugh9Ybp3HrYuw
+[3/4] Converting to signals...
+  IMPORTED: https://www.facebook.com/mrflatheadtasmania/posts/pfbid02QkEXsmUYv9jQpkqkzZZ1nwK
+  deduped: https://www.facebook.com/mrflatheadtasmania/posts/pfbid026gN1sAo1DCeSGfGAiddc335
+  deduped: https://www.facebook.com/mrflatheadtasmania/posts/pfbid02EtJQ8Pvq3UbvrXWwqKoQaUJ
+  deduped: https://www.facebook.com/mrflatheadtasmania/posts/pfbid027bsmSUca7Kscr3Xb4YhCD3q
+  not_catch_report: https://www.facebook.com/mrflatheadtasmania/posts/pfbid0rr75nNWbQddkgz16TzyPDdF6
+  IMPORTED: https://www.facebook.com/mrflatheadtasmania/posts/pfbid02YYuiAbDHAeZFLxv5jsFy5iG
+  deduped: https://www.facebook.com/mrflatheadtasmania/posts/pfbid02T9uxUynJJR567xwWkVYLKCZ
+  deduped: https://www.facebook.com/mrflatheadtasmania/posts/pfbid0WunieXNqq7PyRGMDDtxbh6Fz
+  not_catch_report: https://www.facebook.com/mrflatheadtasmania/posts/pfbid02esJuUYM9rAugh9Ybp3HrYuw
+[4/4] Summary written to /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/fb_summary_b2242996251de30111494607dc1fa4d7_20260415_114815.json
+Done. Imported 2/9 signals.
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/fb_probe_19bcd0bc75fc60513c1f6fb4f30654a7_20260415_114815.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_001.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_002.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_003.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_004.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_005.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_006.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_007.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_008.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_009.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_010.json
+[1/4] Probing page/group for post links...
+Found 10 unique post URLs (limited to 10).
+[2/4] Fetching post details...
+  [1/10] https://www.facebook.com/groups/283165128726817/posts/2708381502871822/
+  [2/10] https://www.facebook.com/groups/283165128726817/posts/2702338150142824/
+  [3/10] https://www.facebook.com/groups/283165128726817/posts/2701417840234855/
+  [4/10] https://www.facebook.com/groups/283165128726817/posts/2701298780246761/
+  [5/10] https://www.facebook.com/groups/283165128726817/posts/2699603110416328/
+  [6/10] https://www.facebook.com/groups/283165128726817/posts/2698626910513948/
+  [7/10] https://www.facebook.com/groups/283165128726817/posts/2698399387203367/
+  [8/10] https://www.facebook.com/groups/283165128726817/posts/2696808654029107/
+  [9/10] https://www.facebook.com/groups/283165128726817/posts/2695833537459952/
+  [10/10] https://www.facebook.com/groups/283165128726817/posts/2693082481068391/
+[3/4] Converting to signals...
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2708381502871822/
+  deduped: https://www.facebook.com/groups/283165128726817/posts/2702338150142824/
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2701417840234855/
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2701298780246761/
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2699603110416328/
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2698626910513948/
+  deduped: https://www.facebook.com/groups/283165128726817/posts/2698399387203367/
+  deduped: https://www.facebook.com/groups/283165128726817/posts/2696808654029107/
+  deduped: https://www.facebook.com/groups/283165128726817/posts/2695833537459952/
+  not_catch_report: https://www.facebook.com/groups/283165128726817/posts/2693082481068391/
+[4/4] Summary written to /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/fb_summary_19bcd0bc75fc60513c1f6fb4f30654a7_20260415_114815.json
+Done. Imported 0/10 signals.
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/fb_probe_c81c29adf8f95172ee0aa08078444228_20260415_114815.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_001.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_002.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_003.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_004.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_005.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_006.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_007.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_008.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_009.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_010.json
+[1/4] Probing page/group for post links...
+Found 10 unique post URLs (limited to 10).
+[2/4] Fetching post details...
+  [1/10] https://www.facebook.com/groups/365640693613260/posts/3441200266057272/
+  [2/10] https://www.facebook.com/groups/365640693613260/posts/3440555312788434/
+  [3/10] https://www.facebook.com/groups/365640693613260/posts/3440290876148211/
+  [4/10] https://www.facebook.com/groups/365640693613260/posts/3439833039527328/
+  [5/10] https://www.facebook.com/groups/365640693613260/posts/3437554419755190/
+  [6/10] https://www.facebook.com/groups/365640693613260/posts/3436468159863816/
+  [7/10] https://www.facebook.com/groups/365640693613260/posts/3435668796610419/
+  [8/10] https://www.facebook.com/groups/365640693613260/posts/3435488473295118/
+  [9/10] https://www.facebook.com/groups/365640693613260/posts/3434492816728017/
+  [10/10] https://www.facebook.com/groups/365640693613260/posts/3434407923403173/
+[3/4] Converting to signals...
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3441200266057272/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3440555312788434/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3440290876148211/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3439833039527328/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3437554419755190/
+  IMPORTED: https://www.facebook.com/groups/365640693613260/posts/3436468159863816/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3435668796610419/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3435488473295118/
+  not_catch_report: https://www.facebook.com/groups/365640693613260/posts/3434492816728017/
+  IMPORTED: https://www.facebook.com/groups/365640693613260/posts/3434407923403173/
+[4/4] Summary written to /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/fb_summary_c81c29adf8f95172ee0aa08078444228_20260415_114815.json
+Done. Imported 2/10 signals.
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/fb_probe_24c224feb2ce6f497a56e1f528285f76_20260415_114815.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_001.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_002.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_003.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_004.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_005.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_006.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_007.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_008.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_009.json
+/Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/experiments/facebook_batch_details/post_010.json
+[1/4] Probing page/group for post links...
+Found 10 unique post URLs (limited to 10).
+[2/4] Fetching post details...
+  [1/10] https://www.facebook.com/troutfishingtasmania/posts/pfbid02MuYac9LQwF4NknpX5FcxS
+  [2/10] https://www.facebook.com/troutfishingtasmania/posts/pfbid02KVRo2tNTziWyWDq559SU7
+  [3/10] https://www.facebook.com/troutfishingtasmania/posts/pfbid0Hwsr3A2Y1LXPyDZMuDH56u
+  [4/10] https://www.facebook.com/troutfishingtasmania/posts/pfbid02quVuUac1x57oREHRAM6ZY
+  [5/10] https://www.facebook.com/troutfishingtasmania/posts/pfbid07Kc2sW4KDVNVBBean81Fkc
+  [6/10] https://www.facebook.com/troutfishingtasmania/posts/pfbid09Wj2TQZyqbjGpJ6j5pPBGZ
+  [7/10] https://www.facebook.com/troutfishingtasmania/posts/pfbid03897HTDZxCBobfkU2CmcyB
+  [8/10] https://www.facebook.com/troutfishingtasmania/posts/pfbid02ihYyUyEX5cbvgKaCRtomE
+  [9/10] https://www.facebook.com/troutfishingtasmania/posts/pfbid02S7QpQhf9z3G2SeG3po9Bq
+  [10/10] https://www.facebook.com/troutfishingtasmania/posts/pfbid032Y6inqqZXUWHS8KCjn33a
+[3/4] Converting to signals...
+  not_catch_report: https://www.facebook.com/troutfishingtasmania/posts/pfbid02MuYac9LQwF4NknpX5FcxS
+  not_catch_report: https://www.facebook.com/troutfishingtasmania/posts/pfbid02KVRo2tNTziWyWDq559SU7
+  IMPORTED: https://www.facebook.com/troutfishingtasmania/posts/pfbid0Hwsr3A2Y1LXPyDZMuDH56u
+  not_catch_report: https://www.facebook.com/troutfishingtasmania/posts/pfbid02quVuUac1x57oREHRAM6ZY
+  IMPORTED: https://www.facebook.com/troutfishingtasmania/posts/pfbid07Kc2sW4KDVNVBBean81Fkc
+  IMPORTED: https://www.facebook.com/troutfishingtasmania/posts/pfbid09Wj2TQZyqbjGpJ6j5pPBGZ
+  not_catch_report: https://www.facebook.com/troutfishingtasmania/posts/pfbid03897HTDZxCBobfkU2CmcyB
+  IMPORTED: https://www.facebook.com/troutfishingtasmania/posts/pfbid02ihYyUyEX5cbvgKaCRtomE
+  not_catch_report: https://www.facebook.com/troutfishingtasmania/posts/pfbid02S7QpQhf9z3G2SeG3po9Bq
+  not_catch_report: https://www.facebook.com/troutfishingtasmania/posts/pfbid032Y6inqqZXUWHS8KCjn33a
+[4/4] Summary written to /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/fb_summary_24c224feb2ce6f497a56e1f528285f76_20260415_114815.json
+Done. Imported 4/10 signals.

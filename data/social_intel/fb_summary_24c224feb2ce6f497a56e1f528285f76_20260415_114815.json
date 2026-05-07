@@ -1,0 +1,208 @@
+{
+  "source_url": "https://www.facebook.com/troutfishingtasmania/",
+  "scrolls": 3,
+  "location": "Tasmania",
+  "shore_vs_boat": "unknown",
+  "posts_found": 10,
+  "posts_fetched": 10,
+  "results": [
+    {
+      "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid02MuYac9LQwF4NknpX5FcxS5S1yeXpgqvpwZqG1jL1VtwvfBPcT19Ea999LydYfwVpl",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid02KVRo2tNTziWyWDq559SU7aSTw7Nuv4GhfpFCasr7JC9bhr754m6Nu4ZbYUFiUzuNl",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid0Hwsr3A2Y1LXPyDZMuDH56utrX7wiEck8rCS2LCVNbNGWyppgVgYtbVLayMLw4WN8l",
+      "imported": true,
+      "status": "imported",
+      "row": {
+        "captured_at": "2026-04-15T11:55:31",
+        "date": "2025-11-04",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "unknown",
+        "species_mentions": "trout",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "unknown",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "The first of no doubt many to come out of the Derwent river for Tim Paradisis\nWeighing in at approx 4lb,\nNot long after being caught was put on the smoker for a great feed\n查看翻译\n写评论…",
+        "url_or_reference": "https://www.facebook.com/troutfishingtasmania/posts/pfbid0Hwsr3A2Y1LXPyDZMuDH56utrX7wiEck8rCS2LCVNbNGWyppgVgYtbVLayMLw4WN8l"
+      },
+      "signal": {
+        "date": "2025-11-04",
+        "date_confidence": "high",
+        "author": "Trout fishing tasmania",
+        "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid0Hwsr3A2Y1LXPyDZMuDH56utrX7wiEck8rCS2LCVNbNGWyppgVgYtbVLayMLw4WN8l",
+        "title": "(2) The first of no doubt many to come out of... - Trout fishing tasmania | Facebook",
+        "species": [
+          "trout"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "unknown",
+        "size_signal": "unknown",
+        "location_text": "Tasmania",
+        "raw_excerpt": "The first of no doubt many to come out of the Derwent river for Tim Paradisis\nWeighing in at approx 4lb,\nNot long after being caught was put on the smoker for a great feed\n查看翻译\n写评论…",
+        "comment_excerpt": "",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid02quVuUac1x57oREHRAM6ZYcMqSXmAWcuUCUmchKNhunUDmKCM4ifigHGaD6AVHEnKl",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid07Kc2sW4KDVNVBBean81Fkcfszizc63DP3xh4EWLgGjtia56ZYTnrfa72a2G2nAzYl",
+      "imported": true,
+      "status": "imported",
+      "row": {
+        "captured_at": "2026-04-15T11:55:31",
+        "date": "2022-08-21",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "unknown",
+        "species_mentions": "trout",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "decent",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "We love nothing more than people sending in their PBs great work will.\nGot him at south riana yesterday afternoon my PB he was 3.6 pound and 58 cm.\n查看翻译",
+        "url_or_reference": "https://www.facebook.com/troutfishingtasmania/posts/pfbid07Kc2sW4KDVNVBBean81Fkcfszizc63DP3xh4EWLgGjtia56ZYTnrfa72a2G2nAzYl"
+      },
+      "signal": {
+        "date": "2022-08-21",
+        "date_confidence": "high",
+        "author": "Trout fishing tasmania",
+        "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid07Kc2sW4KDVNVBBean81Fkcfszizc63DP3xh4EWLgGjtia56ZYTnrfa72a2G2nAzYl",
+        "title": "(2) We love nothing more than people sending... - Trout fishing tasmania | Facebook",
+        "species": [
+          "trout"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "unknown",
+        "size_signal": "decent",
+        "location_text": "Tasmania",
+        "raw_excerpt": "We love nothing more than people sending in their PBs great work will.\nGot him at south riana yesterday afternoon my PB he was 3.6 pound and 58 cm.\n查看翻译",
+        "comment_excerpt": "Damien Frigo\nFake fish I’ve been out all day.\n3年\n回复\n查看翻译\nJoshua Newman\nScott Newman\n3年\n回复\n1\nScott Newman\nJoshua Newman hes a nice one mate, im looking forward too getting out there.\n3年\n回复\n查看翻译\nLiam Flanigan\nMark Flanigan\n3年\n回复\nJoshua Newman\nReagan Lipplegoes\n3年\n回复\n1",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid09Wj2TQZyqbjGpJ6j5pPBGZ2vKC1z8m8JBzsuCGqGGsBzZtb2yuP3GMbhwsg1jwUml",
+      "imported": true,
+      "status": "imported",
+      "row": {
+        "captured_at": "2026-04-15T11:55:31",
+        "date": "2022-08-20",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "unknown",
+        "species_mentions": "trout",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "unknown",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "Here’s Lauren Whitaker with her ripping brown caught on opening weekend love your work\n查看翻译",
+        "url_or_reference": "https://www.facebook.com/troutfishingtasmania/posts/pfbid09Wj2TQZyqbjGpJ6j5pPBGZ2vKC1z8m8JBzsuCGqGGsBzZtb2yuP3GMbhwsg1jwUml"
+      },
+      "signal": {
+        "date": "2022-08-20",
+        "date_confidence": "high",
+        "author": "Trout fishing tasmania",
+        "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid09Wj2TQZyqbjGpJ6j5pPBGZ2vKC1z8m8JBzsuCGqGGsBzZtb2yuP3GMbhwsg1jwUml",
+        "title": "(2) Here’s Lauren Whitaker with her ripping... - Trout fishing tasmania | Facebook",
+        "species": [
+          "trout"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "unknown",
+        "size_signal": "unknown",
+        "location_text": "Tasmania",
+        "raw_excerpt": "Here’s Lauren Whitaker with her ripping brown caught on opening weekend love your work\n查看翻译",
+        "comment_excerpt": "Michelle Stewart\nOne very happy Lauren, one very unhappy trout..... well done cuz\n3年\n回复\n查看翻译\n1\nDaren Thomas\nNice trout\n3年\n回复\n查看翻译\n1\nKim Woolley\nWell done Lauren!\n3年\n回复\n查看翻译\n1\nDaniel Smith\nGreat picture and Great Brown well done\n3年\n回复\n查看翻译\n1\n已选中“最相关评论”，部分评论可能已被过滤。\n写评论…",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid03897HTDZxCBobfkU2CmcyBKRyogD2DwgpTRmXD9qBr4AvEWL7YrCHsQU1N9Dszu5Yl",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid02ihYyUyEX5cbvgKaCRtomEagNb297CiJJabtd3CQs3aTZgrGYGm7TrustbQPpoADEl",
+      "imported": true,
+      "status": "imported",
+      "row": {
+        "captured_at": "2026-04-15T11:55:31",
+        "date": "2022-08-13",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "unknown",
+        "species_mentions": "trout",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "unknown",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "Catch of the day goes to 15 year old beau skinner coming in at a ripping 8Ib we love our youngsters getting out on the weekend for a fish brilliant stuff. “Caught him in the river at brumbys creek on a killer wasp hawk sniper.”\n查看翻译\nTrout fishing tasmania\n发消息",
+        "url_or_reference": "https://www.facebook.com/troutfishingtasmania/posts/pfbid02ihYyUyEX5cbvgKaCRtomEagNb297CiJJabtd3CQs3aTZgrGYGm7TrustbQPpoADEl"
+      },
+      "signal": {
+        "date": "2022-08-13",
+        "date_confidence": "high",
+        "author": "Trout fishing tasmania",
+        "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid02ihYyUyEX5cbvgKaCRtomEagNb297CiJJabtd3CQs3aTZgrGYGm7TrustbQPpoADEl",
+        "title": "(2) Catch of the day goes to 15 year old beau... - Trout fishing tasmania | Facebook",
+        "species": [
+          "trout"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "unknown",
+        "size_signal": "unknown",
+        "location_text": "Tasmania",
+        "raw_excerpt": "Catch of the day goes to 15 year old beau skinner coming in at a ripping 8Ib we love our youngsters getting out on the weekend for a fish brilliant stuff. “Caught him in the river at brumbys creek on a killer wasp hawk sniper.”\n查看翻译\nTrout fishing tasmania\n发消息",
+        "comment_excerpt": "Keenan Oates\nAlex Jones brumbys\n3年\n回复\n查看翻译\n1\nAkram Akram\nTutta Trutta Sebastyan Stonehouse Helen Valerie Long Lesly Eaves Ben Wilson Justin Boon Haylee-Rose Ford Steve Burns Bryce Messner Noelene Britten Trevor Lovell Emma Skinner Daryl Odgers Mark Skinner Jacob Krushka Jack Lynch Order here\nhttps://dreamstee99.xyz/20230312-035847\n3年\n回复\nDarren Hardman\nMark Skinner what a cracker\n3年\n回复\n查看翻译\n1\nTrevo",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid02S7QpQhf9z3G2SeG3po9BqBfKTh9rBGUM6859rq5YtyZ6wxmgCyRYuoVbLhpsSEihl",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/troutfishingtasmania/posts/pfbid032Y6inqqZXUWHS8KCjn33aKvp7d6YFLL31pYTf9kC99x5xBYrMPVvvu1HfQ7CEYMGl",
+      "imported": false,
+      "reason": "not_catch_report"
+    }
+  ]
+}

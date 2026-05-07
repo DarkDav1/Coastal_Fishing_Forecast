@@ -1,0 +1,34 @@
+{
+  "source_url": "https://www.facebook.com/mrflatheadtasmania/",
+  "scrolls": 3,
+  "location": "Hobart",
+  "shore_vs_boat": "boat",
+  "posts_found": 1,
+  "posts_fetched": 1,
+  "results": [
+    {
+      "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02QvPYAukHjb8KkqXAcPeM7wRT1x93UjacZQ3ndwDFpeTof1sAschHftHdPe2J858Fl",
+      "imported": false,
+      "row": null,
+      "signal": {
+        "date": "2026-04-12",
+        "date_confidence": "medium",
+        "author": "Mr Flathead Fishing Charters Tasmania",
+        "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02QvPYAukHjb8KkqXAcPeM7wRT1x93UjacZQ3ndwDFpeTof1sAschHftHdPe2J858Fl",
+        "title": "Can't all be barrels 😁... - Mr Flathead Fishing Charters Tasmania | Facebook",
+        "species": [
+          "tuna"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "boat",
+        "size_signal": "unknown",
+        "location_text": "Hobart",
+        "raw_excerpt": "Can't all be barrels\nanother beautiful Bluefin from today. Well done on the rod in tough conditions!\n查看翻译",
+        "comment_excerpt": "查看翻译\n1\nMeriam Pears\nGood catch\n1天\n回复\n查看翻译\n1",
+        "evidence_confidence": "medium"
+      }
+    }
+  ]
+}

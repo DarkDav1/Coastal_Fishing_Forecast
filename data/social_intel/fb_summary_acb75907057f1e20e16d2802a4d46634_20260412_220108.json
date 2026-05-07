@@ -1,0 +1,168 @@
+{
+  "source_url": "https://www.facebook.com/groups/365640693613260/?sorting_setting=CHRONOLOGICAL",
+  "scrolls": 3,
+  "location": "Tasmania",
+  "shore_vs_boat": "unknown",
+  "posts_found": 10,
+  "posts_fetched": 10,
+  "results": [
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3437554419755190/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3436468159863816/",
+      "imported": true,
+      "row": {
+        "captured_at": "2026-04-12T22:06:15",
+        "date": "2026-04-10",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "unknown",
+        "species_mentions": "snapper",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "unknown",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "My best snapper this year was the first one of the year caught on 6th October.6lb braid and leader with motor oil on a 2/0 headlock jig head.Heart stopping stuff.Water temp was only 12c a couple of days later.\n查看翻译",
+        "url_or_reference": "https://www.facebook.com/groups/365640693613260/posts/3436468159863816/"
+      },
+      "signal": {
+        "date": "2026-04-10",
+        "date_confidence": "medium",
+        "author": "Fishing in Tasmania",
+        "url": "https://www.facebook.com/groups/365640693613260/posts/3436468159863816/",
+        "title": "Fishing in Tasmania | My best snapper this year was the first one of the year caught on 6th October.6lb braid and leader with motor oil on a 2/0 headlock jig head.Heart sto... | Facebook",
+        "species": [
+          "snapper"
+        ],
+        "capture_count": "2条",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "unknown",
+        "size_signal": "unknown",
+        "location_text": "Tasmania",
+        "raw_excerpt": "My best snapper this year was the first one of the year caught on 6th October.6lb braid and leader with motor oil on a 2/0 headlock jig head.Heart stopping stuff.Water temp was only 12c a couple of days later.\n查看翻译",
+        "comment_excerpt": "Gav Purcell\nYou had a good net boy\n2天\n回复\n查看翻译",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3435488473295118/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3435412099969422/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3434479263396039/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3434492816728017/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3433596820150950/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3433230083520957/",
+      "imported": true,
+      "row": {
+        "captured_at": "2026-04-12T22:06:15",
+        "date": "2026-04-07",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "unknown",
+        "species_mentions": "australian_salmon",
+        "schooling_signal": "clear",
+        "surface_activity_signal": "clear",
+        "size_signal": "large",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "Birds are still working and salmon are\nbusting up all up and down the Derwent.\n查看翻译\n0:00 / 0:16",
+        "url_or_reference": "https://www.facebook.com/groups/365640693613260/posts/3433230083520957/"
+      },
+      "signal": {
+        "date": "2026-04-07",
+        "date_confidence": "medium",
+        "author": "Fishing in Tasmania",
+        "url": "https://www.facebook.com/groups/365640693613260/posts/3433230083520957/",
+        "title": "Fishing in Tasmania | Birds are still working and salmon are | Facebook",
+        "species": [
+          "australian_salmon"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "clear",
+        "surface_activity_signal": "clear",
+        "shore_vs_boat": "unknown",
+        "size_signal": "large",
+        "location_text": "Tasmania",
+        "raw_excerpt": "Birds are still working and salmon are\nbusting up all up and down the Derwent.\n查看翻译\n0:00 / 0:16",
+        "comment_excerpt": "Steve Normi Weeding\nWe was there couple hours ago they was about .didn't hook up .just got a big 7 giller tho\n5天\n回复\n查看翻译\n1\nAlex Goodwin\nSteve Normi Weeding photo of it?\n5天\n回复\n查看翻译\nSteve Normi Weeding\nAlex Goodwin\n5天\n回复\n2\nAlex Goodwin\nSteve Normi Weeding nice catch\n5天\n回复\n查看翻译",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3432653426911956/",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/groups/365640693613260/posts/3432577543586211/",
+      "imported": true,
+      "row": {
+        "captured_at": "2026-04-12T22:06:15",
+        "date": "2026-04-06",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Tasmania",
+        "normalized_area": "tasmania",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "shore",
+        "species_mentions": "australian_salmon",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "large",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "A nice thumper my 14yo son caught tonight out port Sorrell way off the shore",
+        "url_or_reference": "https://www.facebook.com/groups/365640693613260/posts/3432577543586211/"
+      },
+      "signal": {
+        "date": "2026-04-06",
+        "date_confidence": "medium",
+        "author": "Fishing in Tasmania",
+        "url": "https://www.facebook.com/groups/365640693613260/posts/3432577543586211/",
+        "title": "Fishing in Tasmania | A nice thumper my 14yo son caught tonight out port Sorrell way off the shore | Facebook",
+        "species": [
+          "australian_salmon"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "shore",
+        "size_signal": "large",
+        "location_text": "Tasmania",
+        "raw_excerpt": "A nice thumper my 14yo son caught tonight out port Sorrell way off the shore",
+        "comment_excerpt": "Dan Oscroft\nNeed tips on catching salmon now we live in Shearwater\n5天\n回复\n查看翻译\n1\n全部11条回复\nLuke Rainsford\n关注\nLarge\n6天\n回复\n查看翻译\nPhilip Lane\nNoice fish\n5天\n回复\n查看翻译\nRobert Newell\nProper one well done\n5天\n回复\n查看翻译\nGeoff Mellor\nAustralian Salmon.\n1天",
+        "evidence_confidence": "medium"
+      }
+    }
+  ]
+}

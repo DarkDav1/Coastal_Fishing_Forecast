@@ -1,0 +1,230 @@
+{
+  "source_url": "https://www.facebook.com/mrflatheadtasmania/",
+  "scrolls": 3,
+  "location": "Hobart",
+  "shore_vs_boat": "boat",
+  "posts_found": 9,
+  "posts_fetched": 9,
+  "results": [
+    {
+      "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02QkEXsmUYv9jQpkqkzZZ1nwKHnCo9byfKCAn1aeyW6juy7YzAXHyk3wKTVCqAR81nl",
+      "imported": true,
+      "status": "imported",
+      "row": {
+        "captured_at": "2026-04-15T11:50:28",
+        "date": "2026-04-13",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Hobart",
+        "normalized_area": "hobart",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "boat",
+        "species_mentions": "tuna",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "unknown",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "Can't all be barrels\nanother beautiful Bluefin from today. Well done on the rod in tough conditions!\n查看翻译",
+        "url_or_reference": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02QkEXsmUYv9jQpkqkzZZ1nwKHnCo9byfKCAn1aeyW6juy7YzAXHyk3wKTVCqAR81nl"
+      },
+      "signal": {
+        "date": "2026-04-13",
+        "date_confidence": "medium",
+        "author": "Mr Flathead Fishing Charters Tasmania",
+        "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02QkEXsmUYv9jQpkqkzZZ1nwKHnCo9byfKCAn1aeyW6juy7YzAXHyk3wKTVCqAR81nl",
+        "title": "(2) Can't all be barrels 😁... - Mr Flathead Fishing Charters Tasmania | Facebook",
+        "species": [
+          "tuna"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "boat",
+        "size_signal": "unknown",
+        "location_text": "Hobart",
+        "raw_excerpt": "Can't all be barrels\nanother beautiful Bluefin from today. Well done on the rod in tough conditions!\n查看翻译",
+        "comment_excerpt": "",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid026gN1sAo1DCeSGfGAiddc335CPsdfWxu6DVfVm2Nx2UxHBLBa4i6VWZu52dPuBNcml",
+      "imported": false,
+      "status": "deduped",
+      "row": null,
+      "signal": {
+        "date": "2026-04-12",
+        "date_confidence": "medium",
+        "author": "Mr Flathead Fishing Charters Tasmania",
+        "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid026gN1sAo1DCeSGfGAiddc335CPsdfWxu6DVfVm2Nx2UxHBLBa4i6VWZu52dPuBNcml",
+        "title": "(2) Paul and his son Ziggy had... - Mr Flathead Fishing Charters Tasmania | Facebook",
+        "species": [
+          "tuna"
+        ],
+        "capture_count": "2条",
+        "schooling_judgment": "clear",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "boat",
+        "size_signal": "unknown",
+        "location_text": "Hobart",
+        "raw_excerpt": "Paul and his son Ziggy had Bluefin Tuna locked in as our target for the day. Fortunately we came across the motherload! From zero to 100 we had Tuna boiling and birds diving. Multiple double hookup and chaos! The odds were against us with rough weather and seals galore but managed to get a couple past our fury friends. Ziggy boated a ripper estimated 70kg+ Bluefin!\n查看翻译",
+        "comment_excerpt": "Ron Cooke\nNice catch fellows well done\n3天\n回复\n查看翻译\n2\nTim Mitchell\nNice work Hamish\n3天\n回复\n查看翻译\n2\nRon Williams\nWell done\n2天\n回复\n查看翻译\n2",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02EtJQ8Pvq3UbvrXWwqKoQaUJWfbiZfA3oADbDSxPVhjZo5RUxWxykoAUK6GzhLvXQl",
+      "imported": false,
+      "status": "deduped",
+      "row": null,
+      "signal": {
+        "date": "2026-04-03",
+        "date_confidence": "medium",
+        "author": "Mr Flathead Fishing Charters Tasmania",
+        "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02EtJQ8Pvq3UbvrXWwqKoQaUJWfbiZfA3oADbDSxPVhjZo5RUxWxykoAUK6GzhLvXQl",
+        "title": "(2) Good Friday.. turned... - Mr Flathead Fishing Charters Tasmania | Facebook",
+        "species": [
+          "tuna"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "boat",
+        "size_signal": "unknown",
+        "location_text": "Hobart",
+        "raw_excerpt": "Good Friday.. turned absolute ripper Friday with this Bluefin Tuna taking the lure after only a short troll! 40 minute fight. Team effort! Thanks for today guys enjoy your fresh Easter fish\n查看翻译",
+        "comment_excerpt": "Geoff Pearton\nWell done guys enjoy\n1周\n回复\n查看翻译\n2\nDaniel Lopes\nWhat was the flavour lure?\n6天\n回复\n查看翻译\nAndrew Hodgson\nAwesome looking silver bullet!\n1周\n回复\n查看翻译\n2",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid027bsmSUca7Kscr3Xb4YhCD3qBtaLzhNuv776cpPrurBGj1G5XqdUiigCvKD8a716hl",
+      "imported": false,
+      "status": "deduped",
+      "row": null,
+      "signal": {
+        "date": "2026-03-31",
+        "date_confidence": "medium",
+        "author": "Mr Flathead Fishing Charters Tasmania",
+        "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid027bsmSUca7Kscr3Xb4YhCD3qBtaLzhNuv776cpPrurBGj1G5XqdUiigCvKD8a716hl",
+        "title": "(2) Stripey, Morwong and... - Mr Flathead Fishing Charters Tasmania | Facebook",
+        "species": [
+          "tuna"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "boat",
+        "size_signal": "unknown",
+        "location_text": "Hobart",
+        "raw_excerpt": "Stripey, Morwong and Latchet for the table. Tuna jumping last couple of days\n查看翻译",
+        "comment_excerpt": "Swansea Fishing Charters Tasmania\nEffort skipper\n2周\n回复\n查看翻译\n2\nStan Walker\nPrice\n2周\n回复\n查看翻译\n1",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid0rr75nNWbQddkgz16TzyPDdF6B7XbEzWmTiQ4EgarpVva3fGniBKoxEyT2QCh8hYnl",
+      "imported": false,
+      "reason": "not_catch_report"
+    },
+    {
+      "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02YYuiAbDHAeZFLxv5jsFy5iG21K44NxUzv6iiMmqS9fgVYKD5f7uCYjezxZosfDUil",
+      "imported": true,
+      "status": "imported",
+      "row": {
+        "captured_at": "2026-04-15T11:50:28",
+        "date": "2026-03-15",
+        "source_platform": "facebook",
+        "source_type": "facebook_browser_probe",
+        "location_text": "Hobart",
+        "normalized_area": "hobart",
+        "normalized_micro_spot": "",
+        "shore_vs_boat": "boat",
+        "species_mentions": "flathead",
+        "schooling_signal": "unknown",
+        "surface_activity_signal": "unknown",
+        "size_signal": "unknown",
+        "method_mentions": "",
+        "evidence_confidence": "medium",
+        "raw_excerpt": "Father and son out for a half day charter. Morwong were on fire giving the young fella plenty of action on the rod!\n查看翻译\n写评论…",
+        "url_or_reference": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02YYuiAbDHAeZFLxv5jsFy5iG21K44NxUzv6iiMmqS9fgVYKD5f7uCYjezxZosfDUil"
+      },
+      "signal": {
+        "date": "2026-03-15",
+        "date_confidence": "medium",
+        "author": "Mr Flathead Fishing Charters Tasmania",
+        "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02YYuiAbDHAeZFLxv5jsFy5iG21K44NxUzv6iiMmqS9fgVYKD5f7uCYjezxZosfDUil",
+        "title": "(2) Father and son out for a... - Mr Flathead Fishing Charters Tasmania | Facebook",
+        "species": [
+          "flathead"
+        ],
+        "capture_count": "未写",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "boat",
+        "size_signal": "unknown",
+        "location_text": "Hobart",
+        "raw_excerpt": "Father and son out for a half day charter. Morwong were on fire giving the young fella plenty of action on the rod!\n查看翻译\n写评论…",
+        "comment_excerpt": "",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02T9uxUynJJR567xwWkVYLKCZv9EwV76wYD2UTWLTYcAbFdckk6PrcGcrNKpgrLt9pl",
+      "imported": false,
+      "status": "deduped",
+      "row": null,
+      "signal": {
+        "date": "2026-03-11",
+        "date_confidence": "medium",
+        "author": "Mr Flathead Fishing Charters Tasmania",
+        "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02T9uxUynJJR567xwWkVYLKCZv9EwV76wYD2UTWLTYcAbFdckk6PrcGcrNKpgrLt9pl",
+        "title": "(2) The rain did not put a... - Mr Flathead Fishing Charters Tasmania | Facebook",
+        "species": [
+          "kingfish",
+          "striped_trumpeter"
+        ],
+        "capture_count": "多条",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "boat",
+        "size_signal": "unknown",
+        "location_text": "Hobart",
+        "raw_excerpt": "The rain did not put a dampener on todays charter! Repeat customer Ashley and crew got their bag of Perch mixed in with a stray yellow tail kingfish on the bottom rig for something different. Finished off with a few ripper striped trumpeter. Thanks heaps for today guys!\n查看翻译",
+        "comment_excerpt": "Jason Cook\nThe red fish is that what they call a red mullet or goat fish\n4周\n回复\n查看翻译\nDebra McCoy\nJason Cook its a wrasse\n4周\n回复\nJason Cook\nDebra McCoy ok thanks its a usual colour\n4周\n回复\n查看翻译\nDebra McCoy\nThanks Hamish, it was a ripper day and the rain just made it more memorable.\n4周\n回复\n查看翻译\n3\nRon Cooke\nNice catch folks well done\n4周\n回复\n查看翻译\nAndrew Hodgson",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid0WunieXNqq7PyRGMDDtxbh6Fz13xpXYHTMmGJqQj7UBJk9bycvEFHLbdocqqWrm19l",
+      "imported": false,
+      "status": "deduped",
+      "row": null,
+      "signal": {
+        "date": "2026-02-28",
+        "date_confidence": "medium",
+        "author": "Mr Flathead Fishing Charters Tasmania",
+        "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid0WunieXNqq7PyRGMDDtxbh6Fz13xpXYHTMmGJqQj7UBJk9bycvEFHLbdocqqWrm19l",
+        "title": "(2) Couple good stripey today... - Mr Flathead Fishing Charters Tasmania | Facebook",
+        "species": [
+          "flathead"
+        ],
+        "capture_count": "2条",
+        "schooling_judgment": "unknown",
+        "surface_activity_signal": "unknown",
+        "shore_vs_boat": "boat",
+        "size_signal": "decent",
+        "location_text": "Hobart",
+        "raw_excerpt": "Couple good stripey today 65 and 62cm throwing a couple undersized back. Also once again bagged out with ease on the flatties in Port Arthur...\n查看翻译",
+        "comment_excerpt": "Jason Harrison\nPretty coincidental that from tasman to Cape roul and every bay in between is full off size sand flats and oversized sandys aswell as kings mixed in amongst them then you come round the roul into storm bay where the Danish seine operation is run and its dead until you get near any structure im no scientist but you cant tell me numbers and size drop dramatically inside that area comp",
+        "evidence_confidence": "medium"
+      }
+    },
+    {
+      "url": "https://www.facebook.com/mrflatheadtasmania/posts/pfbid02esJuUYM9rAugh9Ybp3HrYuwSWNsg6VD8AP668g2a4Sj2VBYPEvtsr9yii5fSmQ5Yl",
+      "imported": false,
+      "reason": "not_catch_report"
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+Query: 霍巴特钓鱼
+Opened tab: 672C8ED9D4ED79912343635C84585BC7
+Extracted 8 fishing result cards
+CSV: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_霍巴特钓鱼_20260415_131230.csv
+JSON: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_霍巴特钓鱼_20260415_131230.json
+  - 记录我在霍巴特钓过的🐟 | 地未衣来 | 2025-12-04
+  - 塔州Kingfish | Talking to the 慕 | 2024-03-23
+  - 🎣塔州钓友们，球球留下你们的最佳钓点！ | 糯米甜酒 | 2024-04-10
+  - 大风大浪大鱿鱼 | 爱学习的路亚小学生 | 2025-12-09
+  - 塔州霍巴特｜钓鱼佬每周末早出晚归鱼获大赏 | Danlulu | 2024-09-11
+  - 布鲁尼抽鱿记 | 爱学习的路亚小学生 | 01-31
+  - 什么鱼啊 赞 | 土豪桑 | 02-22
+  - 圆梦大snapper啦～ | 爱打龟🐢的拍崽 | 02-09
+Query: 塔州钓鱼
+Opened tab: 99FF77F9508255CCF996216FCB85F101
+Extracted 13 fishing result cards
+CSV: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_塔州钓鱼_20260415_131234.csv
+JSON: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_塔州钓鱼_20260415_131234.json
+  - 🎣🏔 塔州钓鱼 | Aria 爱吃鱼 | 2025-08-09
+  - 塔州Kingfish | Talking to the 慕 | 2024-03-23
+  - 塔州生活｜和当地人一起出船海钓 | 游牧卡金Kakin | 2024-12-03
+  - 饭可以不吃鱼必须要钓 | 爱学习的路亚小学生 | 2025-12-15
+  - 塔州霍巴特｜钓鱼佬每周末早出晚归鱼获大赏 | Danlulu | 2024-09-11
+  - 在塔州轻松✅钓鱼技巧 | 61 💚(成融约课) | 2024-01-06
+  - 塔州的冬天该钓淡水啦 但放的鱼也太小了😂 | 爱打龟🐢的拍崽 | 2025-04-25
+  - 鱿鱼杆拉澳三 | 爱学习的路亚小学生 | 03-03
+  - 🌊塔州震撼一幕｜巨型蓝鳍金枪鱼现场目击！🐟 | Something for nothing | 2025-11-24
+  - 🎣塔州钓友们，球球留下你们的最佳钓点！ | 糯米甜酒 | 2024-04-10
+  - 🎄圣诞假期 · 塔州捞虾 / 夜钓 / 海钓 | 猪脑壳 | 2025-12-31
+  - 塔州朗赛斯顿找钓鱼搭子｜周五周六日都🉑🎣 | 猪脑壳 | 2025-12-10
+  - 天凉鱼渐少 | 爱学习的路亚小学生 | 2025-05-13
+Query: 霍巴特路亚
+Opened tab: AA871C840C571B4E07A192ACAF56697A
+Extracted 8 fishing result cards
+CSV: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_霍巴特路亚_20260415_131239.csv
+JSON: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_霍巴特路亚_20260415_131239.json
+  - 塔州Kingfish | Talking to the 慕 | 2024-03-23
+  - 天凉鱼渐少 | 爱学习的路亚小学生 | 2025-05-13
+  - 记录我在霍巴特钓过的🐟 | 地未衣来 | 2025-12-04
+  - 塔州的冬天该钓淡水啦 但放的鱼也太小了😂 | 爱打龟🐢的拍崽 | 2025-04-25
+  - 霍巴特钓青衣 | 爱学习的路亚小学生 | 01-26
+  - 鱿鱼杆拉澳三 | 爱学习的路亚小学生 | 03-03
+  - 钓鱼嘛 哪有不空军的时候！🙂‍↔️ | 爱打龟🐢的拍崽 | 2024-11-02
+  - 🦑🥷🏼鱿鱼季到了 🥱 | 爱打龟🐢的拍崽 | 2024-11-17
+Query: 塔斯马尼亚海钓
+Opened tab: C8DFCA836DCE9C113AC0E27AC3DD72A4
+Extracted 15 fishing result cards
+CSV: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_塔斯马尼亚海钓_20260415_131243.csv
+JSON: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_塔斯马尼亚海钓_20260415_131243.json
+  - 塔州Kingfish | Talking to the 慕 | 2024-03-23
+  - 🎄圣诞假期 · 塔州捞虾 / 夜钓 / 海钓 | 猪脑壳 | 2025-12-31
+  - 塔州西北岸抛Kingfish | 🐳 | 2025-01-05
+  - 🎣🏔 塔州钓鱼 | Aria 爱吃鱼 | 2025-08-09
+  - 塔州蓝鳍金枪鱼 | Randolph舒 | 2024-05-05
+  - 解锁塔州梦幻鱼种 | Mondolls澳洲布偶猫舍 | 2025-05-31
+  - 记录我在霍巴特钓过的🐟 | 地未衣来 | 2025-12-04
+  - 塔斯马尼亚拉80-90cm黄旗金枪鱼 | 航 | 2025-04-28
+  - 🇦🇺塔州海钓| 大house里的海鲜party | あなたの万です | 2025-10-12
+  - 塔斯马尼亚 霍巴特海钓 | 冷漠的Oscar | 2025-10-02
+  - 澳洲探钓。 | 早稻田大学钓鱼专业教授 | 2025-05-11
+  - 塔州朗赛斯顿找钓鱼搭子｜周五周六日都🉑🎣 | 猪脑壳 | 2025-12-10
+  - 鱼根本不吃路亚，你们别自我感动了 | Wild Current | 03-01
+  - 在塔州轻松✅钓鱼技巧 | 61 💚(成融约课) | 2024-01-06
+  - 霍巴特钓青衣 | 爱学习的路亚小学生 | 01-26
+Query: 德文特河 钓鱼
+Opened tab: 36D3D274BB5FB47887720AEAD731CE84
+Extracted 14 fishing result cards
+CSV: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_德文特河_钓鱼_20260415_131248.csv
+JSON: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_德文特河_钓鱼_20260415_131248.json
+  - 塔州鳟鱼一镜到底 | Randolph舒 | 2025-08-01
+  - Devonport上不了鱿鱼 | 浩浩不煮饭 | 2025-10-30
+  - 澳洲的河鳗鱼eel是不是有点泛滥-.- | 弗林的Flynn | 2024-09-02
+  - 这条河里全都是巨大的条纹鲈鱼！ 赞 | 老虎不吃饭饭 | 03-28
+  - 大tailor来了 | Big山 | 03-29
+  - 去布里斯班河钓鱼，偶遇渔政 | 布里斯班小木工 | 2025-10-02
+  - 跟英国本地人去河里面钓鱼？！ | 英区路亚阿泰（导钓版） | 2024-11-13
+  - Maribyrnong河里没有别的鱼 | 小狗卷 | 04-01
+  - 钓Bream的一点心得 | 尚杉達也 | 2025-06-07
+  - 新钓点来啦。2小时战果背不动的节奏🐟🎣 | Dora | 01-25
+  - 墨尔本河口鲈钓点钓法 | 挨润FENG | 2024-03-18
+  - 便宜装备直拉king | McDonald's | 2025-08-29
+  - 活饵钓大鱼钓组 | w.k. | 2024-12-23
+  - 阿德莱德青衣季惊现巨型 Wrasse | 幸运大宝星 | 2025-05-31
+Query: 塔斯曼大桥 钓鱼
+Opened tab: 8B34DA175C6F3EEC9DB797F6A7C49D2B
+Extracted 14 fishing result cards
+CSV: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_塔斯曼大桥_钓鱼_20260415_131253.csv
+JSON: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_塔斯曼大桥_钓鱼_20260415_131253.json
+  - 🎣🏔 塔州钓鱼 | Aria 爱吃鱼 | 2025-08-09
+  - 🌊塔州震撼一幕｜巨型蓝鳍金枪鱼现场目击！🐟 | Something for nothing | 2025-11-24
+  - 今天鱼情不错，鱼口很好 | 酸奶机 | 2024-05-14
+  - 悉尼钓点分享，资深矶钓大神秘点 | 悉尼海钓A大师 | 2025-11-30
+  - 为啥鱼饵被吃了 但是却没上鱼 | Eve | 3天前
+  - 悉尼带鱼秘点分享，风平浪静也能爆箱？ | 悉尼海钓A大师 | 01-25
+  - 路过抛两竿竟然中了米级金枪鱼!!!!! | 大晚上看太阳 | 2025-09-19
+  - 四年前就看中的悉尼钓点 终于把杆子带来 | Liverpool陈 | 2024-02-06
+  - 在塔州轻松✅钓鱼技巧 | 61 💚(成融约课) | 2024-01-06
+  - 塔州的冬天该钓淡水啦 但放的鱼也太小了😂 | 爱打龟🐢的拍崽 | 2025-04-25
+  - 悉尼鱼讯实况转播 bonito还在 tuna也开始了 | 海边老威 | 6天前
+  - 蹬礁岸钓大真鲷 全记录 | Mai四处钓鱼 | 1天前
+  - 布里斯班北岛岸钓偶遇GT | 爱钓鱼的托马斯 | 02-11
+  - 塔州Kingfish | Talking to the 慕 | 2024-03-23
+Query: South Arm 钓鱼
+Opened tab: 6497F707AE7F325A162AD3BA26D2443F
+Extracted 11 fishing result cards
+CSV: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_South_Arm_钓鱼_20260415_131257.csv
+JSON: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_South_Arm_钓鱼_20260415_131257.json
+  - 新钓点来啦。2小时战果背不动的节奏🐟🎣 | Dora | 01-25
+  - South Coast的水土是真的养鱼啊 | Vino🍸 | 2024-04-29
+  - 为啥鱼饵被吃了 但是却没上鱼 | Eve | 3天前
+  - 悉尼宝藏钓点分享，保姆级教程有手就上鱼！ | 悉尼海钓A大师 | 2025-08-09
+  - 矶钓，负重去钓点哪种装备更轻松些？ | 铁匠猪肉铺 | 01-09
+  - 墨尔本岸钓 Snapper🐟 | ImKenny | 2025-05-18
+  - 矶钓其实巨简单指南 搭个小鱼窝 里边提条鱼 | 海边老威 | 04-07
+  - 悉尼钓点分享，资深矶钓大神秘点 | 悉尼海钓A大师 | 2025-11-30
+  - 鱼口是不是变好了 | 肚肚别跑 | 2025-08-30
+  - 悉尼南区新手钓鱼佬🎣 | 幼稚鸡呀 | 2025-05-02
+  - 既然有想曝钓点的，那就再自爆两个吧😂（1） | Vincent | 2024-07-08
+Query: Kangaroo Bluff 钓鱼
+Opened tab: 653A90866B048AF86AAB2CCF39444363
+Extracted 9 fishing result cards
+CSV: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_Kangaroo_Bluff_钓鱼_20260415_131302.csv
+JSON: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_Kangaroo_Bluff_钓鱼_20260415_131302.json
+  - 墨尔本｜竹荚鱼/yakka该怎么钓？ 2分钟教会！ | 不务昼夜 | 02-16
+  - 钓鱼特种兵之澳洲动物收集日 | 路边草丛掏只蓝舌 | 2025-02-16
+  - Batemansbay转暖钓不到鱼啊 | Eeeee | 2024-08-20
+  - 为啥鱼饵被吃了 但是却没上鱼 | Eve | 3天前
+  - 🎣🐟 居然用鸡肉中King Fish ❗❗❗ | Зling ๛ | 01-07
+  - 梦中情鱼 - Western Blue Groper | Vino🍸 | 2025-10-31
+  - 鱼根本不吃路亚，你们别自我感动了 | Wild Current | 03-01
+  - 悉尼爆钓黄旗的一天 | 悉尼大学不给签约钓手🎣 | 2025-09-30
+  - 悉尼岸抛解锁米king | 暴走的Tiger | 03-27
+Query: 澳洲三文鱼 钓鱼
+Opened tab: 9AA1B1C80E824855C19C6670D5F910A1
+Extracted 13 fishing result cards
+CSV: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_澳洲三文鱼_钓鱼_20260415_131307.csv
+JSON: /Users/chenweic/dev/Fishing_Forcast/workspace-cocky/fishing-forecast/data/social_intel/xhs_search_澳洲三文鱼_钓鱼_20260415_131307.json
+  - 澳洲三文鱼，它是怎么能和三文鱼搭边？ | 澳洲流浪汉 | 2024-03-18
+  - 🐟冬天就该钓澳三！悉尼海边的“暴力美学” | Bluebite | 2025-07-27
+  - 第一次拉大澳三轮子都冒烟了！ | Yuriii澳洲野钓版 | 2024-10-22
+  - South Coast的水土是真的养鱼啊 | Vino🍸 | 2024-04-29
+  - 猛钓一晚上澳洲三文鱼 | Nuts | 2025-09-09
+  - 探钓卧龙岗2，铁板路亚中澳洲三文鱼 | 三毛环澳游钓记 | 2025-10-29
+  - 关于吃澳三这个事 | Maya_Franklin | 2024-04-30
+  - 塔州海钓｜澳洲三文鱼｜它们回来了 | Randolph舒 | 2020-11-12
+  - 岸抛铁板钓三文鱼和Trevally，实战技巧揭秘 | 马科长 | 2023-03-08
+  - 澳三刺身还挺好吃的 这能说吗… | 小张不能吃蛋糕了🍰 | 01-25
+  - 抛出第一竿就中鱼！ | Ben | 2024-11-05
+  - 超300次出钓总结的干货 | Sinker Man✨ | 01-15
+  - 为啥鱼饵被吃了 但是却没上鱼 | Eve | 3天前
