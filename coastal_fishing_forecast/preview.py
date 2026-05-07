@@ -1384,6 +1384,219 @@ def _local_adjustment_breakdown(
     }
 
 
+# Safety / Comfort / Fish split: parallel views on top of the engine's
+# existing activity / presence / trip_quality scores. These are NEW fields
+# that don't replace the legacy ones; the engine's main score and the
+# 102+ regression assertions stay untouched. The point is to give the
+# frontend three independent dimensions so a "great fish day in dangerous
+# weather" doesn't get hidden behind a single muddled trip_quality number.
+SAFETY_FLAG_LOW = "low"
+SAFETY_FLAG_MODERATE = "moderate"
+SAFETY_FLAG_ELEVATED = "elevated"
+SAFETY_FLAG_HAZARDOUS = "hazardous"
+EXPOSED_TYPES_FOR_SAFETY = frozenset({"beach", "rocks"})
+
+
+def _fish_outlook_score(activity_score: float, presence_score: float) -> int:
+    """Pure fish-opportunity view: activity + presence, no trip / safety mix.
+
+    Activity weighs slightly more because it captures rule alignment, while
+    presence is a softer signal on whether fish are likely concentrated.
+    """
+    fish = (0.55 * float(activity_score)) + (0.45 * float(presence_score))
+    return _clamp(fish)
+
+
+def _comfort_score(
+    *,
+    inputs_used: Mapping[str, Any],
+    normalized: Mapping[str, Any],
+) -> tuple[int, list[str]]:
+    """Body-comfort view: temperature, wind chill, rain, gusts, wave drag.
+
+    Returns a 0-100 score plus the list of factor tags that pushed it down.
+    A clean autumn morning at 14C with light wind starts near 80; cold
+    wet windy conditions land in the teens.
+    """
+    factors: list[str] = []
+    score = 78.0
+
+    temperature_c = inputs_used.get("temperature_c")
+    wind_speed_knots = float(inputs_used.get("wind_speed_knots") or 0.0)
+    wind_gust_knots = inputs_used.get("wind_gust_knots")
+    rain_mm = float(inputs_used.get("rain_mm") or 0.0)
+    recent_precip = float(inputs_used.get("recent_precipitation_sum_12h") or 0.0)
+    wave_height_m = float(inputs_used.get("wave_height_m") or inputs_used.get("swell_height_m") or 0.0)
+    cloud_cover_pct = inputs_used.get("cloud_cover_pct")
+
+    if temperature_c is not None:
+        temp = float(temperature_c)
+        if temp < 4:
+            score -= 28
+            factors.append("very_cold_air")
+        elif temp < 8:
+            score -= 18
+            factors.append("cold_air")
+        elif temp < 12:
+            score -= 8
+            factors.append("cool_air")
+        elif 16 <= temp <= 24:
+            score += 4
+        elif temp > 28:
+            score -= 6
+            factors.append("hot_air")
+
+        gust_spread = max(0.0, float(wind_gust_knots or wind_speed_knots) - wind_speed_knots)
+        wet_drag = 2.0 if rain_mm >= 0.4 else 0.0
+        if recent_precip >= 2.0:
+            wet_drag += 1.0
+        wind_chill_proxy = (
+            temp
+            - max(0.0, wind_speed_knots - 3.2) * 1.02
+            - gust_spread * 0.22
+            - wet_drag
+        )
+        if wind_chill_proxy <= 0:
+            score -= 14
+            factors.append("biting_wind_chill")
+        elif wind_chill_proxy <= 4:
+            score -= 8
+            factors.append("notable_wind_chill")
+        elif wind_chill_proxy <= 7:
+            score -= 3
+            factors.append("mild_wind_chill")
+
+    if rain_mm >= 2.0:
+        score -= 14
+        factors.append("steady_rain")
+    elif rain_mm >= 0.4:
+        score -= 6
+        factors.append("light_rain")
+    elif recent_precip >= 3.0:
+        score -= 3
+        factors.append("recent_wet_air")
+
+    gust_kn = float(wind_gust_knots) if wind_gust_knots is not None else wind_speed_knots
+    if gust_kn >= 30:
+        score -= 18
+        factors.append("strong_gusts")
+    elif gust_kn >= 22:
+        score -= 10
+        factors.append("brisk_gusts")
+    elif wind_speed_knots >= 18:
+        score -= 6
+        factors.append("brisk_wind")
+
+    if wave_height_m >= 2.5:
+        score -= 12
+        factors.append("rough_seas")
+    elif wave_height_m >= 1.5:
+        score -= 5
+        factors.append("notable_seas")
+
+    if cloud_cover_pct is not None:
+        cloud = float(cloud_cover_pct)
+        if cloud >= 95 and rain_mm >= 0.4:
+            score -= 2
+            factors.append("overcast_with_rain")
+
+    return _clamp(score), factors
+
+
+def _safety_flag(
+    *,
+    inputs_used: Mapping[str, Any],
+    dominant_type: str,
+    tags: set[str],
+) -> tuple[str, list[str], int]:
+    """Independent safety lens. Returns (flag, factors, raw_risk_points).
+
+    Safety is intentionally a 4-tier enum (not a 0-100 number) because users
+    rarely want to debate "how safe is 62". The boundaries map to:
+        low        : no major broad-condition risk detected
+        moderate   : worth being aware of the conditions
+        elevated   : real risk; experienced anglers only / pick spots carefully
+        hazardous  : do not fish exposed water; safety > fish today
+    """
+    factors: list[str] = []
+    risk_points = 0
+
+    wave_height_m = float(inputs_used.get("wave_height_m") or inputs_used.get("swell_height_m") or 0.0)
+    swell_height_m = float(inputs_used.get("swell_height_m") or 0.0)
+    effective_wave = max(wave_height_m, swell_height_m * 1.08)
+    wind_speed_knots = float(inputs_used.get("wind_speed_knots") or 0.0)
+    wind_gust_knots_raw = inputs_used.get("wind_gust_knots")
+    wind_gust_knots = float(wind_gust_knots_raw) if wind_gust_knots_raw is not None else wind_speed_knots
+    temperature_c = inputs_used.get("temperature_c")
+    rain_mm = float(inputs_used.get("rain_mm") or 0.0)
+    rainfall_24h = float(inputs_used.get("rainfall_24h") or 0.0)
+    wave_height_delta_24h = inputs_used.get("wave_height_delta_24h")
+
+    if effective_wave >= 3.5:
+        risk_points += 4
+        factors.append("rough_seas_above_3m")
+    elif effective_wave >= 2.5:
+        risk_points += 3
+        factors.append("rough_seas_above_2m5")
+    elif effective_wave >= 1.8:
+        risk_points += 2
+        factors.append("notable_wave_activity")
+    elif effective_wave >= 1.2:
+        risk_points += 1
+        factors.append("moderate_wave_activity")
+
+    if wind_speed_knots >= 25:
+        risk_points += 3
+        factors.append("strong_wind")
+    elif wind_speed_knots >= 18:
+        risk_points += 2
+        factors.append("brisk_wind")
+
+    if wind_gust_knots >= 35:
+        risk_points += 3
+        factors.append("severe_gusts")
+    elif wind_gust_knots >= 25:
+        risk_points += 2
+        factors.append("strong_gusts")
+
+    if dominant_type in EXPOSED_TYPES_FOR_SAFETY and effective_wave >= 1.5:
+        risk_points += 2
+        factors.append("exposed_with_wave")
+
+    if (
+        temperature_c is not None
+        and float(temperature_c) <= 8
+        and wind_speed_knots >= 10
+        and (rain_mm >= 0.5 or rainfall_24h >= 5)
+    ):
+        risk_points += 2
+        factors.append("cold_wet_windy")
+
+    try:
+        if wave_height_delta_24h is not None and float(wave_height_delta_24h) >= 0.6:
+            risk_points += 1
+            factors.append("rapid_wave_change")
+    except (TypeError, ValueError):
+        pass
+
+    # Severe weather shock tag should bump safety even when individual numbers
+    # are below the per-axis thresholds (e.g. fast pressure drop + gusts).
+    if "severe_multi_day_cold_break" in tags or "trend_breaking_cold_change" in tags:
+        risk_points += 1
+        factors.append("severe_weather_break")
+
+    if risk_points >= 6:
+        flag = SAFETY_FLAG_HAZARDOUS
+    elif risk_points >= 4:
+        flag = SAFETY_FLAG_ELEVATED
+    elif risk_points >= 2:
+        flag = SAFETY_FLAG_MODERATE
+    else:
+        flag = SAFETY_FLAG_LOW
+
+    return flag, factors, risk_points
+
+
 def _derwent_style_score_modes(
     *,
     cards: Mapping[str, dict[str, Any]],
@@ -1614,15 +1827,36 @@ def _derwent_style_score_modes(
     else:
         big = "low"
 
+    final_activity = _clamp(activity)
+    final_presence = _clamp(presence)
+    final_trip_quality = _clamp(trip_quality)
+    inputs_used_context = environment_context.get("inputs_used", {}) or {}
+    fish_outlook = _fish_outlook_score(final_activity, final_presence)
+    comfort_score, comfort_factors = _comfort_score(
+        inputs_used=inputs_used_context,
+        normalized=normalized,
+    )
+    safety_flag, safety_factors, safety_risk_points = _safety_flag(
+        inputs_used=inputs_used_context,
+        dominant_type=dominant_type,
+        tags=tags,
+    )
+
     return {
-        "activity_score": _clamp(activity),
-        "presence_score": _clamp(presence),
-        "trip_quality_score": _clamp(trip_quality),
+        "activity_score": final_activity,
+        "presence_score": final_presence,
+        "trip_quality_score": final_trip_quality,
         "resident_opportunity_score": resident,
         "roaming_opportunity_score": roaming,
         "big_fish_near_shore": big,
         "score_guard_tags": guard_tags,
         "score_mode_tags": score_mode_tags + ocean_pressure_tags,
+        "fish_outlook_score": fish_outlook,
+        "comfort_score": comfort_score,
+        "comfort_factors": comfort_factors,
+        "safety_flag": safety_flag,
+        "safety_factors": safety_factors,
+        "safety_risk_points": safety_risk_points,
     }
 
 
@@ -2216,6 +2450,11 @@ def build_preview(
             "resident_opportunity_score": score_modes["resident_opportunity_score"],
             "roaming_opportunity_score": score_modes["roaming_opportunity_score"],
             "big_fish_near_shore": score_modes["big_fish_near_shore"],
+            "fish_outlook_score": score_modes["fish_outlook_score"],
+            "comfort_score": score_modes["comfort_score"],
+            "comfort_factors": score_modes["comfort_factors"],
+            "safety_flag": score_modes["safety_flag"],
+            "safety_factors": score_modes["safety_factors"],
             "confidence": PREVIEW_CONFIDENCE,
             "dominant_inferred_type": dominant_type,
             "model_rule_family": environment_context["generic_rules"]["family"],

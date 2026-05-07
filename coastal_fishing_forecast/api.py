@@ -468,6 +468,11 @@ def _window_card(window: Mapping[str, Any]) -> dict[str, Any]:
         "activity_score": overall.get("activity_score"),
         "presence_score": overall.get("presence_score"),
         "trip_quality_score": overall.get("trip_quality_score"),
+        "fish_outlook_score": overall.get("fish_outlook_score"),
+        "comfort_score": overall.get("comfort_score"),
+        "comfort_factors": overall.get("comfort_factors", []),
+        "safety_flag": overall.get("safety_flag"),
+        "safety_factors": overall.get("safety_factors", []),
         "big_fish_near_shore": overall.get("big_fish_near_shore"),
         "label": overall.get("label"),
         "model_rule_family": overall.get("model_rule_family"),
@@ -516,6 +521,11 @@ def _hero(range_forecast: Mapping[str, Any]) -> dict[str, Any]:
     return {
         "score": overall["score"],
         "label": overall["label"],
+        "fish_outlook_score": overall.get("fish_outlook_score"),
+        "comfort_score": overall.get("comfort_score"),
+        "safety_flag": overall.get("safety_flag"),
+        "safety_factors": overall.get("safety_factors", []),
+        "comfort_factors": overall.get("comfort_factors", []),
         "headline": f"{dominant} is the strongest nearby option.",
         "best_window": _window_card(best),
     }
