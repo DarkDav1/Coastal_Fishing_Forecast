@@ -66,6 +66,70 @@ INTERNAL_EXPLANATION_TERMS = (
     "评分规则",
 )
 
+# Combo release: when the engine is genuinely confident AND the day already
+# scores high, lift the public preview cap of 86.5 up to a hard ceiling of 95.
+# Confidence stays internal (never shown to the user); it only acts as a gate
+# that unlocks an upper boost when several independent axes align.
+COMBO_HARD_CEILING = 95
+COMBO_GATE_ACTIVITY = 78
+COMBO_GATE_PRESENCE = 74
+COMBO_GATE_TRIP_QUALITY = 68
+COMBO_GATE_SEARCH_CONFIDENCE = 0.55
+COMBO_REMOTE_STATION_KM = 50.0
+REAL_TIDE_SOURCES = frozenset({"tidesatlas", "tide_events", "tide_events_file"})
+COMBO_BLOCKING_TAGS = frozenset(
+    {
+        "recent_weather_shock",
+        "strong_wind_penalty",
+        "harsh_midday_penalty",
+        "heavy_rain_disruption",
+        "strong_rain_penalty",
+        "major_rain_shock",
+        "big_wave_beach",
+        "ocean_influenced_estuary_swell_penalty",
+        "open_bay_swell_cap",
+        "rough_open_bay_cap",
+        "trend_breaking_cold_change",
+        "severe_multi_day_cold_break",
+        "rapid_pressure_change_24h",
+        "rapid_pressure_change_6h",
+        "multi_day_pressure_break",
+        "strong_wind_shift",
+        "recent_heavy_rain_shock",
+        "multi_day_rain_disruption",
+        "dead_water_2h",
+        "weak_tide_movement_3h",
+        "weak_tide_rate",
+        "small_tide_range",
+        "slack_tide_penalty",
+        "offshore_push_away",
+        "wind_presentation_penalty",
+        "rapid_temperature_drop",
+    }
+)
+COMBO_MOVEMENT_TAGS = frozenset(
+    {"rising_tide_window", "early_flood_bonus", "strong_local_tide_flow", "large_tide_range", "falling_tide_window"}
+)
+COMBO_TIMING_TAGS = frozenset({"sunrise_window", "sunset_window", "dawn_window", "dusk_window"})
+COMBO_WEATHER_CLEAN_TAGS = frozenset(
+    {
+        "stable_pressure_bonus",
+        "moderate_wind_bonus",
+        "cloud_cover_bonus",
+        "water_temp_optimal",
+        "pressure_rising",
+        "pressure_falling",
+        "weather_recovery_window",
+    }
+)
+COMBO_STRUCTURE_CATEGORIES = frozenset({"complex_edge_with_moving_water", "modest_edge_flow"})
+COMBO_BLOCKING_WIND_CATEGORIES = frozenset(
+    {"direction_unknown", "geometry_uncertain", "offshore_or_push_away", "exposed_presentation_risk"}
+)
+COMBO_OPEN_COAST_TYPES = frozenset({"beach", "rocks"})
+COMBO_OPEN_COAST_MAX_WAVE_M = 0.8
+COMBO_OPEN_COAST_MAX_WIND_KNOTS = 14.0
+
 
 def _location(lat: float, lon: float) -> dict[str, Any]:
     return {
@@ -755,6 +819,226 @@ def _explanation(range_forecast: Mapping[str, Any], *, explanation_provider: str
         return rule_explanation
 
 
+def _location_combo_prerequisites(
+    preview: Mapping[str, Any] | None,
+    data_sources: Mapping[str, Any],
+) -> dict[str, Any] | None:
+    """Location-level gates that don't change between windows.
+
+    Returns the prerequisites bundle when the location qualifies for combo
+    release evaluation, or None when any structural gate fails. This is the
+    "confidence" half of the combo: only locations with on-water support,
+    real tide events, and clear shoreline geometry are eligible.
+    """
+    if not preview or preview.get("status") != "ok":
+        return None
+    meta = preview.get("meta") or {}
+    support_profile = meta.get("support_profile") or {}
+    if support_profile.get("support_mode") != "on_water":
+        return None
+    tide_source = data_sources.get("tide")
+    if tide_source not in REAL_TIDE_SOURCES:
+        return None
+    if tide_source == "tidesatlas":
+        provider = data_sources.get("tide_provider") or {}
+        port_distance = provider.get("port_distance_km")
+        try:
+            if port_distance is not None and float(port_distance) > COMBO_REMOTE_STATION_KM:
+                return None
+        except (TypeError, ValueError):
+            return None
+    search_confidence = float(meta.get("search_confidence_score") or 0.0)
+    if search_confidence < COMBO_GATE_SEARCH_CONFIDENCE:
+        return None
+    coastline = meta.get("coastline_metrics") or {}
+    if coastline.get("open_water_bearing_deg") is None:
+        return None
+    return {"search_confidence": search_confidence}
+
+
+def _window_combo_evaluation(
+    preview: Mapping[str, Any],
+    prereqs: Mapping[str, Any] | None,
+) -> tuple[int, str | None]:
+    """Per-window combo evaluation. Returns (boost, tag) or (0, None)."""
+    if prereqs is None:
+        return 0, None
+    overall = preview.get("overall_recommendation") or {}
+    if not overall:
+        return 0, None
+    activity = float(overall.get("activity_score") or 0)
+    presence = float(overall.get("presence_score") or 0)
+    trip = float(overall.get("trip_quality_score") or 0)
+    if activity < COMBO_GATE_ACTIVITY or presence < COMBO_GATE_PRESENCE or trip < COMBO_GATE_TRIP_QUALITY:
+        return 0, None
+
+    meta = preview.get("meta") or {}
+    environment = meta.get("environment") or {}
+    inputs_used = environment.get("inputs_used") or {}
+    normalized = environment.get("normalized") or {}
+    tags = set(overall.get("reason_tags") or [])
+
+    if tags & COMBO_BLOCKING_TAGS:
+        return 0, None
+    if float(normalized.get("weather_shock") or 0.0) >= 1.5:
+        return 0, None
+
+    wind_category = str(inputs_used.get("wind_to_shore_category") or "")
+    if wind_category in COMBO_BLOCKING_WIND_CATEGORIES:
+        return 0, None
+
+    movement_aligned = bool(tags & COMBO_MOVEMENT_TAGS)
+    timing_aligned = bool(tags & COMBO_TIMING_TAGS)
+    weather_clean_axis = bool(tags & COMBO_WEATHER_CLEAN_TAGS)
+    structure_category = str(inputs_used.get("structure_flow_category") or "")
+    structure_aligned = structure_category in COMBO_STRUCTURE_CATEGORIES
+    aligned = sum((movement_aligned, timing_aligned, weather_clean_axis, structure_aligned))
+    if aligned < 3:
+        return 0, None
+
+    dominant_type = overall.get("dominant_inferred_type")
+    if dominant_type in COMBO_OPEN_COAST_TYPES:
+        wave = float(inputs_used.get("wave_height_m") or inputs_used.get("swell_height_m") or 0.0)
+        wind_kts = float(inputs_used.get("wind_speed_knots") or 0.0)
+        if wave > COMBO_OPEN_COAST_MAX_WAVE_M or wind_kts > COMBO_OPEN_COAST_MAX_WIND_KNOTS:
+            return 0, None
+
+    if aligned >= 4:
+        return 8, "rare_alignment_window"
+    return 5, "strong_alignment_window"
+
+
+def _apply_window_combo(
+    window: Mapping[str, Any],
+    prereqs: Mapping[str, Any] | None,
+) -> dict[str, Any] | None:
+    preview = window.get("preview") or {}
+    boost, tag = _window_combo_evaluation(preview, prereqs)
+    if boost <= 0 or tag is None:
+        return None
+    overall = preview.get("overall_recommendation")
+    if not overall:
+        return None
+    original = int(overall.get("score") or 0)
+    new_score = min(COMBO_HARD_CEILING, original + boost)
+    if new_score <= original:
+        return None
+    overall["score"] = new_score
+    existing_tags = list(overall.get("reason_tags") or [])
+    if tag not in existing_tags:
+        existing_tags.append(tag)
+        overall["reason_tags"] = existing_tags
+    overall["combo_release"] = {
+        "applied": True,
+        "tag": tag,
+        "boost": boost,
+        "original_score": original,
+        "boosted_score": new_score,
+    }
+    return overall["combo_release"]
+
+
+def _hourly_combo_axes(rule_tags: set[str]) -> int:
+    return sum(
+        (
+            bool(rule_tags & COMBO_MOVEMENT_TAGS),
+            bool(rule_tags & COMBO_TIMING_TAGS),
+            bool(rule_tags & COMBO_WEATHER_CLEAN_TAGS),
+        )
+    )
+
+
+def _apply_hourly_combo(
+    point: dict[str, Any],
+    prereqs: Mapping[str, Any] | None,
+) -> bool:
+    if prereqs is None:
+        return False
+    activity = point.get("activity_score") or 0
+    if activity < COMBO_GATE_ACTIVITY:
+        return False
+    rule_tags = set(point.get("rule_tags") or [])
+    if rule_tags & COMBO_BLOCKING_TAGS:
+        return False
+    aligned = _hourly_combo_axes(rule_tags)
+    if aligned < 2:
+        return False
+    original = int(point.get("score") or 0)
+    boost = 7 if aligned >= 3 else 4
+    new_score = min(COMBO_HARD_CEILING, original + boost)
+    if new_score <= original:
+        return False
+    point["score"] = new_score
+    tag = "rare_alignment_window" if aligned >= 3 else "strong_alignment_window"
+    if tag not in rule_tags:
+        existing = list(point.get("rule_tags") or [])
+        existing.append(tag)
+        point["rule_tags"] = existing
+    return True
+
+
+def _apply_combo_release(range_forecast: dict[str, Any]) -> dict[str, Any]:
+    """Apply combo release to a range forecast in place.
+
+    Returns a small summary dict with how many windows / hours were boosted.
+    Mutates the dict so downstream hero / window cards / planner pick up the
+    boosted scores naturally.
+    """
+    summary: dict[str, Any] = {
+        "applied": False,
+        "windows_boosted": 0,
+        "hours_boosted": 0,
+        "best_tag": None,
+    }
+    data_sources = range_forecast.get("data_sources") or {}
+    windows = range_forecast.get("windows") or []
+    if not windows:
+        return summary
+
+    prereqs = _location_combo_prerequisites(windows[0].get("preview"), data_sources)
+
+    boosted_tags: list[str] = []
+    for window in windows:
+        result = _apply_window_combo(window, prereqs)
+        if result is not None:
+            summary["windows_boosted"] += 1
+            boosted_tags.append(result["tag"])
+
+    hourly = range_forecast.get("hourly_activity") or []
+    for point in hourly:
+        if _apply_hourly_combo(point, prereqs):
+            summary["hours_boosted"] += 1
+
+    if summary["windows_boosted"] == 0 and summary["hours_boosted"] == 0:
+        return summary
+
+    summary["applied"] = True
+    if "rare_alignment_window" in boosted_tags:
+        summary["best_tag"] = "rare_alignment_window"
+    elif boosted_tags:
+        summary["best_tag"] = "strong_alignment_window"
+
+    if summary["windows_boosted"] > 0:
+        forecast_summary = range_forecast.get("summary") or {}
+        supported = [w for w in windows if (w.get("preview") or {}).get("status") == "ok"]
+        if supported:
+            scores = [
+                int((w["preview"].get("overall_recommendation") or {}).get("score") or 0)
+                for w in supported
+            ]
+            if scores:
+                forecast_summary["average_score"] = round(sum(scores) / len(scores), 1)
+        for entry in forecast_summary.get("best_windows", []):
+            for window in windows:
+                if window.get("date") == entry.get("date") and window.get("time_window") == entry.get("time_window"):
+                    new_score = (window["preview"].get("overall_recommendation") or {}).get("score")
+                    if new_score is not None:
+                        entry["score"] = new_score
+                    break
+
+    return summary
+
+
 def build_frontend_forecast_response(
     lat: float,
     lon: float,
@@ -793,6 +1077,7 @@ def build_frontend_forecast_response(
         cache_enabled=cache_enabled,
         cache_dir=cache_dir,
     )
+    combo_release = _apply_combo_release(range_forecast)
     resolved_structure_facilities = list(structure_facilities or [])
     structure_data = None
     structure_fetchers = {
@@ -833,6 +1118,7 @@ def build_frontend_forecast_response(
         "data_sources": range_forecast["data_sources"],
         "tide_verification": _tide_verification(range_forecast["data_sources"]),
         "confidence": _confidence(range_forecast),
+        "combo_release": combo_release,
         "hero": _hero(range_forecast),
         "explanation": _explanation(range_forecast, explanation_provider=explanation_provider),
         "summary": range_forecast["summary"],
