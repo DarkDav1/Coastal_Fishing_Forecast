@@ -103,14 +103,38 @@
     - `notable_seas` → "浪较大"
 - **状态**：ready（算法已实现，等前端对齐）
 
-## 6. 地图 pin 各自独立打分（待算法支持）
+## 6. 地图 pin 各自独立打分
 
-- **来源**：用户 2026-05-07 P1 讨论
-- **后端契约**：**待定** — 当前所有 `structure_facilities` 共享搜索中心点的 environment + score。计划：每个 pin 跑一次 `build_preview`（共享 weather/marine fetch，仅几何 + region 不同）
+- **来源**：用户 2026-05-07 P1 讨论；PR `cursor/per-pin-scoring-117c`（已实现）
+- **后端契约**：每个 `structure_facilities[*]` 现在带一个 `pin_forecast` 子对象：
+  ```json
+  {
+    "pin_forecast": {
+      "available": true,
+      "distance_km_from_search": 3.31,
+      "score": 60,
+      "label": "Usable nearby options",
+      "fish_outlook_score": 62,
+      "comfort_score": 70,
+      "comfort_factors": [],
+      "safety_flag": "low",
+      "safety_factors": [],
+      "dominant_water_type": "bay_estuary_edge",
+      "support_mode": "near_water",
+      "search_confidence_score": 0.48,
+      "reason_summary": "Pin-specific geometry, shared weather/tide with search center."
+    }
+  }
+  ```
+  - `available: false` 时含 `reason` 字段（`inland_or_non_tidal / too_far_from_supported_water / no_environment / preview_error`）
+  - 共享搜索中心的 weather/marine/tide environment（不重复打 Open-Meteo），但**几何信号每个 pin 独立**——这是核心价值：朝外 pin 会被识别为 beach 即使搜索中心是 sheltered_estuary
 - **前端动作**：
-  - 地图层每个 pin 显示自己的分数和标签
-  - 距离很远（> 5 km）的 pin 用不同视觉提示
-- **状态**：pending（依赖后端改动）
+  - 地图每个 pin 显示自己的分数和 `dominant_water_type`
+  - `safety_flag` 高（elevated/hazardous）的 pin 用警告色或不渲染（避免引导用户去危险点）
+  - `available: false` 的 pin 仍可显示在地图上（位置已知），但分数槽显示 "—" 或 "geometry"
+  - `distance_km_from_search > 5km` 用不同视觉（淡色 / 虚线）
+  - 选中 pin 时可显示完整的 fish/comfort/safety 三维度（同条目 5）
+- **状态**：ready
 
 ## 7. 相对天框架（"今天比近 30 天平均强 / 弱"）
 
