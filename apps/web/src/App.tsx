@@ -607,39 +607,67 @@ function fishIndexMeaning(summary: ReturnType<typeof dailyScoreSummary>, lang: L
 function dayScoreFactorText(day?: { best_window: WindowCard | null; windows: WindowCard[] } | null, lang: Lang = "en") {
   const summary = dailyScoreSummary(day);
   const stats = dayConditionStats(day);
-  const score = summary.weighted;
-  if (score == null) return lang === "zh" ? "当前数据不足，暂时无法拆解当天分数。" : "There is not enough data yet to explain the day score.";
+  if (summary.weighted == null) return lang === "zh" ? "当前数据不足，暂时无法用天气和海况说明这一天。" : "There is not enough tide and weather data yet to describe this day.";
 
-  const fishPart = lang === "zh"
-    ? `总分 ${score} 主要来自鱼情指数 ${summary.fishIndex ?? "--"}、出钓条件 ${summary.tripQuality ?? "--"}。`
-    : `The ${score} day score is built from fish index ${summary.fishIndex ?? "--"} and trip quality ${summary.tripQuality ?? "--"}.`;
+  const intro =
+    lang === "zh"
+      ? "从潮水、天气和海面状况来看："
+      : "Looking at tide, weather, and sea state for this day:";
 
   const tidePart =
     stats.tideMovementMax >= 0.18
-      ? (lang === "zh" ? "水流较明显，对分数有支撑。" : "Clear tide movement supports the score.")
+      ? (lang === "zh"
+          ? "潮水动静比较明显，水体交换活跃，通常更有利于近岸觅食节奏。"
+          : "Tide movement is clearly felt—water is exchanging well, which usually helps nearshore feeding.")
       : stats.tideMovementMax >= 0.08
-        ? (lang === "zh" ? "水流中等，只能提供有限支撑。" : "Moderate tide movement gives limited support.")
-        : (lang === "zh" ? "水流偏弱，是分数不容易拉高的原因之一。" : "Weak tide movement is one reason the score does not lift higher.");
+        ? (lang === "zh"
+            ? "潮水动静中等，有一定水流，但算不上大潮或急流。"
+            : "Tide movement is moderate—there is flow, but it is not a strong spring-tide or ripping stage.")
+        : (lang === "zh"
+            ? "潮水整体偏弱，水体交换有限，近岸条件更难被潮水「带起来」。"
+            : "Tide flow is on the weak side, so water movement offers less help along the shore.");
 
   const weatherFactors = [
-    stats.temperatureAvg != null && stats.temperatureAvg < 9 ? (lang === "zh" ? "气温偏冷" : "Cold air") : null,
-    stats.windAvg != null && stats.windAvg > 16 ? (lang === "zh" ? "平均风偏强" : "Stronger average wind") : null,
-    stats.gustMax > 24 ? (lang === "zh" ? "阵风偏强" : "Strong gusts") : null,
-    stats.rainTotal >= 2 ? (lang === "zh" ? "降雨影响" : "Rain") : null,
-    stats.shockMax >= 2 ? (lang === "zh" ? "近期天气变化" : "Recent weather change") : null
+    stats.temperatureAvg != null && stats.temperatureAvg < 9 ? (lang === "zh" ? "气温偏低" : "cool air") : null,
+    stats.windAvg != null && stats.windAvg > 16 ? (lang === "zh" ? "平均风力偏大" : "stronger steady wind") : null,
+    stats.gustMax > 24 ? (lang === "zh" ? "阵风偏强" : "sharp gusts") : null,
+    stats.rainTotal >= 2 ? (lang === "zh" ? "有降雨" : "rain") : null,
+    stats.shockMax >= 2 ? (lang === "zh" ? "近期天气波动较大" : "recent weather swings") : null
   ].filter(Boolean);
-  const weatherPart = weatherFactors.length
-    ? (lang === "zh"
-        ? `${weatherFactors.slice(0, 2).join("、")}拉低当天稳定性。`
-        : `${weatherFactors.slice(0, 2).join(" and ")} ${weatherFactors.length === 1 ? "reduces" : "reduce"} the day's stability.`)
-    : (lang === "zh" ? "天气本身不是主要扣分项。" : "Weather is not a major drag in this score.");
+
+  let weatherPart: string;
+  if (weatherFactors.length >= 2) {
+    weatherPart =
+      lang === "zh"
+        ? `天气方面，${weatherFactors.slice(0, 3).join("、")}叠加，体感与抛投都会吃力一些。`
+        : `On land and wind, ${weatherFactors.slice(0, 3).join(", ")} stack up—comfort and casting get harder.`;
+  } else if (weatherFactors.length === 1) {
+    weatherPart =
+      lang === "zh"
+        ? `天气方面以「${weatherFactors[0]}」为主，需要留意对线组和站位的影响。`
+        : `Weather-wise, ${weatherFactors[0]} stands out—worth adjusting tackle and where you stand.`;
+  } else {
+    weatherPart =
+      lang === "zh"
+        ? "天气整体相对温和，没有明显的低温、大风大雨或剧烈阴晴突变。"
+        : "Weather stays relatively mild—no standout cold, heavy rain, or volatile swings.";
+  }
 
   const wavePart =
     stats.waveMax >= 2
-      ? (lang === "zh" ? "浪高偏大，压低可钓性和安全余量。" : "Larger waves reduce fishability and safety margin.")
-      : (lang === "zh" ? "浪不大，所以浪况不是主要扣分项。" : "Waves are not large, so sea state is not a main penalty.");
+      ? (lang === "zh"
+          ? "海面浪高偏大，近岸会比较折腾，舒适度和安全余量都要打折。"
+          : "Seas run fairly rough near shore—comfort and safety margin both suffer.")
+      : stats.waveMax >= 1.2
+        ? (lang === "zh"
+            ? "海浪中等偏高，选稍有遮蔽的位置会更舒服。"
+            : "Waves are moderately high; a bit of shelter makes the session easier.")
+        : (lang === "zh"
+            ? "浪高不大，海面相对温顺，通常不会单靠浪况把你劝退。"
+            : "Waves stay modest—the sea state alone is unlikely to be the main reason to stay home.");
 
-  return [fishPart, tidePart, weatherPart, wavePart].join(lang === "zh" ? "" : " ");
+  const sep = lang === "zh" ? "" : " ";
+  return [intro, tidePart, weatherPart, wavePart].join(sep);
 }
 
 function plainWindowLabel(value?: string | null, lang: Lang = "en") {
