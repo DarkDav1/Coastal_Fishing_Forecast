@@ -179,6 +179,53 @@
   - 如果以前有「如果是 sheltered region 但 dominant 是 beach 怎么办」的特殊处理可以删掉
 - **状态**：ready（清理代码）
 
+## 11. 用户反馈采集：4 档 outcome + 可选文本
+
+- **来源**：用户 2026-05-07 P1 #6 讨论；PR `cursor/feedback-collection-117c`（已实现 Phase A 后端）
+- **后端契约**：`POST /api/feedback`
+  - 请求体见 `docs/feedback_schema_v1_2026-05-07.md`
+  - 必须字段：`trip_date / trip_window / lat / lon / predicted.score / outcome`
+  - 强烈建议传完整 `predicted` 块（fish/comfort/safety/combo/dominant/key_reason_tags 全部原样回传给后端落盘，未来算法升级不影响历史数据）
+  - 响应：201 + 存储后的 record；或 400 + `{error, message}`
+- **前端动作**：
+  - 在 day-overview 的窗口卡片末尾加小型 4 档 picker：
+    ```
+    How did it go?
+    [😐 skunked] [🐟 ok] [🐟🐟 decent] [🎯 great]
+    ```
+  - 点击后 POST 到 `/api/feedback`，请求体由前端从 forecast response 拼装：
+    ```json
+    {
+      "trip_date": "2026-05-08",
+      "trip_window": "morning",
+      "lat": -42.8915,
+      "lon": 147.332,
+      "region": "sheltered_estuary",
+      "predicted": {
+        "score": 65,
+        "fish_outlook_score": 67,
+        "comfort_score": 70,
+        "safety_flag": "low",
+        "safety_factors": [...],
+        "comfort_factors": [...],
+        "dominant_water_type": "bay_estuary_edge",
+        "key_reason_tags": ["sunrise_window", "rising_tide_window"],
+        "combo_release": "rare_alignment_window"
+      },
+      "outcome": "decent",
+      "outcome_notes": "可选自由文本，<=120 字"
+    }
+    ```
+  - 可选 `outcome_notes` 文本框（单行，limit 120 字）放在 outcome 选完之后展开
+  - **Fire-and-forget**：UI 不需要等待结果。201 = ✓ 角标 / 400 = 用 toast 友好提示
+  - 不展示 outcome 历史给用户（这是隐私敏感数据，且 Phase A 不做查询接口）
+  - 同一个 trip_date + trip_window + lat/lon 用户可以多次提交（后端不去重，分析时按需处理）
+- **后续 Phase B / C**：
+  - Phase B：`coastal-analyze-feedback` CLI 离线跑分析（见 `pyproject.toml` entry point）
+  - Phase C：数据 ≥ 50 条 + 3 地区 + 2 周后，校准 `_calibrate_public_preview_score`
+  - 这两个 phase 不是 Phase A 的范围
+- **状态**：ready（后端已实现，等前端加 picker）
+
 ## 12. 地图 pin 上的"近期社交活跃度"徽标
 
 - **来源**：用户 2026-05-07 路径 1 讨论；PR `cursor/pin-social-pulse-117c`（已实现）

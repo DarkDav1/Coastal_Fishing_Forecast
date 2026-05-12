@@ -1,4 +1,4 @@
-import { execFile } from "node:child_process";
+import { execFile, spawn } from "node:child_process";
 import { createServer } from "node:http";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
@@ -10,6 +10,8 @@ const repoRoot = path.resolve(__dirname, "../../..");
 const coastalSearchForecast = path.join(repoRoot, ".venv/bin/coastal-search-forecast");
 const coastalPlaceSearch = path.join(repoRoot, ".venv/bin/coastal-place-search");
 const coastalApiForecast = path.join(repoRoot, ".venv/bin/coastal-api-forecast");
+const coastalFeedback = path.join(repoRoot, ".venv/bin/coastal-feedback");
+const FEEDBACK_MAX_BODY_BYTES = 32 * 1024;
 const API_CACHE_TTL_MS = 5 * 60 * 1000;
 const API_CACHE_MAX_ENTRIES = 40;
 const apiCache = new Map();
@@ -133,6 +135,53 @@ async function runPlaceSearch(url) {
   return JSON.parse(stdout);
 }
 
+function readRequestBody(request, maxBytes) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    let total = 0;
+    request.on("data", (chunk) => {
+      total += chunk.length;
+      if (total > maxBytes) {
+        reject(new Error("payload_too_large"));
+        request.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    request.on("end", () => resolve(Buffer.concat(chunks).toString("utf-8")));
+    request.on("error", reject);
+  });
+}
+
+function recordFeedbackViaCli(body) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(coastalFeedback, [], {
+      cwd: repoRoot,
+      timeout: 10000,
+    });
+    const out = [];
+    const err = [];
+    child.stdout.on("data", (c) => out.push(c));
+    child.stderr.on("data", (c) => err.push(c));
+    child.on("error", reject);
+    child.on("close", (code) => {
+      const stdout = Buffer.concat(out).toString("utf-8").trim();
+      const stderr = Buffer.concat(err).toString("utf-8").trim();
+      if (!stdout) {
+        reject(new Error(`feedback CLI returned no output (exit ${code}); stderr=${stderr}`));
+        return;
+      }
+      try {
+        resolve({ code, json: JSON.parse(stdout) });
+      } catch (parseError) {
+        reject(parseError);
+      }
+    });
+    child.stdin.write(body);
+    child.stdin.end();
+  });
+}
+
 async function runCoordinateForecast(url) {
   const lat = single(url.searchParams.get("lat"));
   const lon = single(url.searchParams.get("lon"));
@@ -220,6 +269,42 @@ const server = createServer(async (request, response) => {
     if (url.pathname === "/api/coordinate-forecast") {
       const payload = await cached(url, () => runCoordinateForecast(url));
       sendJson(response, 200, payload);
+      return;
+    }
+    if (url.pathname === "/api/feedback") {
+      if (request.method !== "POST") {
+        sendJson(response, 405, { error: "method_not_allowed", allow: "POST" });
+        return;
+      }
+      let body;
+      try {
+        body = await readRequestBody(request, FEEDBACK_MAX_BODY_BYTES);
+      } catch (bodyError) {
+        const message = bodyError instanceof Error ? bodyError.message : String(bodyError);
+        if (message === "payload_too_large") {
+          sendJson(response, 413, { error: "payload_too_large" });
+        } else {
+          sendJson(response, 400, { error: "request_body_error", message });
+        }
+        return;
+      }
+      if (!body) {
+        sendJson(response, 400, { error: "empty_body" });
+        return;
+      }
+      try {
+        const result = await recordFeedbackViaCli(body);
+        if (result.json && result.json.error) {
+          sendJson(response, 400, result.json);
+        } else {
+          sendJson(response, 201, result.json);
+        }
+      } catch (feedbackError) {
+        sendJson(response, 500, {
+          error: "feedback_io_error",
+          message: feedbackError instanceof Error ? feedbackError.message : String(feedbackError),
+        });
+      }
       return;
     }
     sendJson(response, 404, { error: "not_found" });
