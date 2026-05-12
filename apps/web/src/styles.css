@@ -1631,6 +1631,13 @@ p.score-factor-summary {
   padding: 14px;
 }
 
+.weather-wave-unavailable-note {
+  margin: 12px 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: #5e7482;
+}
+
 .weather-map-panel {
   grid-column: 1 / -1;
   padding: 18px;
