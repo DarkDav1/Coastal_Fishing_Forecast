@@ -23,6 +23,7 @@ coastal-regression-replay = "coastal_fishing_forecast.regression_replay_cli:main
 coastal-verify = "coastal_fishing_forecast.verify:main"
 coastal-feedback = "coastal_fishing_forecast.feedback_cli:main"
 coastal-analyze-feedback = "coastal_fishing_forecast.feedback_analysis:main"
+coastal-score-factors = "coastal_fishing_forecast.score_factors_llm:main"
 
 [tool.setuptools.packages.find]
 include = ["coastal_fishing_forecast*"]

@@ -70,6 +70,7 @@ const UI_TEXT = {
     pressure: "Pressure",
     firstMove: "Today’s move",
     scoreFactors: "Score factors",
+    scoreFactorsGenerating: "Generating explanation…",
     backup: "Backup",
     weatherVisual: "Weather visual",
     windTideWaves: "Wind, Tide & Waves",
@@ -147,6 +148,7 @@ const UI_TEXT = {
     pressure: "气压",
     firstMove: "今日建议",
     scoreFactors: "分数原因",
+    scoreFactorsGenerating: "正在生成说明…",
     backup: "备选方案",
     weatherVisual: "天气可视化",
     windTideWaves: "风、潮汐与浪况",
@@ -1238,7 +1240,48 @@ function FishingPlanCard({
   const selectedScore = dayScore(selectedDay);
   const selectedLabel = recommendationLabel(selectedScore);
   const tone = scoreTone(selectedLabel);
-  const scoreFactors = dayScoreFactorText(selectedDay, lang);
+  const scoreFactorsFallback = dayScoreFactorText(selectedDay, lang);
+  const [scoreFactorsLlm, setScoreFactorsLlm] = useState<string | null>(null);
+  const [scoreFactorsLlmLoading, setScoreFactorsLlmLoading] = useState(false);
+
+  useEffect(() => {
+    if (!selectedDay?.windows?.length) {
+      setScoreFactorsLlm(null);
+      setScoreFactorsLlmLoading(false);
+      return;
+    }
+    const controller = new AbortController();
+    setScoreFactorsLlmLoading(true);
+    setScoreFactorsLlm(null);
+    fetch("/api/score-factors", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        lang,
+        date: selectedDay.date ?? "",
+        windows: selectedDay.windows,
+      }),
+      signal: controller.signal,
+    })
+      .then((res) => res.json())
+      .then((payload: { paragraph?: string }) => {
+        if (controller.signal.aborted) return;
+        const raw = typeof payload.paragraph === "string" ? payload.paragraph.trim() : "";
+        setScoreFactorsLlm(raw.length ? raw : null);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setScoreFactorsLlm(null);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setScoreFactorsLlmLoading(false);
+      });
+    return () => controller.abort();
+  }, [selectedDay, lang]);
+
+  const scoreFactorsDisplay = scoreFactorsLlmLoading
+    ? text.scoreFactorsGenerating
+    : scoreFactorsLlm ?? scoreFactorsFallback;
+
   return (
     <section className="plan-card">
       <div className="plan-head">
@@ -1257,7 +1300,7 @@ function FishingPlanCard({
       <DayOverviewPanel day={selectedDay} lang={lang} />
       <div className="action-block primary score-factor-copy">
         <span>{text.scoreFactors}</span>
-        <p>{scoreFactors}</p>
+        <p>{scoreFactorsDisplay}</p>
       </div>
     </section>
   );

@@ -32,6 +32,21 @@ def _planner_prompt(payload: Mapping[str, Any]) -> str:
     )
 
 
+def _score_factors_prompt(payload: Mapping[str, Any]) -> str:
+    return (
+        "You write ONE short paragraph for a recreational shore-fishing audience.\n"
+        "Requirements:\n"
+        "- Match payload.lang: English for en, Chinese for zh.\n"
+        "- Explain tide, wind, weather comfort, and sea state using ONLY facts in the JSON "
+        "(aggregates, optional weather_change_notes, tide_phases).\n"
+        "- Do NOT mention forecast scores, numeric ratings, fish index, trip quality, formulas, "
+        "weights, algorithms, rules, tags, reason_tags, model mechanics, or how anything was calculated.\n"
+        "- Do NOT invent species, places, or conditions absent from the data.\n"
+        "- Return JSON only: {\"paragraph\": \"...\"} with paragraph length roughly 3–7 sentences.\n\n"
+        f"Data:\n{json.dumps(payload, sort_keys=True, ensure_ascii=False)}"
+    )
+
+
 def _explanation_prompt(payload: Mapping[str, Any]) -> str:
     return (
         "Rewrite the provided fishing forecast evidence into concise user-facing explanation text. "
@@ -155,3 +170,57 @@ def generate_github_models_explanation_text(
     if not isinstance(parsed, dict):
         raise GitHubModelsError("GitHub Models explanation content must be a JSON object.")
     return parsed
+
+
+def generate_github_models_score_factors_text(
+    payload: Mapping[str, Any],
+    *,
+    token: str | None = None,
+    model: str | None = None,
+    endpoint: str | None = None,
+    timeout_seconds: int = 25,
+) -> dict[str, Any]:
+    """Single-paragraph score-factors copy for tide / weather / sea state (JSON {\"paragraph\": ...})."""
+
+    resolved_token = token or os.environ.get(GITHUB_TOKEN_ENV)
+    if not resolved_token:
+        raise GitHubModelsError(f"Missing {GITHUB_TOKEN_ENV}.")
+
+    resolved_model = model or os.environ.get(GITHUB_MODELS_MODEL_ENV) or GITHUB_MODELS_DEFAULT_MODEL
+    resolved_endpoint = endpoint or os.environ.get(GITHUB_MODELS_ENDPOINT_ENV) or GITHUB_MODELS_ENDPOINT
+    body = {
+        "model": resolved_model,
+        "temperature": 0.35,
+        "response_format": {"type": "json_object"},
+        "messages": [
+            {
+                "role": "system",
+                "content": "You write cautious coastal fishing summaries from structured environmental facts. Return JSON only.",
+            },
+            {"role": "user", "content": _score_factors_prompt(payload)},
+        ],
+    }
+    request = Request(
+        resolved_endpoint,
+        data=json.dumps(body).encode("utf-8"),
+        headers={
+            "Authorization": f"Bearer {resolved_token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+        },
+        method="POST",
+    )
+    with urlopen(request, timeout=timeout_seconds) as response:
+        response_payload = json.loads(response.read().decode("utf-8"))
+
+    content = _extract_content(response_payload)
+    try:
+        parsed = json.loads(content)
+    except json.JSONDecodeError as exc:
+        raise GitHubModelsError("GitHub Models returned non-JSON score-factors content.") from exc
+    if not isinstance(parsed, dict):
+        raise GitHubModelsError("GitHub Models score-factors content must be a JSON object.")
+    paragraph = parsed.get("paragraph")
+    if not isinstance(paragraph, str) or not paragraph.strip():
+        raise GitHubModelsError("GitHub Models score-factors response missing paragraph.")
+    return {"paragraph": paragraph.strip()}

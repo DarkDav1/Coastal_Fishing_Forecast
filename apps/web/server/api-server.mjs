@@ -11,7 +11,9 @@ const coastalSearchForecast = path.join(repoRoot, ".venv/bin/coastal-search-fore
 const coastalPlaceSearch = path.join(repoRoot, ".venv/bin/coastal-place-search");
 const coastalApiForecast = path.join(repoRoot, ".venv/bin/coastal-api-forecast");
 const coastalFeedback = path.join(repoRoot, ".venv/bin/coastal-feedback");
+const coastalScoreFactors = path.join(repoRoot, ".venv/bin/coastal-score-factors");
 const FEEDBACK_MAX_BODY_BYTES = 32 * 1024;
+const SCORE_FACTORS_MAX_BODY_BYTES = 512 * 1024;
 const API_CACHE_TTL_MS = 5 * 60 * 1000;
 const API_CACHE_MAX_ENTRIES = 40;
 const apiCache = new Map();
@@ -153,6 +155,35 @@ function readRequestBody(request, maxBytes) {
   });
 }
 
+function recordScoreFactorsViaCli(body) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(coastalScoreFactors, [], {
+      cwd: repoRoot,
+      timeout: 35000,
+    });
+    const out = [];
+    const err = [];
+    child.stdout.on("data", (c) => out.push(c));
+    child.stderr.on("data", (c) => err.push(c));
+    child.on("error", reject);
+    child.on("close", (code) => {
+      const stdout = Buffer.concat(out).toString("utf-8").trim();
+      const stderr = Buffer.concat(err).toString("utf-8").trim();
+      if (!stdout) {
+        reject(new Error(`score-factors CLI returned no output (exit ${code}); stderr=${stderr}`));
+        return;
+      }
+      try {
+        resolve({ code, json: JSON.parse(stdout) });
+      } catch (parseError) {
+        reject(parseError);
+      }
+    });
+    child.stdin.write(body);
+    child.stdin.end();
+  });
+}
+
 function recordFeedbackViaCli(body) {
   return new Promise((resolve, reject) => {
     const child = spawn(coastalFeedback, [], {
@@ -246,7 +277,7 @@ const server = createServer(async (request, response) => {
     if (request.method === "OPTIONS") {
       response.writeHead(204, {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET,OPTIONS",
+        "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type"
       });
       response.end();
@@ -303,6 +334,38 @@ const server = createServer(async (request, response) => {
         sendJson(response, 500, {
           error: "feedback_io_error",
           message: feedbackError instanceof Error ? feedbackError.message : String(feedbackError),
+        });
+      }
+      return;
+    }
+    if (url.pathname === "/api/score-factors") {
+      if (request.method !== "POST") {
+        sendJson(response, 405, { error: "method_not_allowed", allow: "POST" });
+        return;
+      }
+      let body;
+      try {
+        body = await readRequestBody(request, SCORE_FACTORS_MAX_BODY_BYTES);
+      } catch (bodyError) {
+        const message = bodyError instanceof Error ? bodyError.message : String(bodyError);
+        if (message === "payload_too_large") {
+          sendJson(response, 413, { error: "payload_too_large" });
+        } else {
+          sendJson(response, 400, { error: "request_body_error", message });
+        }
+        return;
+      }
+      if (!body) {
+        sendJson(response, 400, { error: "empty_body" });
+        return;
+      }
+      try {
+        const result = await recordScoreFactorsViaCli(body);
+        sendJson(response, 200, result.json);
+      } catch (sfError) {
+        sendJson(response, 500, {
+          error: "score_factors_io_error",
+          message: sfError instanceof Error ? sfError.message : String(sfError),
         });
       }
       return;
