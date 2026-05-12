@@ -596,6 +596,24 @@ function firstWeatherChangeNotes(day?: { windows: WindowCard[] } | null, limit =
   return out;
 }
 
+/** Backend change_notes are mostly stress signals; only a few lines describe easing/recovery. */
+const WEATHER_TREND_RECOVERY_EN =
+  /recovering|easing|partly recovering|starting to recover|settling after|shock is easing|trend is recovering/i;
+/** Chinese variants if change_notes are localized later. */
+const WEATHER_TREND_RECOVERY_ZH = /缓和|恢复|趋稳|回落趋缓|冲击减弱|正在好转/i;
+
+function partitionWeatherTrendNotes(notes: string[]): { recovery: string[]; stress: string[] } {
+  const recovery: string[] = [];
+  const stress: string[] = [];
+  for (const raw of notes) {
+    const note = raw.trim();
+    if (!note) continue;
+    if (WEATHER_TREND_RECOVERY_EN.test(note) || WEATHER_TREND_RECOVERY_ZH.test(note)) recovery.push(note);
+    else stress.push(note);
+  }
+  return { recovery, stress };
+}
+
 function dayConditionStats(day?: { windows: WindowCard[] } | null) {
   const windows = day?.windows ?? [];
   const windAvg = averageFloat(windows.map((window) => window.conditions.wind.speed_knots));
@@ -856,7 +874,10 @@ function dayScoreFactorsBullets(
     negative.push(lang === "zh" ? "近期天气序列波动较大。" : "Recent weather has been unstable.");
   }
 
-  if (!cold && !windy && !gusty && !rainy && !volatile) {
+  const trendNotes = firstWeatherChangeNotes(day, 5);
+  const { recovery, stress } = partitionWeatherTrendNotes(trendNotes);
+
+  if (!cold && !windy && !gusty && !rainy && !volatile && stress.length === 0) {
     positive.push(
       lang === "zh"
         ? "天气整体相对温和，没有极端低温、大风大雨或剧烈突变。"
@@ -893,17 +914,19 @@ function dayScoreFactorsBullets(
     );
   }
 
-  const trendNotes = firstWeatherChangeNotes(day, 3);
-  if (trendNotes.length > 0) {
-    const line =
+  if (recovery.length > 0) {
+    positive.push(
       lang === "zh"
-        ? `预报序列提示：${trendNotes.join("；")}。`
-        : `Forecast trend notes: ${trendNotes.join("; ")}.`;
-    if (volatile || stats.shockMax >= 1.5) {
-      negative.push(line);
-    } else {
-      positive.push(line);
-    }
+        ? `天气序列出现缓和迹象：${recovery.join("；")}。`
+        : `Weather trends hint at easing: ${recovery.join("; ")}.`
+    );
+  }
+  if (stress.length > 0) {
+    negative.push(
+      lang === "zh"
+        ? `天气序列压力信号：${stress.join("；")}。`
+        : `Weather trends add friction for consistency: ${stress.join("; ")}.`
+    );
   }
 
   negative.push(...collectAlgorithmDeductions(day?.windows ?? [], lang));
