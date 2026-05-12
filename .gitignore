@@ -1,0 +1,10 @@
+.DS_Store
+.cache/
+.venv/
+*.pyc
+__pycache__/
+*.egg-info/
+
+apps/web/node_modules/
+apps/web/dist/
+apps/web/tsconfig.tsbuildinfo
