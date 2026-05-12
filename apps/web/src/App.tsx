@@ -574,6 +574,24 @@ function daySummaryText(day?: { best_window: WindowCard | null; windows: WindowC
   return "This date is weak overall for a dedicated trip.";
 }
 
+function firstWeatherChangeNotes(day?: { windows: WindowCard[] } | null, limit = 2): string[] {
+  const windows = day?.windows ?? [];
+  const out: string[] = [];
+  const seen = new Set<string>();
+  for (const window of windows) {
+    const notes = window.conditions?.weather_trend?.change_notes;
+    if (!Array.isArray(notes)) continue;
+    for (const note of notes) {
+      if (typeof note === "string" && note.trim() && !seen.has(note)) {
+        seen.add(note);
+        out.push(note.trim());
+        if (out.length >= limit) return out;
+      }
+    }
+  }
+  return out;
+}
+
 function dayConditionStats(day?: { windows: WindowCard[] } | null) {
   const windows = day?.windows ?? [];
   const windAvg = averageFloat(windows.map((window) => window.conditions.wind.speed_knots));
@@ -668,8 +686,24 @@ function dayScoreFactorText(day?: { best_window: WindowCard | null; windows: Win
             ? "浪高不大，海面相对温顺，通常不会单靠浪况把你劝退。"
             : "Waves stay modest—the sea state alone is unlikely to be the main reason to stay home.");
 
+  const phases = stats.tidePhases.filter((p): p is string => typeof p === "string" && Boolean(p));
+  const phaseTail =
+    phases.length > 0
+      ? lang === "zh"
+        ? `各窗口涉及的潮相包括：${phases.join("、")}。`
+        : `Tide phases shown across the day’s windows include: ${phases.join(", ")}.`
+      : "";
+
+  const trendNotes = firstWeatherChangeNotes(day, 2);
+  const trendTail =
+    trendNotes.length > 0
+      ? lang === "zh"
+        ? `天气序列上的提示包括：${trendNotes.join("；")}。`
+        : `Weather trend notes for this day include: ${trendNotes.join("; ")}.`
+      : "";
+
   const sep = lang === "zh" ? "" : " ";
-  return [intro, tidePart, weatherPart, wavePart].join(sep);
+  return [intro, tidePart, weatherPart, wavePart, phaseTail, trendTail].filter(Boolean).join(sep);
 }
 
 function plainWindowLabel(value?: string | null, lang: Lang = "en") {
