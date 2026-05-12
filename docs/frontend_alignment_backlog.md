@@ -123,6 +123,7 @@
       "dominant_water_type": "bay_estuary_edge",
       "support_mode": "near_water",
       "search_confidence_score": 0.48,
+      "recent_social_pulse": { "见条目 12" },
       "reason_summary": "Pin-specific geometry, shared weather/tide with search center."
     }
   }
@@ -177,6 +178,43 @@
   - 卡片「主推水型」文案直接用 `dominant_inferred_type`，不需要再做兜底
   - 如果以前有「如果是 sheltered region 但 dominant 是 beach 怎么办」的特殊处理可以删掉
 - **状态**：ready（清理代码）
+
+## 12. 地图 pin 上的"近期社交活跃度"徽标
+
+- **来源**：用户 2026-05-07 路径 1 讨论；PR `cursor/pin-social-pulse-117c`（已实现）
+- **后端契约**：每个 `pin_forecast` 现在含 `recent_social_pulse` 子对象：
+  ```json
+  {
+    "recent_social_pulse": {
+      "available": true,
+      "level": "medium",
+      "report_count": 8,
+      "top_species": ["bream", "australian_salmon", "flathead"],
+      "nearest_anchor": "sandy_bay",
+      "nearest_anchor_family": "derwent",
+      "recent_window_days": 30,
+      "score_adjustment_allowed": false,
+      "source": "context_only"
+    }
+  }
+  ```
+  - 30 天滚动窗口（短于 hero 的 45 天，pin 是决策点要更新鲜）
+  - 同一搜索内不同 pin 可命中不同 anchor（Sandy Bay 区 pin → `sandy_bay`；Bellerive Pier → `kangaroo_bluff`），这是 per-pin 几何价值的延伸
+  - **`score_adjustment_allowed: false` 是硬约束**：社交内容偏报喜不报忧 + 物种 mismatch（淡水 / 船钓深海）严重，不能进算法
+  - 大部分 pin 在大部分时间显示 `available: false / level: "none"`——这是**正确的**。crawler 覆盖稀疏，宁可不发声
+- **前端动作**：
+  - pin marker 加**小型徽标**（不要喧宾夺主，`pin_forecast.score` 才是主信号）：
+    - `level: "none"` → 不显示
+    - `level: "low"` → 浅灰小点
+    - `level: "medium"` → 普通色 chip "近期 N 报"
+    - `level: "high"` → 突出色 chip + 微弱光晕
+  - 选中 pin 时 tooltip 展开 `top_species`，附 "基于近 30 天社交媒体活跃度，仅供参考，不影响评分"
+  - **不要**把 `top_species` 当作"今天能钓到什么"——它是"过去一个月有人发过什么"
+  - 物种过滤器（如果做）：让用户按 species 过滤地图 pin
+- **设计原则提醒**：
+  - 永远不要把 `recent_social_pulse.level` 加到任何分数计算
+  - 如果 LLM 文案接入这个数据，必须强制 prepend "according to recent social posts" 这种限定语
+- **状态**：ready
 
 ---
 

@@ -56,8 +56,28 @@ SHORE_WEIGHT = {
 
 
 def default_social_data_dir() -> Path:
+    """Locate social-intel files.
+
+    Prefers `<repo-root>/data/social_intel/` when it exists (the public
+    coastal-fishing-forecast layout where the crawler outputs are committed
+    to this repo). Falls back to the legacy sibling layout
+    `../fishing-forecast/data/social_intel/` used by the private Derwent
+    setup. This makes the same code work on a developer laptop and on a
+    cloud agent that only has the public repo cloned.
+    """
     project_root = Path(__file__).resolve().parents[1]
+    repo_local = project_root / "data" / "social_intel"
+    if repo_local.exists():
+        return repo_local
     return project_root.parent / "fishing-forecast" / "data" / "social_intel"
+
+
+# Pin-level pulse window. Shorter than the hero-level 45-day window because
+# pins are decision points for "should I drive there today" — a 30-day
+# rolling window keeps the signal fresher without making the pin go cold
+# on weekly anglers.
+PIN_PULSE_RECENT_DAYS = 30
+PIN_PULSE_TOP_SPECIES = 3
 
 
 def _distance_km(first_lat: float, first_lon: float, second_lat: float, second_lon: float) -> float:
@@ -213,4 +233,85 @@ def build_social_pulse(
         "platforms": platforms,
         "matched_areas": matched_areas,
         "message": "Social signals are used as context only, not as direct score truth.",
+    }
+
+
+def build_compact_pin_pulse(
+    lat: float,
+    lon: float,
+    *,
+    data_dir: Path | None = None,
+    today: date | None = None,
+    recent_days: int = PIN_PULSE_RECENT_DAYS,
+) -> dict[str, Any]:
+    """Per-pin compact social pulse for embedding inside `pin_forecast`.
+
+    Same data and weighting as `build_social_pulse` (CONFIDENCE_WEIGHT,
+    SHORE_WEIGHT, recency, area relevance) but trimmed to the fields a map
+    pin actually needs. Crucially, this is `context_only`: the pin's score
+    is not adjusted by it. The frontend renders it as a small badge with
+    `level` + `top_species` so anglers can see "yep, others have been
+    catching here recently" without the engine pretending those reports
+    are ground truth.
+
+    Returns a dict with stable shape regardless of data availability so the
+    frontend can read fields unconditionally. `available` is False when no
+    rows match the recency + relevance filters at all (which is the
+    expected outcome for most pins, since the crawl coverage is sparse).
+    """
+    resolved_today = today or date.today()
+    resolved_data_dir = data_dir or default_social_data_dir()
+    nearest = _nearest_anchor(lat, lon)
+    rows = _load_rows(resolved_data_dir)
+
+    base_response = {
+        "available": False,
+        "level": "none",
+        "report_count": 0,
+        "top_species": [],
+        "nearest_anchor": nearest.key,
+        "nearest_anchor_family": nearest.family,
+        "recent_window_days": recent_days,
+        "score_adjustment_allowed": False,
+        "source": "context_only",
+    }
+    if not rows:
+        return base_response
+
+    weighted_total = 0.0
+    matched_count = 0
+    species_counter: Counter[str] = Counter()
+
+    for row in rows:
+        row_date = _parse_date(row.get("date", ""))
+        if row_date is None:
+            continue
+        recency = _recency_weight(row_date, resolved_today, recent_days)
+        if recency <= 0:
+            continue
+        relevance = _area_relevance(row.get("normalized_area", ""), nearest, lat, lon)
+        if relevance <= 0:
+            continue
+        confidence = CONFIDENCE_WEIGHT.get((row.get("evidence_confidence") or "").strip().lower(), 0.4)
+        shore = SHORE_WEIGHT.get((row.get("shore_vs_boat") or "").strip().lower(), 0.6)
+        weight = recency * relevance * confidence * shore
+        if weight <= 0:
+            continue
+        weighted_total += weight
+        matched_count += 1
+        for species in (row.get("species_mentions") or "").split(";"):
+            species = species.strip()
+            if species:
+                species_counter[species] += 1
+
+    pulse_score = round(min(100.0, weighted_total * 18.0))
+    if matched_count == 0:
+        return base_response
+
+    return {
+        **base_response,
+        "available": True,
+        "level": _pulse_level(pulse_score),
+        "report_count": matched_count,
+        "top_species": [species for species, _ in species_counter.most_common(PIN_PULSE_TOP_SPECIES)],
     }

@@ -11,7 +11,7 @@ from coastal_fishing_forecast.forecast import build_range_forecast
 from coastal_fishing_forecast.github_models import GitHubModelsError, generate_github_models_explanation_text
 from coastal_fishing_forecast.planner import build_fishing_plan
 from coastal_fishing_forecast.preview import build_preview
-from coastal_fishing_forecast.social_pulse import build_social_pulse
+from coastal_fishing_forecast.social_pulse import build_compact_pin_pulse, build_social_pulse
 from coastal_fishing_forecast.structures import (
     fetch_combined_structure_facilities,
     fetch_list_mast_structure_facilities,
@@ -89,6 +89,13 @@ def _pin_forecast(
     overall = preview.get("overall_recommendation") or {}
     meta = preview.get("meta") or {}
     support_profile = meta.get("support_profile") or {}
+    # Pin-level social pulse: context_only, never adjusts the score. Crawler
+    # coverage is sparse, so most pins will land with available=false; that
+    # is the correct silent default rather than a fake signal.
+    try:
+        pin_pulse = build_compact_pin_pulse(pin_lat, pin_lon)
+    except (OSError, ValueError, TypeError):
+        pin_pulse = None
     return {
         "available": True,
         "distance_km_from_search": round(distance_km_from_search, 2),
@@ -102,6 +109,7 @@ def _pin_forecast(
         "dominant_water_type": overall.get("dominant_inferred_type"),
         "support_mode": support_profile.get("support_mode"),
         "search_confidence_score": meta.get("search_confidence_score"),
+        "recent_social_pulse": pin_pulse,
         "reason_summary": "Pin-specific geometry, shared weather/tide with search center.",
     }
 
