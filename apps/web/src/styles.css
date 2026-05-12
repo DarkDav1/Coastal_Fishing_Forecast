@@ -613,14 +613,6 @@ p.score-factor-summary {
   line-height: 1.55;
 }
 
-p.score-factor-offline-note {
-  margin: 10px 0 0;
-  font-size: 0.82rem;
-  color: var(--muted);
-  font-weight: 600;
-  line-height: 1.45;
-}
-
 .fishing-curve {
   border-top: 1px solid var(--line);
   min-width: 0;

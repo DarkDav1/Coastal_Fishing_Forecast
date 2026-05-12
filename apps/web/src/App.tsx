@@ -73,7 +73,6 @@ const UI_TEXT = {
     scoreFactorsGenerating: "Generating explanation…",
     scoreFactorsPositive: "What's helping",
     scoreFactorsNegative: "What's challenging",
-    scoreFactorsOfflineNote: "Offline summary from tide, wind, and waves (connect GitHub token on the API for AI wording).",
     backup: "Backup",
     weatherVisual: "Weather visual",
     windTideWaves: "Wind, Tide & Waves",
@@ -154,7 +153,6 @@ const UI_TEXT = {
     scoreFactorsGenerating: "正在生成说明…",
     scoreFactorsPositive: "有利因素",
     scoreFactorsNegative: "不利因素",
-    scoreFactorsOfflineNote: "以下为潮水、风、浪等字段的规则归纳（API 配置 GITHUB_TOKEN 后可使用 AI 话术）。",
     backup: "备选方案",
     weatherVisual: "天气可视化",
     windTideWaves: "风、潮汐与浪况",
@@ -752,10 +750,6 @@ function dayScoreFactorsBullets(
   return {
     positive: dedupe(positive),
     negative: dedupe(negative),
-    summary:
-      lang === "zh"
-        ? "以上为基于当日各时间窗口环境字段的简要归纳（未连接 AI 时）。"
-        : "Quick summary from the day’s window data (shown when AI is unavailable).",
   };
 }
 
@@ -1330,19 +1324,16 @@ function FishingPlanCard({
   const scoreFactorsFallback = dayScoreFactorsBullets(selectedDay, lang);
   const [scoreFactorsLlm, setScoreFactorsLlm] = useState<ScoreFactorsBlocks | null>(null);
   const [scoreFactorsLlmLoading, setScoreFactorsLlmLoading] = useState(false);
-  const [scoreFactorsProvider, setScoreFactorsProvider] = useState<string | null>(null);
 
   useEffect(() => {
     if (!selectedDay?.windows?.length) {
       setScoreFactorsLlm(null);
-      setScoreFactorsProvider(null);
       setScoreFactorsLlmLoading(false);
       return;
     }
     const controller = new AbortController();
     setScoreFactorsLlmLoading(true);
     setScoreFactorsLlm(null);
-    setScoreFactorsProvider(null);
     fetch("/api/score-factors", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1359,7 +1350,6 @@ function FishingPlanCard({
           positive_factors?: string[];
           negative_factors?: string[];
           summary?: string;
-          provider?: string;
         }) => {
           if (controller.signal.aborted) return;
           const pos = Array.isArray(payload.positive_factors)
@@ -1368,7 +1358,6 @@ function FishingPlanCard({
           const neg = Array.isArray(payload.negative_factors)
             ? payload.negative_factors.filter((s): s is string => typeof s === "string").map((s) => s.trim()).filter(Boolean)
             : [];
-          setScoreFactorsProvider(typeof payload.provider === "string" ? payload.provider : null);
           if (!pos.length && !neg.length) {
             setScoreFactorsLlm(null);
             return;
@@ -1439,9 +1428,6 @@ function FishingPlanCard({
             </div>
             {scoreFactorsDisplay.summary ? (
               <p className="score-factor-summary">{scoreFactorsDisplay.summary}</p>
-            ) : null}
-            {!scoreFactorsLlm && scoreFactorsProvider !== "github_models" ? (
-              <p className="score-factor-offline-note">{text.scoreFactorsOfflineNote}</p>
             ) : null}
           </>
         ) : (
