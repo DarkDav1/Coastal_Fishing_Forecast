@@ -206,7 +206,7 @@ export type WindowCard = {
     };
     formula?: {
       normalized?: Record<string, number | null | undefined>;
-      rules?: Array<{ id: string; label: string; score_delta: number }>;
+      rules?: Array<{ id: string; label: string; score_delta?: number | null }>;
       score_delta?: number | null;
       family?: string | null;
     };
