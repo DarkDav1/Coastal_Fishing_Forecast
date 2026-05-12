@@ -130,10 +130,10 @@ def _marine_hour_chart_values(
     day: date,
     hour: int,
 ) -> tuple[float | None, float | None]:
-    """Return (primary_sea_height_m, swell_height_m) for the wave chart at Hobart-local (day, hour).
+    """Return (wave_height_m, swell_wave_height_m) from Open-Meteo marine hourly at Hobart-local (day, hour).
 
-    Primary prefers Open-Meteo ``wave_height`` (combined sea state), then ``swell_wave_height``,
-    then non-zero ``wind_wave_height`` so sheltered estuary cells still get a drawable series.
+    Uses only ``wave_height`` and ``swell_wave_height`` (no engine defaults, no wind-sea substitution).
+    Chart UI may use ``wave_height`` first, then fall back to swell for the plotted line — both are API values.
     """
     times = marine_hourly.get("time", [])
     if not isinstance(times, list):
@@ -156,14 +156,10 @@ def _marine_hour_chart_values(
             return None
         return _safe_float(series[idx_match])
 
-    combined = cell("wave_height")
+    wave = cell("wave_height")
     swell = cell("swell_wave_height")
-    wind_sea = cell("wind_wave_height")
-    primary = combined if combined is not None else swell
-    if primary is None and wind_sea is not None and wind_sea > 0.0:
-        primary = wind_sea
     return (
-        None if primary is None else round(primary, 2),
+        None if wave is None else round(wave, 2),
         None if swell is None else round(swell, 2),
     )
 
@@ -584,13 +580,6 @@ def _build_hourly_activity(
             environment = window_context["environment"]
             inputs_used = preview.get("meta", {}).get("environment", {}).get("inputs_used", {})
             wave_snap, swell_snap = _marine_hour_chart_values(marine_hourly, day, hour)
-            if wave_snap is None and swell_snap is None:
-                w_env = environment.get("wave_height_m")
-                s_env = environment.get("swell_height_m")
-                if w_env is not None:
-                    wave_snap = round(float(w_env), 2)
-                if s_env is not None:
-                    swell_snap = round(float(s_env), 2)
             hourly_activity.append(
                 {
                     "date": day.isoformat(),

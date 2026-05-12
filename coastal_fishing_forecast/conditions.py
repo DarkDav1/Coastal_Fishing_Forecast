@@ -70,7 +70,7 @@ def _marine_url(*, lat: float, lon: float, start_date: date, end_date: date) -> 
         "longitude": lon,
         "start_date": start_date.isoformat(),
         "end_date": end_date.isoformat(),
-        "hourly": "wave_height,wave_period,swell_wave_height,swell_wave_direction,wind_wave_height,sea_surface_temperature,sea_level_height_msl",
+        "hourly": "wave_height,wave_period,swell_wave_height,swell_wave_direction,sea_surface_temperature,sea_level_height_msl",
         "timezone": "Australia/Hobart",
         "cell_selection": "sea",
     }
