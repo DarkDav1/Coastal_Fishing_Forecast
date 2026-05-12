@@ -70,6 +70,12 @@ def _parse_datetime(value: str) -> datetime:
     return parsed
 
 
+def _to_hobart(dt: datetime) -> datetime:
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=DEFAULT_TIMEZONE)
+    return dt.astimezone(DEFAULT_TIMEZONE)
+
+
 def _safe_float(value: Any) -> float | None:
     if value is None:
         return None
@@ -119,25 +125,47 @@ def _values_for_window(hourly: Mapping[str, list[Any]], key: str, day: date, win
     return values
 
 
-def _marine_hour_scalar(
+def _marine_hour_chart_values(
     marine_hourly: Mapping[str, list[Any]],
     day: date,
     hour: int,
-    key: str,
-) -> float | None:
-    """One Open-Meteo marine timestep (used for hourly wave/swell chart points)."""
-    day_prefix = day.isoformat()
+) -> tuple[float | None, float | None]:
+    """Return (primary_sea_height_m, swell_height_m) for the wave chart at Hobart-local (day, hour).
+
+    Primary prefers Open-Meteo ``wave_height`` (combined sea state), then ``swell_wave_height``,
+    then non-zero ``wind_wave_height`` so sheltered estuary cells still get a drawable series.
+    """
     times = marine_hourly.get("time", [])
-    series = marine_hourly.get(key, [])
+    if not isinstance(times, list):
+        return None, None
+    idx_match: int | None = None
     for idx, timestamp in enumerate(times):
-        if not str(timestamp).startswith(day_prefix):
+        try:
+            local = _to_hobart(_parse_datetime(str(timestamp)))
+        except ValueError:
             continue
-        if _parse_hour(str(timestamp)) != hour:
-            continue
-        if idx >= len(series):
+        if local.date() == day and local.hour == hour:
+            idx_match = idx
+            break
+    if idx_match is None:
+        return None, None
+
+    def cell(key: str) -> float | None:
+        series = marine_hourly.get(key)
+        if not isinstance(series, list) or idx_match >= len(series):
             return None
-        return _safe_float(series[idx])
-    return None
+        return _safe_float(series[idx_match])
+
+    combined = cell("wave_height")
+    swell = cell("swell_wave_height")
+    wind_sea = cell("wind_wave_height")
+    primary = combined if combined is not None else swell
+    if primary is None and wind_sea is not None and wind_sea > 0.0:
+        primary = wind_sea
+    return (
+        None if primary is None else round(primary, 2),
+        None if swell is None else round(swell, 2),
+    )
 
 
 def _daily_value(daily: Mapping[str, list[Any]], day: date, key: str) -> Any:
@@ -555,8 +583,14 @@ def _build_hourly_activity(
             recommendation = preview.get("overall_recommendation") or {}
             environment = window_context["environment"]
             inputs_used = preview.get("meta", {}).get("environment", {}).get("inputs_used", {})
-            wave_snap = _marine_hour_scalar(marine_hourly, day, hour, "wave_height")
-            swell_snap = _marine_hour_scalar(marine_hourly, day, hour, "swell_wave_height")
+            wave_snap, swell_snap = _marine_hour_chart_values(marine_hourly, day, hour)
+            if wave_snap is None and swell_snap is None:
+                w_env = environment.get("wave_height_m")
+                s_env = environment.get("swell_height_m")
+                if w_env is not None:
+                    wave_snap = round(float(w_env), 2)
+                if s_env is not None:
+                    swell_snap = round(float(s_env), 2)
             hourly_activity.append(
                 {
                     "date": day.isoformat(),

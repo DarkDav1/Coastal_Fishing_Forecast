@@ -83,7 +83,9 @@ const UI_TEXT = {
     tideMovementProxyNote: "This curve shows model-estimated tide movement, not local tide-table height.",
     waveHeight: "Wave height",
     waveUnavailableNote:
-      "Wave height isn’t available for this hourly series (missing marine timestep data). Tide and wind above still reflect the forecast.",
+      "Wave height isn’t available for this hourly series (marine timestep data missing or unreadable). Tide and wind above still reflect the forecast.",
+    waveWindowProxyNote:
+      "Wave heights are shown at each scored time window (hourly marine series was unavailable for this day in the API response).",
     publicPlanNote: "Public fishing access for planning the first move.",
     exactPlace: "Choose the exact place",
     noPlaceFound: "No matching place found.",
@@ -165,7 +167,9 @@ const UI_TEXT = {
     tideMovementProxyNote: "这条曲线显示的是模型估计的潮汐运动，不是本地潮汐表潮高。",
     waveHeight: "浪高",
     waveUnavailableNote:
-      "当前逐小时序列缺少浪高数据（海洋网格未返回该时间点）。上方风场与潮汐仍可使用。",
+      "当前逐小时序列读不到浪高（海洋网格数据缺失或无法解析）。上方潮汐与风场仍来自预报。",
+    waveWindowProxyNote:
+      "浪高按各评分时间窗显示（当日逐小时海洋序列在接口中不可用）。",
     publicPlanNote: "可作为规划第一步的公共钓点入口。",
     exactPlace: "选择准确地点",
     noPlaceFound: "没有找到匹配地点。",
@@ -1897,6 +1901,21 @@ type WeatherSeriesPoint = {
   label: string;
 };
 
+/** When hourly marine wave fields are empty, anchor a drawable curve on scored window swell/wave. */
+function wavePointsFromDayWindows(day: ForecastDay): WeatherSeriesPoint[] {
+  const windows = day.windows ?? [];
+  if (!windows.length) return [];
+  const points: WeatherSeriesPoint[] = [];
+  for (const w of windows) {
+    const v = coerceFiniteNumber(windowWaveHeight(w) as number | string | null | undefined);
+    if (v == null) continue;
+    const hour = representativeHour(w) ?? curveHour(w.time_window);
+    points.push({ hour, value: v, label: w.time_window ?? "" });
+  }
+  points.sort((a, b) => a.hour - b.hour);
+  return points;
+}
+
 function weatherCurvePath(points: WeatherSeriesPoint[], maxValue: number) {
   if (!points.length) return "";
   const plotted = points.map((point) => {
@@ -2070,9 +2089,18 @@ function WeatherVisualPanel({
     setActiveHour(defaultHour);
   }, [day?.date, defaultHour]);
   if (!windows.length && !hourly.length) return null;
-  const wavePoints = hourly
+  const wavePointsFromHourly = hourly
     .map((point) => ({ hour: point.hour, value: hourlyWave(point), label: point.time_window ?? "" }))
     .filter((point): point is WeatherSeriesPoint => point.value != null);
+  let wavePoints = wavePointsFromHourly;
+  let waveCurveNote: string | undefined;
+  if (wavePoints.length === 0 && hourly.length > 0 && day) {
+    const fromWindows = wavePointsFromDayWindows(day);
+    if (fromWindows.length > 0) {
+      wavePoints = fromWindows;
+      waveCurveNote = text.waveWindowProxyNote;
+    }
+  }
   const tideHeightPoints = hourly
     .map((point) => ({ hour: point.hour, value: numberOrNull(hourlyTideHeight(point)), label: point.tide_phase ?? "" }))
     .filter((point): point is WeatherSeriesPoint => point.value != null);
@@ -2106,7 +2134,14 @@ function WeatherVisualPanel({
           note={tideNote}
         />
         {wavePoints.length > 0 ? (
-          <WeatherCurve label={text.waveHeight} unit="m" points={wavePoints} selectedHour={activeHour} onSelectHour={setActiveHour} />
+          <WeatherCurve
+            label={text.waveHeight}
+            unit="m"
+            points={wavePoints}
+            selectedHour={activeHour}
+            onSelectHour={setActiveHour}
+            note={waveCurveNote}
+          />
         ) : hourly.length > 0 ? (
           <div className="weather-curve-panel weather-wave-unavailable">
             <div className="weather-curve-head">
