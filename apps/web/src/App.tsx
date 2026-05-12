@@ -1,4 +1,4 @@
-import { FormEvent, PointerEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { forecastPlace, searchForecast, searchPlaces } from "./api";
 import type { ForecastResponse, HourlyActivityPoint, PlaceCandidate, StructureFacility, WindowCard } from "./types";
 
@@ -596,6 +596,23 @@ function firstWeatherChangeNotes(day?: { windows: WindowCard[] } | null, limit =
   return out;
 }
 
+/** Backend change_notes are usually stress signals; only easing/recovery wording counts as helpful. */
+const WEATHER_TREND_RECOVERY_EN =
+  /recovering|easing|partly recovering|starting to recover|settling after|shock is easing|trend is recovering/i;
+const WEATHER_TREND_RECOVERY_ZH = /缓和|恢复|趋稳|回落趋缓|冲击减弱|正在好转/i;
+
+function partitionWeatherTrendNotes(notes: string[]): { recovery: string[]; stress: string[] } {
+  const recovery: string[] = [];
+  const stress: string[] = [];
+  for (const raw of notes) {
+    const note = raw.trim();
+    if (!note) continue;
+    if (WEATHER_TREND_RECOVERY_EN.test(note) || WEATHER_TREND_RECOVERY_ZH.test(note)) recovery.push(note);
+    else stress.push(note);
+  }
+  return { recovery, stress };
+}
+
 function dayConditionStats(day?: { windows: WindowCard[] } | null) {
   const windows = day?.windows ?? [];
   const windAvg = averageFloat(windows.map((window) => window.conditions.wind.speed_knots));
@@ -633,6 +650,38 @@ type ScoreFactorsBlocks = {
   negative: string[];
   summary?: string;
 };
+
+function dedupeStrings(items: string[]): string[] {
+  return Array.from(new Set(items.map((s) => s.trim()).filter(Boolean)));
+}
+
+/** Combine LLM bullets with rule-based fallback so empty LLM negatives do not hide real stresses. */
+function mergeScoreFactorsForDisplay(
+  llm: ScoreFactorsBlocks | null,
+  fallback: ScoreFactorsBlocks | null,
+  lang: Lang,
+  dayScore: number | null
+): ScoreFactorsBlocks | null {
+  if (!llm && !fallback) return null;
+
+  const positive = dedupeStrings([
+    ...(llm?.positive ?? []),
+    ...(!llm || llm.positive.length === 0 ? (fallback?.positive ?? []) : []),
+  ]);
+
+  let negative = dedupeStrings([...(llm?.negative ?? []), ...(fallback?.negative ?? [])]);
+
+  if (negative.length === 0 && dayScore != null && dayScore < 65) {
+    negative.push(
+      lang === "zh"
+        ? "综合条件把全天近岸窗口压在偏低区间，更需要精挑时间与点位。"
+        : "Overall conditions keep shore fishing on the modest side today—timing and spot choice matter."
+    );
+  }
+
+  const summary = llm?.summary;
+  return { positive, negative, summary };
+}
 
 /** Rule-based fallback: split tide / weather / sea into helpful vs challenging bullets. */
 function dayScoreFactorsBullets(
@@ -695,7 +744,10 @@ function dayScoreFactorsBullets(
     negative.push(lang === "zh" ? "近期天气序列波动较大。" : "Recent weather has been unstable.");
   }
 
-  if (!cold && !windy && !gusty && !rainy && !volatile) {
+  const trendNotes = firstWeatherChangeNotes(day, 5);
+  const { recovery, stress } = partitionWeatherTrendNotes(trendNotes);
+
+  if (!cold && !windy && !gusty && !rainy && !volatile && stress.length === 0) {
     positive.push(
       lang === "zh"
         ? "天气整体相对温和，没有极端低温、大风大雨或剧烈突变。"
@@ -732,24 +784,24 @@ function dayScoreFactorsBullets(
     );
   }
 
-  const trendNotes = firstWeatherChangeNotes(day, 3);
-  if (trendNotes.length > 0) {
-    const line =
+  if (recovery.length > 0) {
+    positive.push(
       lang === "zh"
-        ? `预报序列提示：${trendNotes.join("；")}。`
-        : `Forecast trend notes: ${trendNotes.join("; ")}.`;
-    if (volatile || stats.shockMax >= 1.5) {
-      negative.push(line);
-    } else {
-      positive.push(line);
-    }
+        ? `天气序列出现缓和迹象：${recovery.join("；")}。`
+        : `Weather trends hint at easing: ${recovery.join("; ")}.`
+    );
+  }
+  if (stress.length > 0) {
+    negative.push(
+      lang === "zh"
+        ? `天气序列压力信号：${stress.join("；")}。`
+        : `Weather trends add friction for consistency: ${stress.join("; ")}.`
+    );
   }
 
-  const dedupe = (items: string[]) => Array.from(new Set(items.map((s) => s.trim()).filter(Boolean)));
-
   return {
-    positive: dedupe(positive),
-    negative: dedupe(negative),
+    positive: dedupeStrings(positive),
+    negative: dedupeStrings(negative),
   };
 }
 
@@ -1376,7 +1428,10 @@ function FishingPlanCard({
     return () => controller.abort();
   }, [selectedDay, lang]);
 
-  const scoreFactorsDisplay = scoreFactorsLlm ?? scoreFactorsFallback;
+  const scoreFactorsDisplay = useMemo(
+    () => mergeScoreFactorsForDisplay(scoreFactorsLlm, scoreFactorsFallback, lang, selectedScore),
+    [scoreFactorsLlm, scoreFactorsFallback, lang, selectedScore]
+  );
 
   return (
     <section className="plan-card">
