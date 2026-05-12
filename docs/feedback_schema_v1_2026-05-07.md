@@ -98,13 +98,36 @@ When clicked, POST `/api/feedback` with the body above. The frontend can
 fire-and-forget; the server returns 201 + the stored record on success
 or 400 + `{error, message}` on validation failure.
 
-## Phase B / C (NOT part of this PR)
+## Phase B (implemented)
 
-- Phase B: `scripts/analyze_feedback.py` — read jsonl, bucket by
-  outcome, output sanity report. Off the main code path.
-- Phase C: tune `_calibrate_public_preview_score` thresholds and
-  `_stack_adjustments` constants based on empirical data. Requires
-  ≥ 50 reports, 3+ regions, 2+ weeks span before any change.
+`coastal-analyze-feedback` CLI (module:
+`coastal_fishing_forecast.feedback_analysis`) reads the jsonl and emits a
+markdown report on stdout covering:
+
+- sample size, date span, schema version
+- Phase C readiness gate (>= 50 rows, >= 3 regions, >= 14 days span)
+- outcome distribution
+- predicted-vs-actual signed deviation (mean / median / mean_abs)
+  using fixed targets: skunked=20, ok=45, decent=65, great=85
+- score-bucket sanity (do high predictions match great outcomes?)
+- breakdowns by `region`, `predicted.dominant_water_type`,
+  `predicted.safety_flag`, `predicted.combo_release`
+- reason-tag enrichment in `great` and `skunked` buckets
+
+The script is read-only; it never modifies any algorithm constants.
+
+Usage:
+
+    coastal-analyze-feedback                     # uses default path
+    coastal-analyze-feedback --path X.jsonl
+    coastal-analyze-feedback > calibration_report.md
+
+## Phase C (NOT yet implemented)
+
+Tune `_calibrate_public_preview_score` thresholds and
+`_stack_adjustments` constants based on empirical data. Requires the
+Phase C gate to pass: >= 50 reports, 3+ regions, 2+ weeks span. Each
+constant change should use a hold-out split (80 / 20) to validate.
 
 ## Migration policy
 
