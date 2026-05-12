@@ -119,6 +119,27 @@ def _values_for_window(hourly: Mapping[str, list[Any]], key: str, day: date, win
     return values
 
 
+def _marine_hour_scalar(
+    marine_hourly: Mapping[str, list[Any]],
+    day: date,
+    hour: int,
+    key: str,
+) -> float | None:
+    """Single timestep from Open-Meteo marine hourly (used for wave charts)."""
+    day_prefix = day.isoformat()
+    times = marine_hourly.get("time", [])
+    series = marine_hourly.get(key, [])
+    for idx, timestamp in enumerate(times):
+        if not str(timestamp).startswith(day_prefix):
+            continue
+        if _parse_hour(str(timestamp)) != hour:
+            continue
+        if idx >= len(series):
+            return None
+        return _safe_float(series[idx])
+    return None
+
+
 def _daily_value(daily: Mapping[str, list[Any]], day: date, key: str) -> Any:
     dates = daily.get("time", [])
     values = daily.get(key, [])
@@ -338,6 +359,8 @@ def _window_environment(
         engine_time_window = window.key
     pressure_hpa = round(_mean(_window_numeric_values(weather_hourly, "surface_pressure", weather_indices)) or 1015.0, 1)
     wave_height = _mean(_window_numeric_values(marine_hourly, "wave_height", marine_indices))
+    swell_wave_vals = _window_numeric_values(marine_hourly, "swell_wave_height", marine_indices)
+    swell_mean = _mean(swell_wave_vals)
     rain_values = _window_numeric_values(weather_hourly, "rain", weather_indices)
     precipitation_values = _window_numeric_values(weather_hourly, "precipitation", weather_indices)
     temperature_values = _window_numeric_values(weather_hourly, "temperature_2m", weather_indices)
@@ -372,7 +395,8 @@ def _window_environment(
         "recent_wind_max_12h": None
         if not _recent_numeric_values(weather_hourly, "wind_speed_10m", representative_time, 12)
         else round(max(_recent_numeric_values(weather_hourly, "wind_speed_10m", representative_time, 12)), 1),
-        "swell_height_m": round(_mean(_window_numeric_values(marine_hourly, "swell_wave_height", marine_indices)) or 1.0, 2),
+        # Engine preview still uses a conservative default when the window has no swell samples; hourly charts use raw marine snapshots instead.
+        "swell_height_m": round(swell_mean, 2) if swell_mean is not None else 1.0,
         "swell_direction_deg": None,
         "wave_height_m": None if wave_height is None else round(wave_height, 2),
         "wave_height_delta_24h": _series_delta(marine_hourly, "wave_height", representative_time, wave_height, min_age_hours=24),
@@ -532,6 +556,8 @@ def _build_hourly_activity(
             recommendation = preview.get("overall_recommendation") or {}
             environment = window_context["environment"]
             inputs_used = preview.get("meta", {}).get("environment", {}).get("inputs_used", {})
+            wave_snap = _marine_hour_scalar(marine_hourly, day, hour, "wave_height")
+            swell_snap = _marine_hour_scalar(marine_hourly, day, hour, "swell_wave_height")
             hourly_activity.append(
                 {
                     "date": day.isoformat(),
@@ -557,8 +583,8 @@ def _build_hourly_activity(
                     "wind_speed_knots": environment.get("wind_speed_knots"),
                     "wind_direction_deg": environment.get("wind_direction_deg"),
                     "wind_gust_knots": inputs_used.get("wind_gust_knots"),
-                    "wave_height_m": inputs_used.get("wave_height_m"),
-                    "swell_height_m": environment.get("swell_height_m"),
+                    "wave_height_m": None if wave_snap is None else round(wave_snap, 2),
+                    "swell_height_m": None if swell_snap is None else round(swell_snap, 2),
                     "rain_mm": inputs_used.get("rain_mm"),
                     "precipitation_mm": inputs_used.get("precipitation_mm"),
                     "temperature_c": inputs_used.get("temperature_c"),
