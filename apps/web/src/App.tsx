@@ -53,7 +53,8 @@ const UI_TEXT = {
     unsupportedAdvice: "Move the search to coastal or tidal water.",
     fishActivity24h: "24-hour fish activity",
     historyForecast: "30-day history + forecast",
-    dragDates: "Drag sideways to review daily trip scores",
+    dragDates: "Drag sideways to review each day’s peak window score",
+    dateStripPeakLabel: "peak",
     today: "Today",
     score: "score",
     scoreLayers: "Forecast score layers",
@@ -129,7 +130,8 @@ const UI_TEXT = {
     unsupportedAdvice: "请把搜索点移到海岸或潮汐水域。",
     fishActivity24h: "24 小时鱼情活跃度",
     historyForecast: "30 天历史 + 预测",
-    dragDates: "横向拖动查看每日评分",
+    dragDates: "横向拖动查看每日最佳窗口评分",
+    dateStripPeakLabel: "最高",
     today: "今天",
     score: "评分",
     scoreLayers: "评分拆分",
@@ -540,6 +542,17 @@ function dailyScoreSummary(day?: { best_window: WindowCard | null; windows: Wind
 
 function dayScore(day?: { best_window: WindowCard | null; windows: WindowCard[] } | null) {
   return dailyScoreSummary(day).weighted;
+}
+
+/** Highest window `score` for the date strip (better perceived “best moment that day”). */
+function dayMaxWindowScore(day?: { best_window: WindowCard | null; windows: WindowCard[] } | null): number | null {
+  const windows = day?.windows ?? [];
+  const scores = windows
+    .map((w) => w.score)
+    .filter((s): s is number => typeof s === "number" && Number.isFinite(s));
+  if (scores.length) return Math.round(Math.max(...scores));
+  const fallback = selectedWindowScore(day?.best_window ?? null);
+  return fallback != null ? Math.round(fallback) : null;
 }
 
 function daySummaryText(day?: { best_window: WindowCard | null; windows: WindowCard[] } | null, lang: Lang = "en") {
@@ -1578,8 +1591,8 @@ function FishingCurve({
               type="button"
             >
               {day.date === todayIsoDate() ? <em>{text.today}</em> : <span>{formatDateChip(day.date, lang)}</span>}
-              <b>{dayScore(day) ?? "--"}</b>
-              <small>{lang === "zh" ? "平均" : "avg score"}</small>
+              <b>{dayMaxWindowScore(day) ?? "--"}</b>
+              <small>{text.dateStripPeakLabel}</small>
             </button>
           ))}
           </div>
