@@ -136,13 +136,20 @@ def build_score_factors_payload(
 
 
 def explain_score_factors(payload: Mapping[str, Any]) -> dict[str, Any]:
-    """Returns paragraph + provider; on failure returns empty paragraph for client fallback."""
+    """Returns bullet lists + optional summary; on failure returns empty lists for client fallback."""
 
     try:
         result = generate_github_models_score_factors_text(payload)
-        return {"paragraph": result["paragraph"], "provider": "github_models"}
+        merged = dict(result)
+        merged["provider"] = "github_models"
+        return merged
     except (GitHubModelsError, OSError, TimeoutError, ValueError, URLError):
-        return {"paragraph": "", "provider": "fallback"}
+        return {
+            "positive_factors": [],
+            "negative_factors": [],
+            "summary": "",
+            "provider": "fallback",
+        }
 
 
 def main() -> None:
@@ -150,17 +157,48 @@ def main() -> None:
 
     raw = sys.stdin.read()
     if not raw.strip():
-        print(json.dumps({"paragraph": "", "provider": "fallback", "error": "empty_stdin"}))
+        print(
+            json.dumps(
+                {
+                    "positive_factors": [],
+                    "negative_factors": [],
+                    "summary": "",
+                    "provider": "fallback",
+                    "error": "empty_stdin",
+                }
+            )
+        )
         return
     try:
         data = json.loads(raw)
     except json.JSONDecodeError as exc:
-        print(json.dumps({"paragraph": "", "provider": "fallback", "error": "invalid_json", "message": str(exc)}))
+        print(
+            json.dumps(
+                {
+                    "positive_factors": [],
+                    "negative_factors": [],
+                    "summary": "",
+                    "provider": "fallback",
+                    "error": "invalid_json",
+                    "message": str(exc),
+                }
+            )
+        )
         return
 
     windows = data.get("windows")
     if not isinstance(windows, list):
-        print(json.dumps({"paragraph": "", "provider": "fallback", "error": "missing_windows"}))
+        print(
+            json.dumps(
+                {
+                    "positive_factors": [],
+                    "negative_factors": [],
+                    "summary": "",
+                    "provider": "fallback",
+                    "error": "missing_windows",
+                }
+            )
+        )
         return
 
     lang = data.get("lang") if isinstance(data.get("lang"), str) else "en"

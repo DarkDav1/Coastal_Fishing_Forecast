@@ -71,6 +71,9 @@ const UI_TEXT = {
     firstMove: "Today’s move",
     scoreFactors: "Score factors",
     scoreFactorsGenerating: "Generating explanation…",
+    scoreFactorsPositive: "What's helping",
+    scoreFactorsNegative: "What's challenging",
+    scoreFactorsOfflineNote: "Offline summary from tide, wind, and waves (connect GitHub token on the API for AI wording).",
     backup: "Backup",
     weatherVisual: "Weather visual",
     windTideWaves: "Wind, Tide & Waves",
@@ -149,6 +152,9 @@ const UI_TEXT = {
     firstMove: "今日建议",
     scoreFactors: "分数原因",
     scoreFactorsGenerating: "正在生成说明…",
+    scoreFactorsPositive: "有利因素",
+    scoreFactorsNegative: "不利因素",
+    scoreFactorsOfflineNote: "以下为潮水、风、浪等字段的规则归纳（API 配置 GITHUB_TOKEN 后可使用 AI 话术）。",
     backup: "备选方案",
     weatherVisual: "天气可视化",
     windTideWaves: "风、潮汐与浪况",
@@ -624,86 +630,133 @@ function fishIndexMeaning(summary: ReturnType<typeof dailyScoreSummary>, lang: L
   return "Fish index reflects bite activity and near-shore presence; today's fish signal is weak.";
 }
 
-function dayScoreFactorText(day?: { best_window: WindowCard | null; windows: WindowCard[] } | null, lang: Lang = "en") {
+type ScoreFactorsBlocks = {
+  positive: string[];
+  negative: string[];
+  summary?: string;
+};
+
+/** Rule-based fallback: split tide / weather / sea into helpful vs challenging bullets. */
+function dayScoreFactorsBullets(
+  day?: { best_window: WindowCard | null; windows: WindowCard[] } | null,
+  lang: Lang = "en"
+): ScoreFactorsBlocks | null {
   const summary = dailyScoreSummary(day);
+  if (summary.weighted == null) return null;
+
   const stats = dayConditionStats(day);
-  if (summary.weighted == null) return lang === "zh" ? "当前数据不足，暂时无法用天气和海况说明这一天。" : "There is not enough tide and weather data yet to describe this day.";
+  const positive: string[] = [];
+  const negative: string[] = [];
 
-  const intro =
-    lang === "zh"
-      ? "从潮水、天气和海面状况来看："
-      : "Looking at tide, weather, and sea state for this day:";
-
-  const tidePart =
-    stats.tideMovementMax >= 0.18
-      ? (lang === "zh"
-          ? "潮水动静比较明显，水体交换活跃，通常更有利于近岸觅食节奏。"
-          : "Tide movement is clearly felt—water is exchanging well, which usually helps nearshore feeding.")
-      : stats.tideMovementMax >= 0.08
-        ? (lang === "zh"
-            ? "潮水动静中等，有一定水流，但算不上大潮或急流。"
-            : "Tide movement is moderate—there is flow, but it is not a strong spring-tide or ripping stage.")
-        : (lang === "zh"
-            ? "潮水整体偏弱，水体交换有限，近岸条件更难被潮水「带起来」。"
-            : "Tide flow is on the weak side, so water movement offers less help along the shore.");
-
-  const weatherFactors = [
-    stats.temperatureAvg != null && stats.temperatureAvg < 9 ? (lang === "zh" ? "气温偏低" : "cool air") : null,
-    stats.windAvg != null && stats.windAvg > 16 ? (lang === "zh" ? "平均风力偏大" : "stronger steady wind") : null,
-    stats.gustMax > 24 ? (lang === "zh" ? "阵风偏强" : "sharp gusts") : null,
-    stats.rainTotal >= 2 ? (lang === "zh" ? "有降雨" : "rain") : null,
-    stats.shockMax >= 2 ? (lang === "zh" ? "近期天气波动较大" : "recent weather swings") : null
-  ].filter(Boolean);
-
-  let weatherPart: string;
-  if (weatherFactors.length >= 2) {
-    weatherPart =
+  if (stats.tideMovementMax >= 0.18) {
+    positive.push(
       lang === "zh"
-        ? `天气方面，${weatherFactors.slice(0, 3).join("、")}叠加，体感与抛投都会吃力一些。`
-        : `On land and wind, ${weatherFactors.slice(0, 3).join(", ")} stack up—comfort and casting get harder.`;
-  } else if (weatherFactors.length === 1) {
-    weatherPart =
+        ? "潮水交换较活跃，近岸水体更新更明显。"
+        : "Tide movement is clearly felt—water exchanges well near shore."
+    );
+  } else if (stats.tideMovementMax >= 0.08) {
+    positive.push(
       lang === "zh"
-        ? `天气方面以「${weatherFactors[0]}」为主，需要留意对线组和站位的影响。`
-        : `Weather-wise, ${weatherFactors[0]} stands out—worth adjusting tackle and where you stand.`;
+        ? "有一定潮水流速，水体在中等程度上流动。"
+        : "There is moderate tidal flow—enough water movement to notice."
+    );
   } else {
-    weatherPart =
+    negative.push(
       lang === "zh"
-        ? "天气整体相对温和，没有明显的低温、大风大雨或剧烈阴晴突变。"
-        : "Weather stays relatively mild—no standout cold, heavy rain, or volatile swings.";
+        ? "潮水整体偏弱，水流带动力不足。"
+        : "Tide flow is weak, so less water movement to spark activity."
+    );
   }
 
-  const wavePart =
-    stats.waveMax >= 2
-      ? (lang === "zh"
-          ? "海面浪高偏大，近岸会比较折腾，舒适度和安全余量都要打折。"
-          : "Seas run fairly rough near shore—comfort and safety margin both suffer.")
-      : stats.waveMax >= 1.2
-        ? (lang === "zh"
-            ? "海浪中等偏高，选稍有遮蔽的位置会更舒服。"
-            : "Waves are moderately high; a bit of shelter makes the session easier.")
-        : (lang === "zh"
-            ? "浪高不大，海面相对温顺，通常不会单靠浪况把你劝退。"
-            : "Waves stay modest—the sea state alone is unlikely to be the main reason to stay home.");
+  if (stats.tideRangeAvg != null && stats.tideRangeAvg >= 0.65) {
+    positive.push(
+      lang === "zh"
+        ? "潮差相对可观，潮水进退更有存在感。"
+        : "Tidal range is reasonably wide, so highs and lows matter more."
+    );
+  }
+
+  const cold = stats.temperatureAvg != null && stats.temperatureAvg < 9;
+  const windy = stats.windAvg != null && stats.windAvg > 16;
+  const gusty = stats.gustMax > 24;
+  const rainy = stats.rainTotal >= 2;
+  const volatile = stats.shockMax >= 2;
+  if (cold) {
+    negative.push(lang === "zh" ? "平均气温偏低，体感偏冷。" : "Cool air temperatures make it feel chilly.");
+  }
+  if (windy) {
+    negative.push(lang === "zh" ? "平均风力偏大，对线组和站位要求更高。" : "Steady wind is on the stronger side for casting and footing.");
+  }
+  if (gusty) {
+    negative.push(lang === "zh" ? "阵风偏强，抛投与站稳都要留心。" : "Gusts are sharp enough to affect casting and balance.");
+  }
+  if (rainy) {
+    negative.push(lang === "zh" ? "窗口期内累计降雨明显。" : "Meaningful rain across the day’s windows.");
+  }
+  if (volatile) {
+    negative.push(lang === "zh" ? "近期天气序列波动较大。" : "Recent weather has been unstable.");
+  }
+
+  if (!cold && !windy && !gusty && !rainy && !volatile) {
+    positive.push(
+      lang === "zh"
+        ? "天气整体相对温和，没有极端低温、大风大雨或剧烈突变。"
+        : "Weather is relatively mild—no extreme cold, heavy rain, or wild swings."
+    );
+  }
+
+  if (stats.waveMax >= 2) {
+    negative.push(
+      lang === "zh"
+        ? "浪高偏大，近岸折腾度与安全余量下降。"
+        : "Seas are fairly rough—comfort and safety margin drop near shore."
+    );
+  } else if (stats.waveMax >= 1.2) {
+    negative.push(
+      lang === "zh"
+        ? "海浪中等偏高，有遮蔽的位置会更舒服。"
+        : "Waves run moderately high—sheltered spots are easier."
+    );
+  } else {
+    positive.push(
+      lang === "zh"
+        ? "浪高不大，海面整体相对温顺。"
+        : "Waves stay modest—the sea state is unlikely to be the main blocker."
+    );
+  }
 
   const phases = stats.tidePhases.filter((p): p is string => typeof p === "string" && Boolean(p));
-  const phaseTail =
-    phases.length > 0
-      ? lang === "zh"
-        ? `各窗口涉及的潮相包括：${phases.join("、")}。`
-        : `Tide phases shown across the day’s windows include: ${phases.join(", ")}.`
-      : "";
+  if (phases.length > 0) {
+    positive.push(
+      lang === "zh"
+        ? `各时段潮相包括：${phases.join("、")}。`
+        : `Tide phases across windows include: ${phases.join(", ")}.`
+    );
+  }
 
-  const trendNotes = firstWeatherChangeNotes(day, 2);
-  const trendTail =
-    trendNotes.length > 0
-      ? lang === "zh"
-        ? `天气序列上的提示包括：${trendNotes.join("；")}。`
-        : `Weather trend notes for this day include: ${trendNotes.join("; ")}.`
-      : "";
+  const trendNotes = firstWeatherChangeNotes(day, 3);
+  if (trendNotes.length > 0) {
+    const line =
+      lang === "zh"
+        ? `预报序列提示：${trendNotes.join("；")}。`
+        : `Forecast trend notes: ${trendNotes.join("; ")}.`;
+    if (volatile || stats.shockMax >= 1.5) {
+      negative.push(line);
+    } else {
+      positive.push(line);
+    }
+  }
 
-  const sep = lang === "zh" ? "" : " ";
-  return [intro, tidePart, weatherPart, wavePart, phaseTail, trendTail].filter(Boolean).join(sep);
+  const dedupe = (items: string[]) => Array.from(new Set(items.map((s) => s.trim()).filter(Boolean)));
+
+  return {
+    positive: dedupe(positive),
+    negative: dedupe(negative),
+    summary:
+      lang === "zh"
+        ? "以上为基于当日各时间窗口环境字段的简要归纳（未连接 AI 时）。"
+        : "Quick summary from the day’s window data (shown when AI is unavailable).",
+  };
 }
 
 function plainWindowLabel(value?: string | null, lang: Lang = "en") {
@@ -1274,19 +1327,22 @@ function FishingPlanCard({
   const selectedScore = dayScore(selectedDay);
   const selectedLabel = recommendationLabel(selectedScore);
   const tone = scoreTone(selectedLabel);
-  const scoreFactorsFallback = dayScoreFactorText(selectedDay, lang);
-  const [scoreFactorsLlm, setScoreFactorsLlm] = useState<string | null>(null);
+  const scoreFactorsFallback = dayScoreFactorsBullets(selectedDay, lang);
+  const [scoreFactorsLlm, setScoreFactorsLlm] = useState<ScoreFactorsBlocks | null>(null);
   const [scoreFactorsLlmLoading, setScoreFactorsLlmLoading] = useState(false);
+  const [scoreFactorsProvider, setScoreFactorsProvider] = useState<string | null>(null);
 
   useEffect(() => {
     if (!selectedDay?.windows?.length) {
       setScoreFactorsLlm(null);
+      setScoreFactorsProvider(null);
       setScoreFactorsLlmLoading(false);
       return;
     }
     const controller = new AbortController();
     setScoreFactorsLlmLoading(true);
     setScoreFactorsLlm(null);
+    setScoreFactorsProvider(null);
     fetch("/api/score-factors", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -1298,11 +1354,30 @@ function FishingPlanCard({
       signal: controller.signal,
     })
       .then((res) => res.json())
-      .then((payload: { paragraph?: string }) => {
-        if (controller.signal.aborted) return;
-        const raw = typeof payload.paragraph === "string" ? payload.paragraph.trim() : "";
-        setScoreFactorsLlm(raw.length ? raw : null);
-      })
+      .then(
+        (payload: {
+          positive_factors?: string[];
+          negative_factors?: string[];
+          summary?: string;
+          provider?: string;
+        }) => {
+          if (controller.signal.aborted) return;
+          const pos = Array.isArray(payload.positive_factors)
+            ? payload.positive_factors.filter((s): s is string => typeof s === "string").map((s) => s.trim()).filter(Boolean)
+            : [];
+          const neg = Array.isArray(payload.negative_factors)
+            ? payload.negative_factors.filter((s): s is string => typeof s === "string").map((s) => s.trim()).filter(Boolean)
+            : [];
+          setScoreFactorsProvider(typeof payload.provider === "string" ? payload.provider : null);
+          if (!pos.length && !neg.length) {
+            setScoreFactorsLlm(null);
+            return;
+          }
+          const sum =
+            typeof payload.summary === "string" && payload.summary.trim().length > 0 ? payload.summary.trim() : undefined;
+          setScoreFactorsLlm({ positive: pos, negative: neg, summary: sum });
+        }
+      )
       .catch(() => {
         if (!controller.signal.aborted) setScoreFactorsLlm(null);
       })
@@ -1312,9 +1387,7 @@ function FishingPlanCard({
     return () => controller.abort();
   }, [selectedDay, lang]);
 
-  const scoreFactorsDisplay = scoreFactorsLlmLoading
-    ? text.scoreFactorsGenerating
-    : scoreFactorsLlm ?? scoreFactorsFallback;
+  const scoreFactorsDisplay = scoreFactorsLlm ?? scoreFactorsFallback;
 
   return (
     <section className="plan-card">
@@ -1334,7 +1407,46 @@ function FishingPlanCard({
       <DayOverviewPanel day={selectedDay} lang={lang} />
       <div className="action-block primary score-factor-copy">
         <span>{text.scoreFactors}</span>
-        <p>{scoreFactorsDisplay}</p>
+        {scoreFactorsLlmLoading ? (
+          <p className="score-factor-loading">{text.scoreFactorsGenerating}</p>
+        ) : scoreFactorsDisplay ? (
+          <>
+            <div className="score-factor-lists">
+              <div className="score-factor-col score-factor-positive">
+                <h4>{text.scoreFactorsPositive}</h4>
+                {scoreFactorsDisplay.positive.length ? (
+                  <ul>
+                    {scoreFactorsDisplay.positive.map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="score-factor-empty">{lang === "zh" ? "（无明显加分项）" : "(No standout positives.)"}</p>
+                )}
+              </div>
+              <div className="score-factor-col score-factor-negative">
+                <h4>{text.scoreFactorsNegative}</h4>
+                {scoreFactorsDisplay.negative.length ? (
+                  <ul>
+                    {scoreFactorsDisplay.negative.map((line) => (
+                      <li key={line}>{line}</li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="score-factor-empty">{lang === "zh" ? "（无明显扣分项）" : "(No major negatives.)"}</p>
+                )}
+              </div>
+            </div>
+            {scoreFactorsDisplay.summary ? (
+              <p className="score-factor-summary">{scoreFactorsDisplay.summary}</p>
+            ) : null}
+            {!scoreFactorsLlm && scoreFactorsProvider !== "github_models" ? (
+              <p className="score-factor-offline-note">{text.scoreFactorsOfflineNote}</p>
+            ) : null}
+          </>
+        ) : (
+          <p>{lang === "zh" ? "当前数据不足。" : "Not enough data yet."}</p>
+        )}
       </div>
     </section>
   );

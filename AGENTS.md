@@ -36,4 +36,4 @@ Coastal Fishing Forecast — a Python engine + React/TypeScript web frontend for
 - The API server (`api-server.mjs`) hardcodes paths to `.venv/bin/coastal-*` from the repo root. The Python venv **must** be at `/workspace/.venv/`.
 - The first `search-forecast` API call can take ~25s because it fetches live weather/tide data from Open-Meteo + Nominatim. Subsequent calls are cached (~5min TTL).
 - Optional API keys (`TIDESATLAS_API_KEY`, `MAPBOX_ACCESS_TOKEN`, `GITHUB_TOKEN`) enhance functionality but the app works without them using free data sources.
-- **`POST /api/score-factors`** (Score factors paragraph): uses GitHub Models when **`GITHUB_TOKEN`** is set (same stack as the planner). Without a token, the CLI returns an empty paragraph and the UI falls back to the rule-based tide/weather copy in `App.tsx`.
+- **`POST /api/score-factors`** (Score factors): JSON body `{ lang, date, windows }`. Calls GitHub Models when **`GITHUB_TOKEN`** is set. Response `{ positive_factors: string[], negative_factors: string[], summary?: string, provider }`. Empty lists + `provider: fallback` → UI uses rule-based bullets in `dayScoreFactorsBullets()` in `App.tsx`.

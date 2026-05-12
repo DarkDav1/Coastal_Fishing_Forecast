@@ -34,15 +34,24 @@ def _planner_prompt(payload: Mapping[str, Any]) -> str:
 
 def _score_factors_prompt(payload: Mapping[str, Any]) -> str:
     return (
-        "You write ONE short paragraph for a recreational shore-fishing audience.\n"
+        "You explain shore-fishing CONDITIONS for ONE calendar day to a general audience.\n"
         "Requirements:\n"
         "- Match payload.lang: English for en, Chinese for zh.\n"
-        "- Explain tide, wind, weather comfort, and sea state using ONLY facts in the JSON "
-        "(aggregates, optional weather_change_notes, tide_phases).\n"
-        "- Do NOT mention forecast scores, numeric ratings, fish index, trip quality, formulas, "
-        "weights, algorithms, rules, tags, reason_tags, model mechanics, or how anything was calculated.\n"
-        "- Do NOT invent species, places, or conditions absent from the data.\n"
-        "- Return JSON only: {\"paragraph\": \"...\"} with paragraph length roughly 3–7 sentences.\n\n"
+        "- Split observations into helpful vs challenging factors using ONLY facts in the JSON "
+        "(aggregates, weather_change_notes, tide phases).\n"
+        "- positive_factors: bullet strings — conditions that SUPPORT going fishing or better bite windows "
+        "(clear tide movement, manageable wind, calm enough seas, mild weather, stable trends, etc.). "
+        "Use 2–5 bullets.\n"
+        "- negative_factors: bullet strings — conditions that WORK AGAINST comfort, safety, or bite "
+        "(slack tide, cold, rain, strong gusts, rough seas, volatile weather, etc.). "
+        "Use 0–5 bullets; use [] if nothing meaningful counts against the day.\n"
+        "- summary: ONE short paragraph (2–4 sentences) that ties the bullets together in plain language. "
+        "Optional only if both lists already tell the full story; prefer including it.\n"
+        "- Do NOT mention forecast scores, numeric ratings, fish index, trip quality, formulas, weights, "
+        "algorithms, rules, tags, reason_tags, or model internals.\n"
+        "- Do NOT invent species, named places, or conditions absent from the data.\n"
+        "- Return JSON only with keys: positive_factors (array of strings), negative_factors (array of strings), "
+        "summary (string).\n\n"
         f"Data:\n{json.dumps(payload, sort_keys=True, ensure_ascii=False)}"
     )
 
@@ -172,6 +181,23 @@ def generate_github_models_explanation_text(
     return parsed
 
 
+def _normalize_score_factors_response(parsed: Mapping[str, Any]) -> dict[str, Any]:
+    pos = parsed.get("positive_factors")
+    neg = parsed.get("negative_factors")
+    if not isinstance(pos, list) or not isinstance(neg, list):
+        raise GitHubModelsError("score-factors response must include positive_factors and negative_factors arrays.")
+    pos_s = [str(x).strip() for x in pos if isinstance(x, str) and str(x).strip()]
+    neg_s = [str(x).strip() for x in neg if isinstance(x, str) and str(x).strip()]
+    if not pos_s and not neg_s:
+        raise GitHubModelsError("score-factors lists are empty.")
+    summary_raw = parsed.get("summary")
+    summary = summary_raw.strip() if isinstance(summary_raw, str) else ""
+    out: dict[str, Any] = {"positive_factors": pos_s, "negative_factors": neg_s}
+    if summary:
+        out["summary"] = summary
+    return out
+
+
 def generate_github_models_score_factors_text(
     payload: Mapping[str, Any],
     *,
@@ -180,7 +206,7 @@ def generate_github_models_score_factors_text(
     endpoint: str | None = None,
     timeout_seconds: int = 25,
 ) -> dict[str, Any]:
-    """Single-paragraph score-factors copy for tide / weather / sea state (JSON {\"paragraph\": ...})."""
+    """Score-factors UI: positive/negative bullets + optional summary paragraph."""
 
     resolved_token = token or os.environ.get(GITHUB_TOKEN_ENV)
     if not resolved_token:
@@ -190,12 +216,15 @@ def generate_github_models_score_factors_text(
     resolved_endpoint = endpoint or os.environ.get(GITHUB_MODELS_ENDPOINT_ENV) or GITHUB_MODELS_ENDPOINT
     body = {
         "model": resolved_model,
-        "temperature": 0.35,
+        "temperature": 0.4,
         "response_format": {"type": "json_object"},
         "messages": [
             {
                 "role": "system",
-                "content": "You write cautious coastal fishing summaries from structured environmental facts. Return JSON only.",
+                "content": (
+                    "You write cautious coastal fishing condition summaries as bullet lists plus a brief synthesis. "
+                    "Return JSON only."
+                ),
             },
             {"role": "user", "content": _score_factors_prompt(payload)},
         ],
@@ -220,7 +249,4 @@ def generate_github_models_score_factors_text(
         raise GitHubModelsError("GitHub Models returned non-JSON score-factors content.") from exc
     if not isinstance(parsed, dict):
         raise GitHubModelsError("GitHub Models score-factors content must be a JSON object.")
-    paragraph = parsed.get("paragraph")
-    if not isinstance(paragraph, str) or not paragraph.strip():
-        raise GitHubModelsError("GitHub Models score-factors response missing paragraph.")
-    return {"paragraph": paragraph.strip()}
+    return _normalize_score_factors_response(parsed)
