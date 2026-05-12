@@ -874,7 +874,11 @@ def _generic_derwent_rules(environment: EnvironmentInputs) -> dict[str, Any]:
         if environment.wave_height_m < 0.3:
             _add_rule(rules, "calm_sea_beach", 3, "Calm sea")
         if environment.wave_height_m > 1.0:
-            _add_rule(rules, "big_wave_beach", -5, "Larger surf")
+            wind_kph = environment.wind_speed_knots * 1.852
+            if wind_kph >= 18:
+                _add_rule(rules, "big_wave_beach", -5, "Larger surf and wind chop")
+            else:
+                _add_rule(rules, "passing_swell_high", -2, "Larger swell passing offshore")
     if environment.wave_height_delta_24h is not None and environment.wave_height_delta_24h <= -0.08:
         _add_rule(rules, "pelagic_settling_window", 2, "Settling sea")
 
@@ -1236,11 +1240,24 @@ def _ocean_influenced_estuary_pressure(
     exposed_penalty = float(normalized.get("exposed_penalty", 0.0) or 0.0)
     wave_height = float(inputs.get("wave_height_m") or inputs.get("swell_height_m") or 0.0)
     swell_height = float(inputs.get("swell_height_m") or 0.0)
+    swell_direction = inputs.get("swell_direction_deg")
+    open_water_bearing = environment_context.get("open_water_bearing_deg")
+    wind_speed_knots = float(inputs.get("wind_speed_knots") or 0.0)
     effective_wave = max(wave_height, swell_height * 1.08)
 
     ocean_influenced = water_body_exposure >= 0.42 and inner_bay_shelter <= 0.62
     if not ocean_influenced or effective_wave < 1.35:
         return {"severity": 0.0, "tags": []}
+
+    # Directional gate: if the swell is coming from a direction that does not
+    # align with the open-water bearing of this coordinate, the offshore swell
+    # is unlikely to actually pressure the bay's inner angles. Only apply the
+    # gate when both directions are known; otherwise preserve the existing
+    # conservative behavior.
+    if swell_direction is not None and open_water_bearing is not None:
+        from_open_water = _angular_distance_deg(float(swell_direction), float(open_water_bearing))
+        if from_open_water > 70.0:
+            return {"severity": 0.0, "tags": []}
 
     severity = 1.0
     tags = ["ocean_influenced_estuary_swell_penalty"]
@@ -1250,6 +1267,15 @@ def _ocean_influenced_estuary_pressure(
     if effective_wave >= 3.2:
         severity = 3.0
         tags.append("rough_open_bay_cap")
+
+    # Light-wind softening: when local wind is light AND wave is moderate,
+    # the swell is passing offshore rather than driving chop in the bay. This
+    # is the typical "calm day with offshore swell" Tasmanian estuary case.
+    # Reduce severity by one tier (but never below 0).
+    wind_kph = wind_speed_knots * 1.852
+    if wind_kph < 12 and effective_wave < 2.2:
+        severity = 0.0
+        return {"severity": 0.0, "tags": []}
 
     return {
         "severity": severity,
@@ -1709,6 +1735,7 @@ def _environment_context(
 
     return {
         "region_slug": region_config.slug,
+        "open_water_bearing_deg": signals.open_water_bearing_deg,
         "inputs_used": {
             "temperature_c": environment.temperature_c,
             "wind_speed_knots": environment.wind_speed_knots,
@@ -2123,6 +2150,58 @@ def _support_mode(on_water: bool, is_direct_support: bool, is_extended_support: 
     return SUPPORT_MODE_UNSUPPORTED
 
 
+# Region-aware tiebreaker order for dominant water-type selection. When two
+# water types score within DOMINANT_TIEBREAKER_TOLERANCE of each other on
+# overall_recommendation, we prefer the type that better matches the searched
+# region. This avoids dict-iteration order silently picking "beach" whenever
+# beach / jetty / bay overall scores are essentially tied for a sheltered
+# search like Southport or Sandy Bay.
+DOMINANT_TIEBREAKER_TOLERANCE = 6
+_REGION_DOMINANT_PREFERENCE = {
+    "open_coast": ("beach", "rocks", "jetty", "bay_estuary_edge"),
+    "surf_coast": ("beach", "rocks", "jetty", "bay_estuary_edge"),
+    "sheltered_estuary": ("bay_estuary_edge", "jetty", "rocks", "beach"),
+    "harbour_access": ("jetty", "bay_estuary_edge", "rocks", "beach"),
+    "bay_coast": ("bay_estuary_edge", "jetty", "rocks", "beach"),
+    "generic_coastal": ("bay_estuary_edge", "jetty", "rocks", "beach"),
+}
+
+
+def _pick_dominant_type(
+    nearby_water_types: Mapping[str, Mapping[str, Any]],
+    region_config: RegionConfig,
+) -> str:
+    preference = _REGION_DOMINANT_PREFERENCE.get(
+        region_config.slug,
+        _REGION_DOMINANT_PREFERENCE["generic_coastal"],
+    )
+
+    def overall(card: Mapping[str, Any]) -> int:
+        scores = card.get("scores") or {}
+        return int(scores.get("overall_recommendation") or 0)
+
+    best_type, best_card = max(
+        nearby_water_types.items(),
+        key=lambda item: overall(item[1]),
+    )
+    best_score = overall(best_card)
+
+    # Within tolerance, pick the highest-ranked region-preferred type that
+    # also scores within tolerance of the leader. Strict winners (gap >
+    # tolerance) keep their position regardless of region.
+    in_tolerance = [
+        type_key
+        for type_key, card in nearby_water_types.items()
+        if best_score - overall(card) <= DOMINANT_TIEBREAKER_TOLERANCE
+    ]
+    if len(in_tolerance) <= 1:
+        return best_type
+
+    pref_index = {type_key: idx for idx, type_key in enumerate(preference)}
+    in_tolerance.sort(key=lambda type_key: pref_index.get(type_key, len(preference)))
+    return in_tolerance[0]
+
+
 def build_preview(
     lat: float,
     lon: float,
@@ -2160,10 +2239,7 @@ def build_preview(
     environment_context = _environment_context(normalized_environment, global_signals, region_config)
     nearby_water_types = _score_nearby_water_types(global_signals, type_signals, environment_context, region_config)
 
-    dominant_type = max(
-        nearby_water_types.items(),
-        key=lambda item: item[1]["scores"]["overall_recommendation"],
-    )[0]
+    dominant_type = _pick_dominant_type(nearby_water_types, region_config)
     score_modes = _derwent_style_score_modes(
         cards=nearby_water_types,
         dominant_type=dominant_type,

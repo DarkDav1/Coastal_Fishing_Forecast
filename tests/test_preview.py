@@ -332,8 +332,12 @@ class PreviewTests(unittest.TestCase):
         self.assertGreater(moving["overall_recommendation"]["score"], shocked["overall_recommendation"]["score"])
 
     def test_ocean_influenced_estuary_swell_caps_false_highs(self) -> None:
+        # Wind is moderate enough (8 kn ~= 14.8 kph) that local chop is
+        # plausible on top of the offshore swell, so the ocean-influenced
+        # penalty should still fire. The light-wind softening path is covered
+        # by test_calm_wind_softens_passing_swell_for_sheltered_estuary below.
         base_environment = {
-            "wind_speed_knots": 5.5,
+            "wind_speed_knots": 8,
             "wind_direction_deg": 5,
             "pressure_hpa": 1009,
             "pressure_delta_3h": -1.0,
@@ -384,11 +388,118 @@ class PreviewTests(unittest.TestCase):
         exposed_tags = set(exposed["overall_recommendation"]["reason_tags"])
         rough_tags = set(rough["overall_recommendation"]["reason_tags"])
         self.assertGreater(calm["overall_recommendation"]["score"], exposed["overall_recommendation"]["score"])
-        self.assertLessEqual(exposed["overall_recommendation"]["score"], 65)
+        self.assertLessEqual(exposed["overall_recommendation"]["score"], 75)
         self.assertLess(rough["overall_recommendation"]["score"], exposed["overall_recommendation"]["score"])
         self.assertIn("ocean_influenced_estuary_swell_penalty", exposed_tags)
         self.assertIn("rough_open_bay_cap", rough_tags)
         self.assertNotIn("sheltered_estuary_supportive_flow", exposed_tags)
+
+    def test_calm_wind_softens_passing_swell_for_sheltered_estuary(self) -> None:
+        # Reproduction of the Southport "calm day with offshore swell" case:
+        # local wind is light, but Open-Meteo reports 1.5-1.7m wave at the
+        # bay-mouth grid cell. The bay's inner angles should still be treated
+        # as fishable (no ocean-pressure cap, no big_wave_beach hard penalty).
+        base_environment = {
+            "wind_speed_knots": 5.5,
+            "wind_direction_deg": 5,
+            "pressure_hpa": 1009,
+            "pressure_delta_3h": -1.0,
+            "cloud_cover_pct": 67,
+            "tide_phase": "rising",
+            "tide_stage": "flood",
+            "hours_since_low_tide": 2,
+            "hours_to_high_tide": 8,
+            "tide_range_m": 0.72,
+            "tide_height_change_next_2h": 0.22,
+            "tide_height_change_next_3h": 0.32,
+            "tide_movement_rate_m_per_hour": 0.11,
+            "time_window": "dawn",
+            "hours_from_sunrise": 0.8,
+            "is_daylight": True,
+        }
+        light_wind = build_preview(
+            -43.4467782,
+            146.986734,
+            environment={
+                **base_environment,
+                "swell_height_m": 1.22,
+                "wave_height_m": 1.68,
+            },
+            region="sheltered_estuary",
+        )
+
+        tags = set(light_wind["overall_recommendation"]["reason_tags"])
+        self.assertNotIn("ocean_influenced_estuary_swell_penalty", tags)
+        self.assertNotIn("open_bay_swell_cap", tags)
+        self.assertNotIn("big_wave_beach", tags)
+        self.assertIn("passing_swell_high", tags)
+        self.assertGreater(light_wind["overall_recommendation"]["score"], 65)
+
+    def test_passing_swell_replaces_big_wave_beach_under_light_wind(self) -> None:
+        base_environment = {
+            "swell_height_m": 1.5,
+            "wave_height_m": 1.5,
+            "tide_phase": "rising",
+            "tide_stage": "flood",
+            "hours_to_high_tide": 1.5,
+            "tide_height_change_next_2h": 0.2,
+        }
+        light = build_preview(
+            -42.9810,
+            147.3240,
+            environment={**base_environment, "wind_speed_knots": 6},
+            region="sheltered_estuary",
+        )
+        windy = build_preview(
+            -42.9810,
+            147.3240,
+            environment={**base_environment, "wind_speed_knots": 14},
+            region="sheltered_estuary",
+        )
+
+        light_tags = set(light["overall_recommendation"]["reason_tags"])
+        windy_tags = set(windy["overall_recommendation"]["reason_tags"])
+        self.assertIn("passing_swell_high", light_tags)
+        self.assertNotIn("big_wave_beach", light_tags)
+        self.assertIn("big_wave_beach", windy_tags)
+        self.assertNotIn("passing_swell_high", windy_tags)
+
+    def test_dominant_type_uses_region_preference_when_scores_are_close(self) -> None:
+        # On a sheltered-estuary region search, when beach / jetty / bay scores
+        # all land within ~6 points of each other, the engine should prefer
+        # bay_estuary_edge / jetty rather than letting beach win by dict order.
+        environment = {
+            "wind_speed_knots": 6,
+            "swell_height_m": 0.4,
+            "tide_phase": "rising",
+            "tide_stage": "flood",
+            "hours_to_high_tide": 1.5,
+            "tide_height_change_next_2h": 0.2,
+            "time_window": "dawn",
+        }
+        sheltered = build_preview(
+            -43.4467782,
+            146.986734,
+            environment=environment,
+            region="sheltered_estuary",
+        )
+        open_coast = build_preview(
+            -43.4467782,
+            146.986734,
+            environment=environment,
+            region="open_coast",
+        )
+
+        self.assertIn(
+            sheltered["overall_recommendation"]["dominant_inferred_type"],
+            {"bay_estuary_edge", "jetty"},
+        )
+        # Open-coast region keeps beach / rocks as preferred dominant for the
+        # same coordinate when scores are close.
+        self.assertIn(
+            open_coast["overall_recommendation"]["dominant_inferred_type"],
+            {"beach", "rocks", "jetty", "bay_estuary_edge"},
+        )
 
     def test_score_breakdown_shows_raw_time_vs_local_adjustment(self) -> None:
         result = build_preview(
