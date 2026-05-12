@@ -62,6 +62,18 @@ def _fixture_conditions() -> dict:
     }
 
 
+def _fixture_conditions_varying_hourly_waves() -> dict:
+    """Same as _fixture_conditions but wave/swell heights change each hour (chart fidelity)."""
+    base = _fixture_conditions()
+    times = base["marine_hourly"]["time"]
+    wave_height = [round(0.5 + index * 0.01, 2) for index in range(len(times))]
+    swell_height = [round(0.4 + index * 0.005, 2) for index in range(len(times))]
+    marine = dict(base["marine_hourly"])
+    marine["wave_height"] = wave_height
+    marine["swell_wave_height"] = swell_height
+    return {**base, "marine_hourly": marine}
+
+
 def _fixture_conditions_with_weather_lookback() -> dict:
     times = []
     pressure = []
@@ -320,6 +332,22 @@ class ForecastTests(unittest.TestCase):
         self.assertIn("recent_weather_shock", afternoon[13]["rule_tags"])
         window_env = result["windows"][0]["environment"]
         self.assertLessEqual(window_env["temperature_drop_from_recent_72h_peak"], -5.0)
+
+    def test_hourly_wave_curve_reads_marine_hourly_timesteps(self) -> None:
+        result = build_range_forecast(
+            -41.2530,
+            148.3060,
+            start_date="2026-04-20",
+            end_date="2026-04-20",
+            region="open_coast",
+            windows=("morning",),
+            condition_data=_fixture_conditions_varying_hourly_waves(),
+        )
+        day_points = [point for point in result["hourly_activity"] if point["date"] == "2026-04-20"]
+        waves = [point["wave_height_m"] for point in day_points]
+        self.assertGreater(len(set(waves)), 8)
+        self.assertAlmostEqual(day_points[0]["wave_height_m"], 0.5)
+        self.assertAlmostEqual(day_points[16]["wave_height_m"], round(0.5 + 16 * 0.01, 2))
 
 
 if __name__ == "__main__":
