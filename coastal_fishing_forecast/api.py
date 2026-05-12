@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from datetime import date
 from pathlib import Path
 from typing import Any, Mapping
@@ -9,6 +10,7 @@ from typing import Any, Mapping
 from coastal_fishing_forecast.forecast import build_range_forecast
 from coastal_fishing_forecast.github_models import GitHubModelsError, generate_github_models_explanation_text
 from coastal_fishing_forecast.planner import build_fishing_plan
+from coastal_fishing_forecast.preview import build_preview
 from coastal_fishing_forecast.social_pulse import build_social_pulse
 from coastal_fishing_forecast.structures import (
     fetch_combined_structure_facilities,
@@ -16,6 +18,125 @@ from coastal_fishing_forecast.structures import (
     fetch_list_wildfisheries_sea_spots,
     fetch_osm_structure_facilities,
 )
+
+
+PIN_FORECAST_EARTH_RADIUS_KM = 6371.0
+
+
+def _haversine_km(lat1: float, lon1: float, lat2: float, lon2: float) -> float:
+    phi1 = math.radians(float(lat1))
+    phi2 = math.radians(float(lat2))
+    dphi = math.radians(float(lat2) - float(lat1))
+    dlam = math.radians(float(lon2) - float(lon1))
+    a = math.sin(dphi / 2) ** 2 + math.cos(phi1) * math.cos(phi2) * math.sin(dlam / 2) ** 2
+    return 2.0 * PIN_FORECAST_EARTH_RADIUS_KM * math.asin(math.sqrt(a))
+
+
+def _pin_environment_from_best_window(range_forecast: Mapping[str, Any]) -> Mapping[str, Any] | None:
+    """Pull the environment dict from the search center's best window.
+
+    Pins reuse this environment so we don't re-fetch weather / marine / tide
+    for every map pin (the data is location-coarse anyway). Each pin still
+    runs build_preview with its own coordinate so geometry signals
+    (exposure / shelter / coastline complexity / open water bearing) are
+    pin-specific.
+    """
+    best = _best_window(list(range_forecast.get("windows") or []))
+    if best is None:
+        return None
+    env = best.get("environment")
+    return env if isinstance(env, Mapping) else None
+
+
+def _pin_forecast(
+    *,
+    pin_lat: float,
+    pin_lon: float,
+    search_lat: float,
+    search_lon: float,
+    environment: Mapping[str, Any] | None,
+    region: str | None,
+) -> dict[str, Any]:
+    """Run a per-pin preview using the search center's environment.
+
+    Returns a compact forecast dict suitable for embedding inside a
+    structure_facilities entry. Always returns a dict (never None) so the
+    frontend can rely on the field shape; sets `available: False` when the
+    pin coordinate is outside supported scope.
+    """
+    distance_km_from_search = _haversine_km(search_lat, search_lon, pin_lat, pin_lon)
+    base = {
+        "available": False,
+        "distance_km_from_search": round(distance_km_from_search, 2),
+    }
+    if environment is None:
+        base["reason"] = "no_environment"
+        return base
+    try:
+        preview = build_preview(pin_lat, pin_lon, environment=environment, region=region)
+    except (TypeError, ValueError, KeyError):
+        base["reason"] = "preview_error"
+        return base
+    status = preview.get("status")
+    if status != "ok":
+        support = preview.get("support") or {}
+        base["reason"] = support.get("reason_code") or status or "unsupported"
+        meta = preview.get("meta") or {}
+        support_profile = meta.get("support_profile") or {}
+        if support_profile.get("support_mode"):
+            base["support_mode"] = support_profile["support_mode"]
+        return base
+    overall = preview.get("overall_recommendation") or {}
+    meta = preview.get("meta") or {}
+    support_profile = meta.get("support_profile") or {}
+    return {
+        "available": True,
+        "distance_km_from_search": round(distance_km_from_search, 2),
+        "score": overall.get("score"),
+        "label": overall.get("label"),
+        "fish_outlook_score": overall.get("fish_outlook_score"),
+        "comfort_score": overall.get("comfort_score"),
+        "comfort_factors": overall.get("comfort_factors", []),
+        "safety_flag": overall.get("safety_flag"),
+        "safety_factors": overall.get("safety_factors", []),
+        "dominant_water_type": overall.get("dominant_inferred_type"),
+        "support_mode": support_profile.get("support_mode"),
+        "search_confidence_score": meta.get("search_confidence_score"),
+        "reason_summary": "Pin-specific geometry, shared weather/tide with search center.",
+    }
+
+
+def _augment_facilities_with_pin_forecast(
+    facilities: list[dict[str, Any]],
+    *,
+    range_forecast: Mapping[str, Any],
+    region: str | None,
+    search_lat: float,
+    search_lon: float,
+) -> list[dict[str, Any]]:
+    if not facilities:
+        return facilities
+    environment = _pin_environment_from_best_window(range_forecast)
+    augmented: list[dict[str, Any]] = []
+    for facility in facilities:
+        coords = facility.get("coordinates") if isinstance(facility, Mapping) else None
+        pin_lat = coords.get("latitude") if isinstance(coords, Mapping) else None
+        pin_lon = coords.get("longitude") if isinstance(coords, Mapping) else None
+        next_facility = dict(facility)
+        if pin_lat is not None and pin_lon is not None:
+            try:
+                next_facility["pin_forecast"] = _pin_forecast(
+                    pin_lat=float(pin_lat),
+                    pin_lon=float(pin_lon),
+                    search_lat=search_lat,
+                    search_lon=search_lon,
+                    environment=environment,
+                    region=region,
+                )
+            except (TypeError, ValueError):
+                pass
+        augmented.append(next_facility)
+    return augmented
 
 
 API_CONTRACT_VERSION = "2026-04-27.frontend.v1"
@@ -1119,6 +1240,13 @@ def build_frontend_forecast_response(
         for item in resolved_structure_facilities
         if _is_frontend_structure_facility(item)
     ]
+    frontend_structure_facilities = _augment_facilities_with_pin_forecast(
+        frontend_structure_facilities,
+        range_forecast=range_forecast,
+        region=region,
+        search_lat=lat,
+        search_lon=lon,
+    )
 
     response = {
         "api_contract_version": API_CONTRACT_VERSION,
