@@ -1,4 +1,4 @@
-import { FormEvent, PointerEvent, useEffect, useRef, useState } from "react";
+import { FormEvent, PointerEvent, useEffect, useMemo, useRef, useState } from "react";
 import { forecastPlace, searchForecast, searchPlaces } from "./api";
 import type { ForecastResponse, HourlyActivityPoint, PlaceCandidate, StructureFacility, WindowCard } from "./types";
 
@@ -596,6 +596,24 @@ function firstWeatherChangeNotes(day?: { windows: WindowCard[] } | null, limit =
   return out;
 }
 
+/** Backend change_notes are mostly stress signals; only a few lines describe easing/recovery. */
+const WEATHER_TREND_RECOVERY_EN =
+  /recovering|easing|partly recovering|starting to recover|settling after|shock is easing|trend is recovering/i;
+/** Chinese variants if change_notes are localized later. */
+const WEATHER_TREND_RECOVERY_ZH = /缓和|恢复|趋稳|回落趋缓|冲击减弱|正在好转/i;
+
+function partitionWeatherTrendNotes(notes: string[]): { recovery: string[]; stress: string[] } {
+  const recovery: string[] = [];
+  const stress: string[] = [];
+  for (const raw of notes) {
+    const note = raw.trim();
+    if (!note) continue;
+    if (WEATHER_TREND_RECOVERY_EN.test(note) || WEATHER_TREND_RECOVERY_ZH.test(note)) recovery.push(note);
+    else stress.push(note);
+  }
+  return { recovery, stress };
+}
+
 function dayConditionStats(day?: { windows: WindowCard[] } | null) {
   const windows = day?.windows ?? [];
   const windAvg = averageFloat(windows.map((window) => window.conditions.wind.speed_knots));
@@ -633,6 +651,167 @@ type ScoreFactorsBlocks = {
   negative: string[];
   summary?: string;
 };
+
+function dedupeStrings(items: string[]): string[] {
+  return Array.from(new Set(items.map((s) => s.trim()).filter(Boolean)));
+}
+
+/**
+ * User-facing lines for algorithm "deduction" signals (negative score deltas and negative_reason_tags).
+ * Keys match backend rule ids / split tags — values stay plain-language (no mechanics).
+ */
+const SCORE_DEDUCTION_COPY: Record<string, { en: string; zh: string }> = {
+  activity_capped_by_trip_quality: {
+    en: "Trip comfort caps how strong the best moments can feel.",
+    zh: "出行体感一般时，高峰窗口的“强势感”会受限。",
+  },
+  big_wave_beach: {
+    en: "Surf and wind chop are noticeable — footing and lure control get harder.",
+    zh: "碎浪与风浪偏大，站位与控饵会更吃力。",
+  },
+  dead_water_2h: {
+    en: "Very weak tide movement — less water exchange near you.",
+    zh: "局部潮水几乎停滞，近岸水体交换偏弱。",
+  },
+  estuary_system_trend_cap: {
+    en: "The estuary is still settling after broader weather shifts.",
+    zh: "河口系统在天气波动后仍在调整，节奏偏保守。",
+  },
+  estuary_timing_capped_by_flow: {
+    en: "Tide timing is awkward — flow does not line up well with your windows.",
+    zh: "潮时与窗口衔接不佳，水流节奏不够顺手。",
+  },
+  estuary_trend_needs_recovery: {
+    en: "Conditions still need time to stabilize after recent trends.",
+    zh: "前期走势过后，环境还需要一点时间回到更顺的状态。",
+  },
+  gust_penalty: {
+    en: "Gusts are sharp enough to affect casting and balance.",
+    zh: "阵风偏强，抛投与站稳都要留心。",
+  },
+  harsh_midday_penalty: {
+    en: "Bright midday light tends to dull the bite.",
+    zh: "正午强光时段，鱼口往往偏怠。",
+  },
+  heavy_rain_disruption: {
+    en: "Heavy recent rain has stirred things up.",
+    zh: "近期大雨过后，水体与环境仍在收拾残局。",
+  },
+  major_rain_shock: {
+    en: "Major rain disruption — runoff and clarity can suffer.",
+    zh: "强降雨冲击明显，径流与清晰度压力更大。",
+  },
+  multi_day_rain_disruption: {
+    en: "Rain has persisted across multiple days.",
+    zh: "连日降雨持续干扰水体与近岸环境。",
+  },
+  open_coast_system_trend_cap: {
+    en: "Open-coast weather trends still weigh on comfort and consistency.",
+    zh: "外海天气系统的后续影响仍在，稳定性受限。",
+  },
+  passing_swell_high: {
+    en: "Larger swell is passing — more motion even if wind looks tame.",
+    zh: "有较强涌浪过境，海面动能比观感更明显。",
+  },
+  plain_day_penalty: {
+    en: "Midday daylight stretches feel plain for shore bites.",
+    zh: "白昼平淡时段偏多，窗口感不强。",
+  },
+  presence_capped_by_weak_movement: {
+    en: "Weak movement caps how “alive” the water feels.",
+    zh: "水体动感偏弱，活跃感上限不高。",
+  },
+  raw_midday_penalty: {
+    en: "Bright midday period is a headwind for shore fishing.",
+    zh: "正午强光时段对近岸作钓不友好。",
+  },
+  raw_plain_day: {
+    en: "Plain daylight windows offer limited sparkle.",
+    zh: "白昼窗口偏平淡，亮点不多。",
+  },
+  recent_heavy_rain_shock: {
+    en: "Heavy rain recently — clarity and comfort may lag.",
+    zh: "刚刚经历过大雨，水体与体感未必立刻跟上。",
+  },
+  recent_weather_shock: {
+    en: "Recent weather has been unstable — feeding moods get interrupted.",
+    zh: "近期天气不稳定，鱼开口节奏容易被打乱。",
+  },
+  sharp_pressure_shift_flag: {
+    en: "Pressure is shifting quickly — fish can turn picky.",
+    zh: "气压变化偏快，鱼情容易变得挑剔。",
+  },
+  slack_tide_penalty: {
+    en: "Slack water — less tidal movement to work with.",
+    zh: "平潮时段，潮流带动力不足。",
+  },
+  small_tide_range: {
+    en: "Small tidal range — highs and lows matter less.",
+    zh: "潮差偏小，潮水进退的存在感偏弱。",
+  },
+  strong_rain_penalty: {
+    en: "Rain is strong enough to hurt comfort and clarity.",
+    zh: "降雨强度偏大，体感与水色压力更明显。",
+  },
+  strong_wind_penalty: {
+    en: "Wind is strong for shore casting and footing.",
+    zh: "风力偏强，抛投与站位压力更大。",
+  },
+  timing_capped_by_dead_water: {
+    en: "Timings bump into very weak tide movement.",
+    zh: "时间点撞上潮水极弱阶段，窗口会被压低。",
+  },
+  timing_capped_by_local_instability: {
+    en: "Local instability trims how good timing can get.",
+    zh: "局地不稳定因素让最佳时段上限变低。",
+  },
+  water_temp_cold: {
+    en: "Water temperature reads cold — metabolism and mood often taper.",
+    zh: "水温偏低，活性与开口意愿往往收敛。",
+  },
+  weak_tide_movement_3h: {
+    en: "Weak tide movement — limited push in the water.",
+    zh: "潮流偏弱，水体推动力不足。",
+  },
+  weak_tide_rate: {
+    en: "Tide height is changing slowly.",
+    zh: "潮位变化偏慢，动感不足。",
+  },
+};
+
+function collectAlgorithmDeductions(windows: WindowCard[], lang: Lang): string[] {
+  const lines: string[] = [];
+  const seen = new Set<string>();
+
+  const add = (text: string) => {
+    const t = text.trim();
+    if (!t || seen.has(t)) return;
+    seen.add(t);
+    lines.push(t);
+  };
+
+  for (const w of windows) {
+    const rules = w.conditions?.formula?.rules;
+    if (!Array.isArray(rules)) continue;
+    for (const r of rules) {
+      const delta = r.score_delta;
+      if (delta == null || typeof delta !== "number" || delta >= 0) continue;
+      const copy = SCORE_DEDUCTION_COPY[r.id];
+      if (copy) add(copy[lang]);
+      else if (typeof r.label === "string" && r.label.trim()) add(r.label.trim());
+    }
+  }
+
+  for (const w of windows) {
+    for (const tag of w.negative_reason_tags ?? []) {
+      if (typeof tag !== "string") continue;
+      const copy = SCORE_DEDUCTION_COPY[tag];
+      if (copy) add(copy[lang]);
+    }
+  }
+
+  return lines;
+}
 
 /** Rule-based fallback: split tide / weather / sea into helpful vs challenging bullets. */
 function dayScoreFactorsBullets(
@@ -695,7 +874,10 @@ function dayScoreFactorsBullets(
     negative.push(lang === "zh" ? "近期天气序列波动较大。" : "Recent weather has been unstable.");
   }
 
-  if (!cold && !windy && !gusty && !rainy && !volatile) {
+  const trendNotes = firstWeatherChangeNotes(day, 5);
+  const { recovery, stress } = partitionWeatherTrendNotes(trendNotes);
+
+  if (!cold && !windy && !gusty && !rainy && !volatile && stress.length === 0) {
     positive.push(
       lang === "zh"
         ? "天气整体相对温和，没有极端低温、大风大雨或剧烈突变。"
@@ -732,24 +914,26 @@ function dayScoreFactorsBullets(
     );
   }
 
-  const trendNotes = firstWeatherChangeNotes(day, 3);
-  if (trendNotes.length > 0) {
-    const line =
+  if (recovery.length > 0) {
+    positive.push(
       lang === "zh"
-        ? `预报序列提示：${trendNotes.join("；")}。`
-        : `Forecast trend notes: ${trendNotes.join("; ")}.`;
-    if (volatile || stats.shockMax >= 1.5) {
-      negative.push(line);
-    } else {
-      positive.push(line);
-    }
+        ? `天气序列出现缓和迹象：${recovery.join("；")}。`
+        : `Weather trends hint at easing: ${recovery.join("; ")}.`
+    );
+  }
+  if (stress.length > 0) {
+    negative.push(
+      lang === "zh"
+        ? `天气序列压力信号：${stress.join("；")}。`
+        : `Weather trends add friction for consistency: ${stress.join("; ")}.`
+    );
   }
 
-  const dedupe = (items: string[]) => Array.from(new Set(items.map((s) => s.trim()).filter(Boolean)));
+  negative.push(...collectAlgorithmDeductions(day?.windows ?? [], lang));
 
   return {
-    positive: dedupe(positive),
-    negative: dedupe(negative),
+    positive: dedupeStrings(positive),
+    negative: dedupeStrings(negative),
   };
 }
 
@@ -1376,7 +1560,16 @@ function FishingPlanCard({
     return () => controller.abort();
   }, [selectedDay, lang]);
 
-  const scoreFactorsDisplay = scoreFactorsLlm ?? scoreFactorsFallback;
+  const scoreFactorsDisplay = useMemo(() => {
+    const fb = scoreFactorsFallback;
+    const llm = scoreFactorsLlm;
+    if (!llm) return fb;
+    const algo = collectAlgorithmDeductions(selectedDay?.windows ?? [], lang);
+    return {
+      ...llm,
+      negative: dedupeStrings([...llm.negative, ...algo]),
+    };
+  }, [scoreFactorsLlm, scoreFactorsFallback, selectedDay?.windows, lang]);
 
   return (
     <section className="plan-card">
