@@ -82,6 +82,8 @@ const UI_TEXT = {
     tideMovement: "Tide movement",
     tideMovementProxyNote: "This curve shows model-estimated tide movement, not local tide-table height.",
     waveHeight: "Wave height",
+    waveUnavailableNote:
+      "Open-Meteo returned no usable hourly ``wave_height`` / ``swell_wave_height`` for this day in the API response (or the running forecast server is an older build that does not fill those fields). Tide and wind above still reflect the forecast.",
     publicPlanNote: "Public fishing access for planning the first move.",
     exactPlace: "Choose the exact place",
     noPlaceFound: "No matching place found.",
@@ -162,6 +164,8 @@ const UI_TEXT = {
     tideMovement: "潮汐变化",
     tideMovementProxyNote: "这条曲线显示的是模型估计的潮汐运动，不是本地潮汐表潮高。",
     waveHeight: "浪高",
+    waveUnavailableNote:
+      "Open-Meteo 当日逐小时未返回可用的 ``wave_height`` / ``swell_wave_height``（或当前运行的预报服务仍是旧版本、未写入这些字段）。上方潮汐与风场仍来自预报。",
     publicPlanNote: "可作为规划第一步的公共钓点入口。",
     exactPlace: "选择准确地点",
     noPlaceFound: "没有找到匹配地点。",
@@ -1519,8 +1523,21 @@ function hourlyRain(point: HourlyActivityPoint) {
   return point.rain_mm ?? point.precipitation_mm ?? 0;
 }
 
-function hourlyWave(point: HourlyActivityPoint) {
-  return point.wave_height_m ?? point.swell_height_m ?? null;
+/** Accept numeric strings from JSON edge paths so wave curves do not disappear. */
+function coerceFiniteNumber(value: unknown): number | null {
+  if (value === null || value === undefined) return null;
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    if (!trimmed) return null;
+    const n = Number(trimmed);
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
+function hourlyWave(point: HourlyActivityPoint): number | null {
+  return coerceFiniteNumber(point.wave_height_m) ?? coerceFiniteNumber(point.swell_height_m);
 }
 
 function hourlyTideHeight(point: HourlyActivityPoint) {
@@ -2054,7 +2071,7 @@ function WeatherVisualPanel({
   }, [day?.date, defaultHour]);
   if (!windows.length && !hourly.length) return null;
   const wavePoints = hourly
-    .map((point) => ({ hour: point.hour, value: numberOrNull(hourlyWave(point)), label: point.time_window ?? "" }))
+    .map((point) => ({ hour: point.hour, value: hourlyWave(point), label: point.time_window ?? "" }))
     .filter((point): point is WeatherSeriesPoint => point.value != null);
   const tideHeightPoints = hourly
     .map((point) => ({ hour: point.hour, value: numberOrNull(hourlyTideHeight(point)), label: point.tide_phase ?? "" }))
@@ -2088,7 +2105,17 @@ function WeatherVisualPanel({
           onSelectHour={setActiveHour}
           note={tideNote}
         />
-        <WeatherCurve label={text.waveHeight} unit="m" points={wavePoints} selectedHour={activeHour} onSelectHour={setActiveHour} />
+        {wavePoints.length > 0 ? (
+          <WeatherCurve label={text.waveHeight} unit="m" points={wavePoints} selectedHour={activeHour} onSelectHour={setActiveHour} />
+        ) : hourly.length > 0 ? (
+          <div className="weather-curve-panel weather-wave-unavailable">
+            <div className="weather-curve-head">
+              <span>{text.waveHeight}</span>
+              <b>—</b>
+            </div>
+            <p className="weather-wave-unavailable-note">{text.waveUnavailableNote}</p>
+          </div>
+        ) : null}
       </div>
     </section>
   );

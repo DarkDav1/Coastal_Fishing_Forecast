@@ -70,6 +70,12 @@ def _parse_datetime(value: str) -> datetime:
     return parsed
 
 
+def _to_hobart(dt: datetime) -> datetime:
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=DEFAULT_TIMEZONE)
+    return dt.astimezone(DEFAULT_TIMEZONE)
+
+
 def _safe_float(value: Any) -> float | None:
     if value is None:
         return None
@@ -117,6 +123,45 @@ def _values_for_window(hourly: Mapping[str, list[Any]], key: str, day: date, win
         if window.start_hour <= hour <= window.end_hour:
             values.append((idx, timestamp))
     return values
+
+
+def _marine_hour_chart_values(
+    marine_hourly: Mapping[str, list[Any]],
+    day: date,
+    hour: int,
+) -> tuple[float | None, float | None]:
+    """Return (wave_height_m, swell_wave_height_m) from Open-Meteo marine hourly at Hobart-local (day, hour).
+
+    Uses only ``wave_height`` and ``swell_wave_height`` (no engine defaults, no wind-sea substitution).
+    Chart UI may use ``wave_height`` first, then fall back to swell for the plotted line — both are API values.
+    """
+    times = marine_hourly.get("time", [])
+    if not isinstance(times, list):
+        return None, None
+    idx_match: int | None = None
+    for idx, timestamp in enumerate(times):
+        try:
+            local = _to_hobart(_parse_datetime(str(timestamp)))
+        except ValueError:
+            continue
+        if local.date() == day and local.hour == hour:
+            idx_match = idx
+            break
+    if idx_match is None:
+        return None, None
+
+    def cell(key: str) -> float | None:
+        series = marine_hourly.get(key)
+        if not isinstance(series, list) or idx_match >= len(series):
+            return None
+        return _safe_float(series[idx_match])
+
+    wave = cell("wave_height")
+    swell = cell("swell_wave_height")
+    return (
+        None if wave is None else round(wave, 2),
+        None if swell is None else round(swell, 2),
+    )
 
 
 def _daily_value(daily: Mapping[str, list[Any]], day: date, key: str) -> Any:
@@ -338,6 +383,8 @@ def _window_environment(
         engine_time_window = window.key
     pressure_hpa = round(_mean(_window_numeric_values(weather_hourly, "surface_pressure", weather_indices)) or 1015.0, 1)
     wave_height = _mean(_window_numeric_values(marine_hourly, "wave_height", marine_indices))
+    swell_wave_vals = _window_numeric_values(marine_hourly, "swell_wave_height", marine_indices)
+    swell_mean = _mean(swell_wave_vals)
     rain_values = _window_numeric_values(weather_hourly, "rain", weather_indices)
     precipitation_values = _window_numeric_values(weather_hourly, "precipitation", weather_indices)
     temperature_values = _window_numeric_values(weather_hourly, "temperature_2m", weather_indices)
@@ -372,7 +419,7 @@ def _window_environment(
         "recent_wind_max_12h": None
         if not _recent_numeric_values(weather_hourly, "wind_speed_10m", representative_time, 12)
         else round(max(_recent_numeric_values(weather_hourly, "wind_speed_10m", representative_time, 12)), 1),
-        "swell_height_m": round(_mean(_window_numeric_values(marine_hourly, "swell_wave_height", marine_indices)) or 1.0, 2),
+        "swell_height_m": round(swell_mean, 2) if swell_mean is not None else 1.0,
         "swell_direction_deg": None,
         "wave_height_m": None if wave_height is None else round(wave_height, 2),
         "wave_height_delta_24h": _series_delta(marine_hourly, "wave_height", representative_time, wave_height, min_age_hours=24),
@@ -532,6 +579,7 @@ def _build_hourly_activity(
             recommendation = preview.get("overall_recommendation") or {}
             environment = window_context["environment"]
             inputs_used = preview.get("meta", {}).get("environment", {}).get("inputs_used", {})
+            wave_snap, swell_snap = _marine_hour_chart_values(marine_hourly, day, hour)
             hourly_activity.append(
                 {
                     "date": day.isoformat(),
@@ -557,8 +605,8 @@ def _build_hourly_activity(
                     "wind_speed_knots": environment.get("wind_speed_knots"),
                     "wind_direction_deg": environment.get("wind_direction_deg"),
                     "wind_gust_knots": inputs_used.get("wind_gust_knots"),
-                    "wave_height_m": inputs_used.get("wave_height_m"),
-                    "swell_height_m": environment.get("swell_height_m"),
+                    "wave_height_m": None if wave_snap is None else round(wave_snap, 2),
+                    "swell_height_m": None if swell_snap is None else round(swell_snap, 2),
                     "rain_mm": inputs_used.get("rain_mm"),
                     "precipitation_mm": inputs_used.get("precipitation_mm"),
                     "temperature_c": inputs_used.get("temperature_c"),
