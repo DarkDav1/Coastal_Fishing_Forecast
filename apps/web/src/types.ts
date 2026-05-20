@@ -13,6 +13,14 @@ export type StructureFacility = {
     latitude: number;
     longitude: number;
   };
+  pin_forecast?: {
+    score?: number | null;
+    label?: string | null;
+    dominant_water_type?: string | null;
+    waterbody_class?: string | null;
+    classification_confidence?: number | null;
+    fish_profile?: string | null;
+  };
 };
 
 export type PlaceCandidate = {
@@ -61,8 +69,23 @@ export type ForecastResponse = {
     hero: {
       score: number | null;
       label: string;
+      fish_outlook_score?: number | null;
+      comfort_score?: number | null;
+      trip_quality_score?: number | null;
+      safety_flag?: string | null;
+      waterbody_class?: string | null;
+      classification_confidence?: number | null;
+      fish_profile?: string | null;
       headline: string;
       best_window: null | WindowCard;
+    };
+    classification?: null | {
+      waterbody_class?: string | null;
+      classification_confidence?: number | null;
+      classification_reasons?: string[];
+      manual_region_override?: string | null;
+      effective_region?: string | null;
+      fish_profile?: string | null;
     };
     confidence: {
       score: number;
@@ -111,6 +134,9 @@ export type HourlyActivityPoint = {
   activity_score?: number | null;
   presence_score?: number | null;
   trip_quality_score?: number | null;
+  fish_outlook_score?: number | null;
+  comfort_score?: number | null;
+  safety_flag?: string | null;
   big_fish_near_shore?: string | null;
   label?: string | null;
   dominant_inferred_type?: string | null;
@@ -121,6 +147,9 @@ export type HourlyActivityPoint = {
   tide_range_m?: number | null;
   tide_height_m?: number | null;
   tide_movement_rate_m_per_hour?: number | null;
+  tide_current_confidence?: string | null;
+  current_strength_proxy?: number | null;
+  current_source_note?: string | null;
   wind_speed_knots?: number | null;
   wind_direction_deg?: number | null;
   wind_gust_knots?: number | null;
@@ -130,6 +159,13 @@ export type HourlyActivityPoint = {
   precipitation_mm?: number | null;
   temperature_c?: number | null;
   pressure_hpa?: number | null;
+  sea_surface_temperature_c?: number | null;
+  sea_surface_temperature_delta_24h?: number | null;
+  water_temperature_signal?: string | null;
+  water_temperature_trend?: string | null;
+  temperature_confidence?: string | null;
+  waterbody_class?: string | null;
+  fish_profile?: string | null;
 };
 
 export type WindowCard = {
@@ -141,11 +177,22 @@ export type WindowCard = {
   activity_score?: number | null;
   presence_score?: number | null;
   trip_quality_score?: number | null;
+  fish_outlook_score?: number | null;
+  comfort_score?: number | null;
+  comfort_factors?: string[];
+  safety_flag?: string | null;
+  safety_factors?: string[];
   big_fish_near_shore?: string | null;
   label: string;
+  reason_tags?: string[];
   positive_reason_tags?: string[];
   negative_reason_tags?: string[];
   dominant_water_type: string;
+  waterbody_class?: string | null;
+  classification_confidence?: number | null;
+  classification_reasons?: string[];
+  manual_region_override?: string | null;
+  fish_profile?: string | null;
   water_type_scores: Array<{ key: string; label: string; score: number }>;
   expanded_water_types: Array<{ key: string; label: string; score: number; parent: string }>;
   behavior_groups: Array<{ key: string; label: string; score: number; reason: string }>;
@@ -160,10 +207,11 @@ export type WindowCard = {
       alongshore_knots?: number | null;
     };
     swell: {
-      height_m: number;
-      direction_deg: number;
+      height_m: number | null;
+      direction_deg: number | null;
       wave_height_m?: number | null;
       wave_height_delta_24h?: number | null;
+      source?: string | null;
     };
     pressure_hpa: number;
     pressure_delta_3h?: number | null;
@@ -181,6 +229,11 @@ export type WindowCard = {
     };
     marine?: {
       sea_surface_temperature_c?: number | null;
+      sea_surface_temperature_delta_24h?: number | null;
+      sea_surface_temperature_delta_72h?: number | null;
+      water_temperature_signal?: string | null;
+      water_temperature_trend?: string | null;
+      temperature_confidence?: string | null;
     };
     tide: {
       phase: string;
@@ -189,6 +242,9 @@ export type WindowCard = {
       range_m?: number | null;
       height_m?: number | null;
       movement_rate_m_per_hour?: number | null;
+      current_confidence?: string | null;
+      current_strength_proxy?: number | null;
+      current_source_note?: string | null;
       hours_to_high_tide?: number | null;
       hours_to_low_tide?: number | null;
       hours_since_low_tide?: number | null;
@@ -210,5 +266,13 @@ export type WindowCard = {
       score_delta?: number | null;
       family?: string | null;
     };
+    classification?: {
+      waterbody_class?: string | null;
+      classification_confidence?: number | null;
+      classification_reasons?: string[];
+      manual_region_override?: string | null;
+      effective_region?: string | null;
+    };
+    fish_profile?: string | null;
   };
 };

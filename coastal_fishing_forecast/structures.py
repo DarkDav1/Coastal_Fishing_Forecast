@@ -547,6 +547,7 @@ def fetch_combined_structure_facilities(
     lon: float,
     *,
     radius_m: int = 1200,
+    timeout_seconds: int = 8,
     cache_enabled: bool = True,
     cache_dir: str | Path | None = None,
 ) -> dict[str, Any]:
@@ -564,6 +565,7 @@ def fetch_combined_structure_facilities(
                 lat,
                 lon,
                 radius_m=radius_m,
+                timeout_seconds=timeout_seconds,
                 cache_enabled=cache_enabled,
                 cache_dir=cache_dir,
             )

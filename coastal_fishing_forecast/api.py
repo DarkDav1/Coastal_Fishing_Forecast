@@ -107,6 +107,9 @@ def _pin_forecast(
         "safety_flag": overall.get("safety_flag"),
         "safety_factors": overall.get("safety_factors", []),
         "dominant_water_type": overall.get("dominant_inferred_type"),
+        "waterbody_class": (meta.get("waterbody_classification") or {}).get("waterbody_class"),
+        "classification_confidence": (meta.get("waterbody_classification") or {}).get("classification_confidence"),
+        "fish_profile": (meta.get("environment") or {}).get("inputs_used", {}).get("fish_profile"),
         "support_mode": support_profile.get("support_mode"),
         "search_confidence_score": meta.get("search_confidence_score"),
         "recent_social_pulse": pin_pulse,
@@ -167,10 +170,13 @@ NEGATIVE_REASON_MARKERS = (
     "slack",
     "small",
     "cold",
+    "cool",
+    "hot",
     "shock",
     "rapid",
     "severe",
     "gust",
+    "low_confidence",
     "big_wave",
     "swell",
     "rough",
@@ -234,6 +240,9 @@ COMBO_BLOCKING_TAGS = frozenset(
         "offshore_push_away",
         "wind_presentation_penalty",
         "rapid_temperature_drop",
+        "low_confidence_current",
+        "water_temp_cold",
+        "water_temp_cooling_fast",
     }
 )
 COMBO_MOVEMENT_TAGS = frozenset(
@@ -246,6 +255,7 @@ COMBO_WEATHER_CLEAN_TAGS = frozenset(
         "moderate_wind_bonus",
         "cloud_cover_bonus",
         "water_temp_optimal",
+        "water_temp_stable",
         "pressure_rising",
         "pressure_falling",
         "weather_recovery_window",
@@ -268,11 +278,21 @@ def _location(lat: float, lon: float) -> dict[str, Any]:
     }
 
 
+def _window_selection_score(window: Mapping[str, Any]) -> float:
+    overall = window["preview"]["overall_recommendation"]
+    activity = overall.get("activity_score")
+    presence = overall.get("presence_score")
+    trip_quality = overall.get("trip_quality_score")
+    if activity is None or presence is None or trip_quality is None:
+        return float(overall.get("score") or 0)
+    return (float(activity) * 0.40) + (float(presence) * 0.35) + (float(trip_quality) * 0.25)
+
+
 def _best_window(windows: list[Mapping[str, Any]]) -> Mapping[str, Any] | None:
     ok_windows = [window for window in windows if window["preview"]["status"] == "ok"]
     if not ok_windows:
         return None
-    return max(ok_windows, key=lambda window: window["preview"]["overall_recommendation"].get("trip_quality_score") or 0)
+    return max(ok_windows, key=_window_selection_score)
 
 
 def _tide_verification(data_sources: Mapping[str, Any]) -> dict[str, Any]:
@@ -368,6 +388,17 @@ def _confidence(range_forecast: Mapping[str, Any]) -> dict[str, Any]:
     if tide_status == "live_verified_remote_station":
         limitations.append("Tide events came from a distant station.")
         apply_cap(64, "Distant tide station.")
+
+    current_confidence = str(inputs_used.get("tide_current_confidence") or "low")
+    waterbody_class = str(inputs_used.get("waterbody_class") or "")
+    if current_confidence == "low" and waterbody_class in {"river_mouth", "tidal_river"}:
+        limitations.append("River and estuary current strength is inferred from tide height, not measured current.")
+        apply_cap(62, "Low-confidence river/estuary current proxy.")
+
+    temperature_confidence = str(inputs_used.get("temperature_confidence") or "low")
+    if temperature_confidence == "low":
+        limitations.append("Water-temperature trend is incomplete for this window.")
+        apply_cap(68, "Incomplete water-temperature trend.")
 
     if data_sources.get("conditions") != "open_meteo":
         limitations.append("Weather and marine conditions were supplied or replayed rather than freshly fetched by the API.")
@@ -553,12 +584,17 @@ def _condition_strip(window: Mapping[str, Any]) -> dict[str, Any]:
     inputs_used = model_environment.get("inputs_used", {})
     normalized = model_environment.get("normalized", {})
     generic_rules = model_environment.get("generic_rules", {})
+
+    def environment_or_input(key: str) -> Any:
+        value = env.get(key)
+        return value if value is not None else inputs_used.get(key)
+
     return {
         "wind": {
             "speed_knots": env["wind_speed_knots"],
             "direction_deg": env["wind_direction_deg"],
-            "gust_knots": inputs_used.get("wind_gust_knots"),
-            "recent_max_12h": inputs_used.get("recent_wind_max_12h"),
+            "gust_knots": environment_or_input("wind_gust_knots"),
+            "recent_max_12h": environment_or_input("recent_wind_max_12h"),
             "onshore_knots": inputs_used.get("wind_onshore_knots"),
             "offshore_knots": inputs_used.get("wind_offshore_knots"),
             "alongshore_knots": inputs_used.get("wind_alongshore_knots"),
@@ -566,59 +602,68 @@ def _condition_strip(window: Mapping[str, Any]) -> dict[str, Any]:
         "swell": {
             "height_m": env["swell_height_m"],
             "direction_deg": env["swell_direction_deg"],
-            "wave_height_m": inputs_used.get("wave_height_m"),
-            "wave_height_delta_24h": inputs_used.get("wave_height_delta_24h"),
+            "wave_height_m": environment_or_input("wave_height_m"),
+            "wave_height_delta_24h": environment_or_input("wave_height_delta_24h"),
+            "source": environment_or_input("wave_data_source"),
         },
         "pressure_hpa": env["pressure_hpa"],
-        "pressure_delta_3h": inputs_used.get("pressure_delta_3h"),
+        "pressure_delta_3h": environment_or_input("pressure_delta_3h"),
         "weather_trend": {
-            "pressure_delta_6h": inputs_used.get("pressure_delta_6h"),
-            "pressure_delta_24h": inputs_used.get("pressure_delta_24h"),
-            "pressure_delta_48h": inputs_used.get("pressure_delta_48h"),
-            "pressure_delta_72h": inputs_used.get("pressure_delta_72h"),
-            "temperature_delta_24h": inputs_used.get("temperature_delta_24h"),
-            "temperature_delta_48h": inputs_used.get("temperature_delta_48h"),
-            "temperature_delta_72h": inputs_used.get("temperature_delta_72h"),
-            "temperature_drop_from_recent_72h_peak": inputs_used.get("temperature_drop_from_recent_72h_peak"),
-            "wind_direction_change_12h": inputs_used.get("wind_direction_change_12h"),
-            "max_gust_24h": inputs_used.get("max_gust_24h"),
-            "max_gust_72h": inputs_used.get("max_gust_72h"),
-            "rainfall_24h": inputs_used.get("rainfall_24h"),
-            "rainfall_48h": inputs_used.get("rainfall_48h"),
-            "rainfall_72h": inputs_used.get("rainfall_72h"),
+            "pressure_delta_6h": environment_or_input("pressure_delta_6h"),
+            "pressure_delta_24h": environment_or_input("pressure_delta_24h"),
+            "pressure_delta_48h": environment_or_input("pressure_delta_48h"),
+            "pressure_delta_72h": environment_or_input("pressure_delta_72h"),
+            "temperature_delta_24h": environment_or_input("temperature_delta_24h"),
+            "temperature_delta_48h": environment_or_input("temperature_delta_48h"),
+            "temperature_delta_72h": environment_or_input("temperature_delta_72h"),
+            "temperature_drop_from_recent_72h_peak": environment_or_input("temperature_drop_from_recent_72h_peak"),
+            "wind_direction_change_12h": environment_or_input("wind_direction_change_12h"),
+            "max_gust_24h": environment_or_input("max_gust_24h"),
+            "max_gust_72h": environment_or_input("max_gust_72h"),
+            "rainfall_24h": environment_or_input("rainfall_24h"),
+            "rainfall_48h": environment_or_input("rainfall_48h"),
+            "rainfall_72h": environment_or_input("rainfall_72h"),
             "change_notes": _weather_change_notes(inputs_used),
         },
         "air": {
-            "temperature_c": inputs_used.get("temperature_c"),
-            "rain_mm": inputs_used.get("rain_mm"),
-            "precipitation_mm": inputs_used.get("precipitation_mm"),
-            "recent_precipitation_sum_12h": inputs_used.get("recent_precipitation_sum_12h"),
-            "cloud_cover_pct": inputs_used.get("cloud_cover_pct"),
+            "temperature_c": environment_or_input("temperature_c"),
+            "rain_mm": environment_or_input("rain_mm"),
+            "precipitation_mm": environment_or_input("precipitation_mm"),
+            "recent_precipitation_sum_12h": environment_or_input("recent_precipitation_sum_12h"),
+            "cloud_cover_pct": environment_or_input("cloud_cover_pct"),
         },
         "marine": {
-            "sea_surface_temperature_c": inputs_used.get("sea_surface_temperature_c"),
+            "sea_surface_temperature_c": environment_or_input("sea_surface_temperature_c"),
+            "sea_surface_temperature_delta_24h": environment_or_input("sea_surface_temperature_delta_24h"),
+            "sea_surface_temperature_delta_72h": environment_or_input("sea_surface_temperature_delta_72h"),
+            "water_temperature_signal": environment_or_input("water_temperature_signal"),
+            "water_temperature_trend": environment_or_input("water_temperature_trend"),
+            "temperature_confidence": environment_or_input("temperature_confidence"),
         },
         "tide": {
             "phase": env["tide_phase"],
             "source": window["tide_source"],
-            "stage": inputs_used.get("tide_stage"),
-            "range_m": inputs_used.get("tide_range_m"),
-            "height_m": inputs_used.get("tide_height_m"),
-            "movement_rate_m_per_hour": inputs_used.get("tide_movement_rate_m_per_hour"),
-            "hours_to_high_tide": inputs_used.get("hours_to_high_tide"),
-            "hours_to_low_tide": inputs_used.get("hours_to_low_tide"),
-            "hours_since_low_tide": inputs_used.get("hours_since_low_tide"),
+            "stage": environment_or_input("tide_stage"),
+            "range_m": environment_or_input("tide_range_m"),
+            "height_m": environment_or_input("tide_height_m"),
+            "movement_rate_m_per_hour": environment_or_input("tide_movement_rate_m_per_hour"),
+            "current_confidence": environment_or_input("tide_current_confidence"),
+            "current_strength_proxy": environment_or_input("current_strength_proxy"),
+            "current_source_note": environment_or_input("current_source_note"),
+            "hours_to_high_tide": environment_or_input("hours_to_high_tide"),
+            "hours_to_low_tide": environment_or_input("hours_to_low_tide"),
+            "hours_since_low_tide": environment_or_input("hours_since_low_tide"),
         },
         "solar": {
-            "hour_of_day": inputs_used.get("hour_of_day"),
-            "hours_from_sunrise": inputs_used.get("hours_from_sunrise"),
-            "hours_from_sunset": inputs_used.get("hours_from_sunset"),
-            "hours_from_solar_noon": inputs_used.get("hours_from_solar_noon"),
-            "is_daylight": inputs_used.get("is_daylight"),
+            "hour_of_day": environment_or_input("hour_of_day"),
+            "hours_from_sunrise": environment_or_input("hours_from_sunrise"),
+            "hours_from_sunset": environment_or_input("hours_from_sunset"),
+            "hours_from_solar_noon": environment_or_input("hours_from_solar_noon"),
+            "is_daylight": environment_or_input("is_daylight"),
         },
         "moon": {
-            "phase_name": inputs_used.get("moon_phase_name"),
-            "illumination_pct": inputs_used.get("moon_illumination_pct"),
+            "phase_name": environment_or_input("moon_phase_name"),
+            "illumination_pct": environment_or_input("moon_illumination_pct"),
         },
         "formula": {
             "normalized": normalized,
@@ -627,6 +672,8 @@ def _condition_strip(window: Mapping[str, Any]) -> dict[str, Any]:
             "score_delta": generic_rules.get("score_delta"),
             "family": generic_rules.get("family"),
         },
+        "classification": window.get("preview", {}).get("meta", {}).get("waterbody_classification"),
+        "fish_profile": environment_or_input("fish_profile"),
     }
 
 
@@ -642,6 +689,9 @@ def _split_reason_tags(tags: list[str]) -> tuple[list[str], list[str]]:
 def _window_card(window: Mapping[str, Any]) -> dict[str, Any]:
     preview = window["preview"]
     overall = preview.get("overall_recommendation") or {}
+    meta = preview.get("meta") or {}
+    classification = meta.get("waterbody_classification") or {}
+    inputs_used = (meta.get("environment") or {}).get("inputs_used", {})
     positive_tags, negative_tags = _split_reason_tags(overall.get("reason_tags", []))
     water_scores = [
         {
@@ -674,6 +724,11 @@ def _window_card(window: Mapping[str, Any]) -> dict[str, Any]:
         "positive_reason_tags": positive_tags,
         "negative_reason_tags": negative_tags,
         "dominant_water_type": overall.get("dominant_inferred_type"),
+        "waterbody_class": classification.get("waterbody_class"),
+        "classification_confidence": classification.get("classification_confidence"),
+        "classification_reasons": classification.get("classification_reasons", []),
+        "manual_region_override": classification.get("manual_region_override"),
+        "fish_profile": inputs_used.get("fish_profile"),
         "water_type_scores": water_scores,
         "expanded_water_types": _expanded_water_types(window),
         "behavior_groups": _behavior_groups(window),
@@ -710,15 +765,22 @@ def _hero(range_forecast: Mapping[str, Any]) -> dict[str, Any]:
         }
 
     overall = best["preview"]["overall_recommendation"]
+    meta = best["preview"].get("meta") or {}
+    classification = meta.get("waterbody_classification") or {}
+    inputs_used = (meta.get("environment") or {}).get("inputs_used", {})
     dominant = WATER_TYPE_LABELS.get(overall["dominant_inferred_type"], overall["dominant_inferred_type"])
     return {
         "score": overall["score"],
         "label": overall["label"],
         "fish_outlook_score": overall.get("fish_outlook_score"),
         "comfort_score": overall.get("comfort_score"),
+        "trip_quality_score": overall.get("trip_quality_score"),
         "safety_flag": overall.get("safety_flag"),
         "safety_factors": overall.get("safety_factors", []),
         "comfort_factors": overall.get("comfort_factors", []),
+        "waterbody_class": classification.get("waterbody_class"),
+        "classification_confidence": classification.get("classification_confidence"),
+        "fish_profile": inputs_used.get("fish_profile"),
         "headline": f"{dominant} is the strongest nearby option.",
         "best_window": _window_card(best),
     }
@@ -742,7 +804,8 @@ def _rule_based_explanation(range_forecast: Mapping[str, Any]) -> dict[str, Any]
         risks.append("Tide phase is estimated, so tide-sensitive guidance has lower confidence.")
     if conditions["tide"]["source"] == "openmeteo_model":
         risks.append("Tide phase is inferred from model sea-level data, not a local tide station.")
-    if conditions["swell"]["height_m"] >= 1.8:
+    swell_height = _number(conditions["swell"].get("height_m"))
+    if swell_height is not None and swell_height >= 1.8:
         risks.append("Higher swell may reduce comfort and safety on exposed beaches and rocks.")
     if conditions["wind"]["speed_knots"] >= 18:
         risks.append("Stronger wind may reduce trip quality, especially on exposed water.")
@@ -866,6 +929,19 @@ def _frontend_structure_data(data: Mapping[str, Any] | None) -> dict[str, Any] |
     return {key: value for key, value in compact.items() if value is not None}
 
 
+def _primary_classification(range_forecast: Mapping[str, Any]) -> dict[str, Any] | None:
+    best = _best_window(list(range_forecast["windows"]))
+    if best is None:
+        return None
+    preview = best.get("preview") or {}
+    meta = preview.get("meta") or {}
+    classification = dict(meta.get("waterbody_classification") or {})
+    inputs_used = (meta.get("environment") or {}).get("inputs_used", {})
+    if inputs_used.get("fish_profile") is not None:
+        classification["fish_profile"] = inputs_used.get("fish_profile")
+    return classification or None
+
+
 def _whitelisted_explanation_input(rule_explanation: Mapping[str, Any], range_forecast: Mapping[str, Any]) -> dict[str, Any]:
     best = _best_window(list(range_forecast["windows"]))
     if best is None:
@@ -881,6 +957,8 @@ def _whitelisted_explanation_input(rule_explanation: Mapping[str, Any], range_fo
             "trip_quality_score": card.get("trip_quality_score"),
             "label": card.get("label"),
             "dominant_water_type": card.get("dominant_water_type"),
+            "waterbody_class": card.get("waterbody_class"),
+            "fish_profile": card.get("fish_profile"),
             "behavior_groups": card.get("behavior_groups"),
             "plain_score_context": _plain_score_context(card),
         },
@@ -1025,13 +1103,18 @@ def _window_combo_evaluation(
     wind_category = str(inputs_used.get("wind_to_shore_category") or "")
     if wind_category in COMBO_BLOCKING_WIND_CATEGORIES:
         return 0, None
+    if str(inputs_used.get("tide_current_confidence") or "low") == "low" and str(inputs_used.get("waterbody_class") or "") in {
+        "river_mouth",
+        "tidal_river",
+    }:
+        return 0, None
+    if str(inputs_used.get("water_temperature_signal") or "") == "cold":
+        return 0, None
 
     movement_aligned = bool(tags & COMBO_MOVEMENT_TAGS)
     timing_aligned = bool(tags & COMBO_TIMING_TAGS)
     weather_clean_axis = bool(tags & COMBO_WEATHER_CLEAN_TAGS)
-    structure_category = str(inputs_used.get("structure_flow_category") or "")
-    structure_aligned = structure_category in COMBO_STRUCTURE_CATEGORIES
-    aligned = sum((movement_aligned, timing_aligned, weather_clean_axis, structure_aligned))
+    aligned = sum((movement_aligned, timing_aligned, weather_clean_axis))
     if aligned < 3:
         return 0, None
 
@@ -1042,8 +1125,6 @@ def _window_combo_evaluation(
         if wave > COMBO_OPEN_COAST_MAX_WAVE_M or wind_kts > COMBO_OPEN_COAST_MAX_WIND_KNOTS:
             return 0, None
 
-    if aligned >= 4:
-        return 8, "rare_alignment_window"
     return 5, "strong_alignment_window"
 
 
@@ -1248,13 +1329,6 @@ def build_frontend_forecast_response(
         for item in resolved_structure_facilities
         if _is_frontend_structure_facility(item)
     ]
-    frontend_structure_facilities = _augment_facilities_with_pin_forecast(
-        frontend_structure_facilities,
-        range_forecast=range_forecast,
-        region=region,
-        search_lat=lat,
-        search_lon=lon,
-    )
 
     response = {
         "api_contract_version": API_CONTRACT_VERSION,
@@ -1265,6 +1339,7 @@ def build_frontend_forecast_response(
         "tide_verification": _tide_verification(range_forecast["data_sources"]),
         "confidence": _confidence(range_forecast),
         "combo_release": combo_release,
+        "classification": _primary_classification(range_forecast),
         "hero": _hero(range_forecast),
         "explanation": _explanation(range_forecast, explanation_provider=explanation_provider),
         "summary": range_forecast["summary"],

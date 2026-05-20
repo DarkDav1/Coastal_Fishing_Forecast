@@ -884,7 +884,7 @@ class PreviewTests(unittest.TestCase):
             offshore["overall_recommendation"]["score"],
         )
 
-    def test_inferred_structure_edges_only_help_with_moving_water(self) -> None:
+    def test_inferred_structure_edges_do_not_adjust_scores(self) -> None:
         base_environment = {
             "wind_speed_knots": 8,
             "swell_height_m": 0.4,
@@ -927,7 +927,8 @@ class PreviewTests(unittest.TestCase):
             moving["meta"]["environment"]["inputs_used"]["structure_flow_category"],
             "complex_edge_with_moving_water",
         )
-        self.assertIn("inferred_edge_flow", moving["overall_recommendation"]["reason_tags"])
+        self.assertNotIn("inferred_edge_flow", moving["overall_recommendation"]["reason_tags"])
+        self.assertNotIn("modest_inferred_edge_flow", moving["overall_recommendation"]["reason_tags"])
         self.assertEqual(
             weak["meta"]["environment"]["inputs_used"]["structure_flow_category"],
             "edge_waiting_for_flow",
@@ -957,6 +958,61 @@ class PreviewTests(unittest.TestCase):
         result = build_preview(-27.4705, 153.0260)
         self.assertEqual(result["status"], "unsupported")
         self.assertEqual(result["meta"]["support_profile"]["support_mode"], "unsupported")
+
+    def test_waterbody_classification_distinguishes_reference_places(self) -> None:
+        sandy_bay = build_preview(-42.8991036, 147.3389916)
+        port_huon = build_preview(-43.1635, 146.9735)
+        binalong_bay = build_preview(-41.2510, 148.3100)
+
+        self.assertEqual(sandy_bay["meta"]["waterbody_classification"]["waterbody_class"], "bay_coast")
+        self.assertIn(
+            port_huon["meta"]["waterbody_classification"]["waterbody_class"],
+            {"river_mouth", "tidal_river", "sheltered_estuary"},
+        )
+        self.assertIn(
+            binalong_bay["meta"]["waterbody_classification"]["waterbody_class"],
+            {"open_coast", "surf_coast"},
+        )
+
+    def test_water_temperature_layer_changes_fish_signal(self) -> None:
+        base_environment = {
+            "time_window": "dawn",
+            "tide_phase": "rising",
+            "tide_stage": "flood",
+            "tide_range_m": 0.8,
+            "tide_height_change_next_2h": 0.20,
+            "tide_movement_rate_m_per_hour": 0.10,
+            "tide_source": "openmeteo_model",
+            "wind_speed_knots": 8,
+            "swell_height_m": 0.4,
+            "wave_height_m": 0.25,
+            "pressure_hpa": 1016,
+        }
+        cold = build_preview(
+            -42.8991036,
+            147.3389916,
+            environment={
+                **base_environment,
+                "sea_surface_temperature_c": 9.0,
+                "sea_surface_temperature_delta_24h": -1.5,
+            },
+        )
+        stable = build_preview(
+            -42.8991036,
+            147.3389916,
+            environment={
+                **base_environment,
+                "sea_surface_temperature_c": 16.0,
+                "sea_surface_temperature_delta_24h": 0.1,
+                "sea_surface_temperature_delta_72h": 0.4,
+            },
+        )
+
+        self.assertLess(cold["overall_recommendation"]["fish_outlook_score"], stable["overall_recommendation"]["fish_outlook_score"])
+        self.assertIn("water_temp_cold", cold["overall_recommendation"]["reason_tags"])
+        self.assertIn("water_temp_cooling_fast", cold["overall_recommendation"]["reason_tags"])
+        self.assertIn("water_temp_optimal", stable["overall_recommendation"]["reason_tags"])
+        self.assertIn("water_temp_stable", stable["overall_recommendation"]["reason_tags"])
 
 
 if __name__ == "__main__":

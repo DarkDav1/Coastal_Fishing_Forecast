@@ -12,11 +12,13 @@ const coastalPlaceSearch = path.join(repoRoot, ".venv/bin/coastal-place-search")
 const coastalApiForecast = path.join(repoRoot, ".venv/bin/coastal-api-forecast");
 const coastalFeedback = path.join(repoRoot, ".venv/bin/coastal-feedback");
 const coastalScoreFactors = path.join(repoRoot, ".venv/bin/coastal-score-factors");
+const API_PORT = Number(process.env.COASTAL_WEB_API_PORT ?? process.env.PORT ?? 8787);
 const FEEDBACK_MAX_BODY_BYTES = 32 * 1024;
 const SCORE_FACTORS_MAX_BODY_BYTES = 512 * 1024;
-const API_CACHE_TTL_MS = 5 * 60 * 1000;
-const API_CACHE_MAX_ENTRIES = 40;
+const API_CACHE_TTL_MS = 15 * 60 * 1000;
+const API_CACHE_MAX_ENTRIES = 80;
 const apiCache = new Map();
+const pendingRequests = new Map();
 
 function sendJson(response, statusCode, payload) {
   response.writeHead(statusCode, {
@@ -24,6 +26,15 @@ function sendJson(response, statusCode, payload) {
     "Access-Control-Allow-Origin": "*"
   });
   response.end(JSON.stringify(payload));
+}
+
+function sendHtml(response, statusCode, html) {
+  response.writeHead(statusCode, {
+    "Content-Type": "text/html; charset=utf-8",
+    "Cache-Control": "no-store",
+    "Access-Control-Allow-Origin": "*"
+  });
+  response.end(html);
 }
 
 function single(value, fallback = "") {
@@ -62,9 +73,72 @@ async function cached(url, loader) {
   if (cachedPayload !== null) {
     return cachedPayload;
   }
-  const payload = await loader();
-  setCachedPayload(url, payload);
-  return payload;
+  const key = cacheKey(url);
+  if (pendingRequests.has(key)) {
+    return pendingRequests.get(key);
+  }
+  const pending = loader()
+    .then((payload) => {
+      setCachedPayload(url, payload);
+      return payload;
+    })
+    .finally(() => {
+      pendingRequests.delete(key);
+    });
+  pendingRequests.set(key, pending);
+  return pending;
+}
+
+function sanitizeCoordinate(value, fallback) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return fallback;
+  return number;
+}
+
+async function runWindyEmbedProxy(url) {
+  const lat = sanitizeCoordinate(url.searchParams.get("lat"), -42.8991).toFixed(4);
+  const lon = sanitizeCoordinate(url.searchParams.get("lon"), 147.3390).toFixed(4);
+  const windyUrl = new URL("https://embed.windy.com/embed2.html");
+  const params = {
+    lat,
+    lon,
+    detailLat: lat,
+    detailLon: lon,
+    width: "760",
+    height: "620",
+    zoom: "10",
+    level: "surface",
+    overlay: "wind",
+    product: "ecmwf",
+    menu: "",
+    message: "true",
+    marker: "true",
+    calendar: "now",
+    pressure: "",
+    type: "map",
+    location: "coordinates",
+    detail: "true",
+    metricWind: "kt",
+    metricTemp: "°C",
+    radarRange: "-1",
+  };
+  for (const [key, value] of Object.entries(params)) {
+    windyUrl.searchParams.set(key, value);
+  }
+  const upstream = await fetch(windyUrl, {
+    headers: {
+      "User-Agent": "Mozilla/5.0 CoastalFishingForecast/1.0",
+      "Accept": "text/html,application/xhtml+xml",
+    },
+  });
+  if (!upstream.ok) {
+    throw new Error(`Windy embed request failed with ${upstream.status}`);
+  }
+  const html = await upstream.text();
+  return html
+    .replace("<head>", '<head><base href="https://embed.windy.com/">')
+    .replaceAll('src="/', 'src="https://embed.windy.com/')
+    .replaceAll('href="/', 'href="https://embed.windy.com/');
 }
 
 function isoDateOffset(days) {
@@ -78,9 +152,9 @@ function isoDateOffset(days) {
 
 async function runSearchForecast(url) {
   const query = single(url.searchParams.get("query"), "Sandy Bay Tasmania").trim();
-  const startDate = single(url.searchParams.get("start_date"), isoDateOffset(-30));
+  const startDate = single(url.searchParams.get("start_date"), isoDateOffset(-7));
   const endDate = single(url.searchParams.get("end_date"), isoDateOffset(5));
-  const region = single(url.searchParams.get("region"), "sheltered_estuary");
+  const region = url.searchParams.get("region");
   const plannerProvider = single(url.searchParams.get("planner_provider"), "rule_based");
   const args = [
     query,
@@ -90,8 +164,6 @@ async function runSearchForecast(url) {
     startDate,
     "--end-date",
     endDate,
-    "--region",
-    region,
     "--windows",
     "morning,day,dusk",
     "--condition-source",
@@ -107,6 +179,7 @@ async function runSearchForecast(url) {
     "--cache-dir",
     ".cache/coastal_fishing_forecast"
   ];
+  if (region) args.push("--region", region);
 
   const { stdout } = await execFileAsync(coastalSearchForecast, args, {
     cwd: repoRoot,
@@ -218,9 +291,9 @@ async function runCoordinateForecast(url) {
   const lon = single(url.searchParams.get("lon"));
   const displayName = single(url.searchParams.get("display_name"), `${lat}, ${lon}`);
   const placeId = single(url.searchParams.get("id"), `selected:${lat},${lon}`);
-  const startDate = single(url.searchParams.get("start_date"), isoDateOffset(-30));
+  const startDate = single(url.searchParams.get("start_date"), isoDateOffset(-7));
   const endDate = single(url.searchParams.get("end_date"), isoDateOffset(5));
-  const region = single(url.searchParams.get("region"), "sheltered_estuary");
+  const region = url.searchParams.get("region");
   const plannerProvider = single(url.searchParams.get("planner_provider"), "rule_based");
   const args = [
     lat,
@@ -229,8 +302,6 @@ async function runCoordinateForecast(url) {
     startDate,
     "--end-date",
     endDate,
-    "--region",
-    region,
     "--windows",
     "morning,day,dusk",
     "--condition-source",
@@ -246,6 +317,7 @@ async function runCoordinateForecast(url) {
     "--cache-dir",
     ".cache/coastal_fishing_forecast"
   ];
+  if (region) args.push("--region", region);
   const { stdout } = await execFileAsync(coastalApiForecast, args, {
     cwd: repoRoot,
     maxBuffer: 20 * 1024 * 1024,
@@ -273,7 +345,7 @@ async function runCoordinateForecast(url) {
 
 const server = createServer(async (request, response) => {
   try {
-    const url = new URL(request.url ?? "/", "http://127.0.0.1:8787");
+    const url = new URL(request.url ?? "/", `http://127.0.0.1:${API_PORT}`);
     if (request.method === "OPTIONS") {
       response.writeHead(204, {
         "Access-Control-Allow-Origin": "*",
@@ -285,6 +357,11 @@ const server = createServer(async (request, response) => {
     }
     if (url.pathname === "/api/health") {
       sendJson(response, 200, { ok: true, service: "coastal-web-api" });
+      return;
+    }
+    if (url.pathname === "/api/windy-embed") {
+      const html = await runWindyEmbedProxy(url);
+      sendHtml(response, 200, html);
       return;
     }
     if (url.pathname === "/api/search-forecast") {
@@ -379,6 +456,6 @@ const server = createServer(async (request, response) => {
   }
 });
 
-server.listen(8787, "127.0.0.1", () => {
-  console.log("Coastal web API listening on http://127.0.0.1:8787");
+server.listen(API_PORT, "127.0.0.1", () => {
+  console.log(`Coastal web API listening on http://127.0.0.1:${API_PORT}`);
 });

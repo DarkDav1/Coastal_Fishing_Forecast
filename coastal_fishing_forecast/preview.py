@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import math
 from typing import Any, Mapping
 
@@ -25,6 +25,16 @@ INVALID_REASON_CODE = "invalid_coordinate"
 PREVIEW_CONFIDENCE = "low"
 HIGH_CONFIDENCE = "high"
 WATER_TYPE_KEYS = ("beach", "rocks", "jetty", "bay_estuary_edge")
+WATERBODY_CLASSES = (
+    "open_coast",
+    "surf_coast",
+    "bay_coast",
+    "sheltered_estuary",
+    "river_mouth",
+    "tidal_river",
+    "harbour_access",
+    "unsupported",
+)
 SUPPORT_MODE_ON_WATER = "on_water"
 SUPPORT_MODE_NEAR_WATER = "near_water"
 SUPPORT_MODE_TIDAL_CORRIDOR = "tidal_corridor"
@@ -62,17 +72,29 @@ class TypeSignals:
 
 
 @dataclass(frozen=True)
+class WaterbodyClassification:
+    waterbody_class: str
+    confidence: float
+    reasons: tuple[str, ...]
+    recommended_region: str
+    manual_region_override: str | None = None
+
+
+@dataclass(frozen=True)
 class EnvironmentInputs:
     temperature_c: float | None = None
     wind_speed_knots: float = 12.0
     wind_direction_deg: float | None = None
     wind_gust_knots: float | None = None
     recent_wind_max_12h: float | None = None
-    swell_height_m: float = 1.0
+    swell_height_m: float | None = None
     swell_direction_deg: float | None = None
     wave_height_m: float | None = None
     wave_height_delta_24h: float | None = None
+    wave_data_source: str | None = None
     sea_surface_temperature_c: float | None = None
+    sea_surface_temperature_delta_24h: float | None = None
+    sea_surface_temperature_delta_72h: float | None = None
     pressure_hpa: float = 1015.0
     pressure_delta_3h: float | None = None
     pressure_delta_6h: float | None = None
@@ -100,10 +122,15 @@ class EnvironmentInputs:
     hours_since_low_tide: float | None = None
     hours_since_high_tide: float | None = None
     tide_range_m: float | None = None
+    tide_height_m: float | None = None
     tide_height_change_next_2h: float | None = None
     tide_height_change_next_3h: float | None = None
     tide_height_change_prev_2h: float | None = None
     tide_movement_rate_m_per_hour: float | None = None
+    tide_source: str | None = None
+    tide_current_confidence: str = "low"
+    current_strength_proxy: float | None = None
+    current_source_note: str | None = None
     time_window: str = "day"
     hour_of_day: float | None = None
     hours_from_sunrise: float | None = None
@@ -113,6 +140,11 @@ class EnvironmentInputs:
     moon_phase_fraction: float | None = None
     moon_phase_name: str | None = None
     moon_illumination_pct: float | None = None
+    waterbody_class: str = "generic_coastal"
+    fish_profile: str = "generic_estuary"
+    water_temperature_signal: str = "unknown"
+    water_temperature_trend: str = "unknown"
+    temperature_confidence: str = "low"
     rule_family: str = "derwent_generalized_v1"
 
 
@@ -280,6 +312,94 @@ def _compute_global_signals(lat: float, lon: float, nearest_water_km: float, on_
     )
 
 
+def _classify_waterbody(
+    signals: GlobalSignals,
+    *,
+    nearest_water_km: float,
+    on_water: bool,
+    manual_region: str | None,
+) -> WaterbodyClassification:
+    """Classify the broad waterbody before applying fish/tide rules.
+
+    This is intentionally conservative: broad land-mask geometry can separate
+    exposed coast from sheltered/river-like water, but it cannot prove a named
+    habitat feature or fishing structure.
+    """
+    inner = signals.inner_water_fraction
+    mid = signals.mid_water_fraction
+    outer = signals.outer_water_fraction
+    complexity = signals.coastline_complexity
+    exposure = signals.exposure
+    shelter = signals.shelter
+    access = signals.accessibility
+    reasons: list[str] = []
+
+    if nearest_water_km > EXTENDED_TIDAL_PREVIEW_KM:
+        return WaterbodyClassification(
+            waterbody_class="unsupported",
+            confidence=0.9,
+            reasons=("searched point is too far from supported coastal or tidal water",),
+            recommended_region="generic_coastal",
+            manual_region_override=manual_region,
+        )
+
+    if not on_water and nearest_water_km > DIRECT_NEARBY_WATER_KM and shelter >= 0.55 and complexity >= 0.35:
+        reasons.append("nearby water is sheltered and narrow enough for tidal-corridor support")
+        waterbody_class = "tidal_river"
+    elif shelter >= 0.82 and outer <= 0.18 and mid <= 0.26:
+        reasons.append("very sheltered narrow water indicates a tidal river or upper estuary")
+        waterbody_class = "tidal_river" if inner <= 0.24 else "river_mouth"
+    elif shelter >= 0.72 and complexity >= 0.42 and outer <= 0.34:
+        reasons.append("high shelter and complex coastline indicate a river-mouth or tidal-river setting")
+        waterbody_class = "tidal_river" if inner <= 0.42 else "river_mouth"
+    elif shelter >= 0.62 and complexity >= 0.34:
+        reasons.append("sheltered water with coastline complexity indicates an estuary or protected bay edge")
+        waterbody_class = "sheltered_estuary"
+    elif shelter >= 0.48 and outer <= 0.58:
+        reasons.append("moderate shelter and limited outer water indicate bay-coast conditions")
+        waterbody_class = "bay_coast"
+    elif exposure >= 0.72 and complexity <= 0.30:
+        reasons.append("high exposure and simple shoreline indicate surf or open coast")
+        waterbody_class = "surf_coast"
+    elif exposure >= 0.58:
+        reasons.append("broad outer-water exposure indicates open coast")
+        waterbody_class = "open_coast"
+    elif complexity >= 0.46 and access >= 0.45:
+        reasons.append("complex accessible edge indicates harbour-like access water")
+        waterbody_class = "harbour_access"
+    else:
+        reasons.append("mixed coastline geometry falls back to generic bay/coastal scoring")
+        waterbody_class = "bay_coast"
+
+    if manual_region:
+        reasons.append(f"manual region override requested: {manual_region}")
+
+    confidence = 0.42
+    confidence += 0.16 if on_water else 0.06 if nearest_water_km <= DIRECT_NEARBY_WATER_KM else 0.0
+    confidence += min(0.18, abs(exposure - shelter) * 0.20)
+    confidence += min(0.14, complexity * 0.14)
+    if waterbody_class in {"river_mouth", "tidal_river"}:
+        confidence -= 0.08  # geometry-only river/estuary distinction is inherently softer.
+
+    return WaterbodyClassification(
+        waterbody_class=waterbody_class,
+        confidence=round(_clamp_unit(confidence), 2),
+        reasons=tuple(reasons),
+        recommended_region=waterbody_class if waterbody_class in WATERBODY_CLASSES else "generic_coastal",
+        manual_region_override=manual_region,
+    )
+
+
+def _default_fish_profile(waterbody_class: str) -> str:
+    if waterbody_class in {"river_mouth", "tidal_river", "sheltered_estuary", "harbour_access"}:
+        return "generic_estuary"
+    if waterbody_class in {"open_coast", "surf_coast"}:
+        return "salmon_pelagic"
+    if waterbody_class == "bay_coast":
+        return "flathead"
+    return "generic_estuary"
+
+
 def _infer_type_signals(signals: GlobalSignals) -> TypeSignals:
     return TypeSignals(
         beach=max(
@@ -368,11 +488,14 @@ def _normalize_environment(environment: Mapping[str, Any] | None) -> Environment
         temperature_c=_optional_float(environment.get("temperature_c")),
         wind_gust_knots=_optional_float(environment.get("wind_gust_knots")),
         recent_wind_max_12h=_optional_float(environment.get("recent_wind_max_12h")),
-        swell_height_m=float(environment.get("swell_height_m", 1.0)),
+        swell_height_m=_optional_float(environment.get("swell_height_m")),
         swell_direction_deg=_normalize_direction(environment.get("swell_direction_deg")),
         wave_height_m=_optional_float(environment.get("wave_height_m")),
         wave_height_delta_24h=_optional_float(environment.get("wave_height_delta_24h")),
+        wave_data_source=str(environment.get("wave_data_source") or "provided"),
         sea_surface_temperature_c=_optional_float(environment.get("sea_surface_temperature_c")),
+        sea_surface_temperature_delta_24h=_optional_float(environment.get("sea_surface_temperature_delta_24h")),
+        sea_surface_temperature_delta_72h=_optional_float(environment.get("sea_surface_temperature_delta_72h")),
         pressure_hpa=float(environment.get("pressure_hpa", 1015.0)),
         pressure_delta_3h=_optional_float(environment.get("pressure_delta_3h")),
         pressure_delta_6h=_optional_float(environment.get("pressure_delta_6h")),
@@ -400,10 +523,15 @@ def _normalize_environment(environment: Mapping[str, Any] | None) -> Environment
         hours_since_low_tide=_optional_float(environment.get("hours_since_low_tide")),
         hours_since_high_tide=_optional_float(environment.get("hours_since_high_tide")),
         tide_range_m=_optional_float(environment.get("tide_range_m")),
+        tide_height_m=_optional_float(environment.get("tide_height_m")),
         tide_height_change_next_2h=_optional_float(environment.get("tide_height_change_next_2h")),
         tide_height_change_next_3h=_optional_float(environment.get("tide_height_change_next_3h")),
         tide_height_change_prev_2h=_optional_float(environment.get("tide_height_change_prev_2h")),
         tide_movement_rate_m_per_hour=_optional_float(environment.get("tide_movement_rate_m_per_hour")),
+        tide_source=str(environment.get("tide_source") or "") or None,
+        tide_current_confidence=str(environment.get("tide_current_confidence") or "low"),
+        current_strength_proxy=_optional_float(environment.get("current_strength_proxy")),
+        current_source_note=str(environment.get("current_source_note") or "") or None,
         time_window=time_window,
         hour_of_day=_optional_float(environment.get("hour_of_day")),
         hours_from_sunrise=_optional_float(environment.get("hours_from_sunrise")),
@@ -413,7 +541,159 @@ def _normalize_environment(environment: Mapping[str, Any] | None) -> Environment
         moon_phase_fraction=_optional_float(environment.get("moon_phase_fraction")),
         moon_phase_name=str(environment.get("moon_phase_name") or "") or None,
         moon_illumination_pct=_optional_float(environment.get("moon_illumination_pct")),
+        waterbody_class=str(environment.get("waterbody_class") or "generic_coastal"),
+        fish_profile=str(environment.get("fish_profile") or "generic_estuary"),
+        water_temperature_signal=str(environment.get("water_temperature_signal") or "unknown"),
+        water_temperature_trend=str(environment.get("water_temperature_trend") or "unknown"),
+        temperature_confidence=str(environment.get("temperature_confidence") or "low"),
         rule_family=str(environment.get("rule_family", "derwent_generalized_v1")),
+    )
+
+
+def _current_strength_proxy(environment: EnvironmentInputs) -> float | None:
+    candidates = [
+        environment.current_strength_proxy,
+        None if environment.tide_height_change_next_2h is None else environment.tide_height_change_next_2h / 0.28,
+        None if environment.tide_height_change_next_3h is None else environment.tide_height_change_next_3h / 0.38,
+        None if environment.tide_movement_rate_m_per_hour is None else environment.tide_movement_rate_m_per_hour / 0.14,
+    ]
+    values = [float(value) for value in candidates if value is not None]
+    if not values:
+        return None
+    return round(_clamp_unit(max(values)), 2)
+
+
+def _tide_current_context(environment: EnvironmentInputs, waterbody_class: str) -> dict[str, Any]:
+    tide_source = (environment.tide_source or "").lower()
+    if tide_source == "tidesatlas":
+        confidence = "medium"
+        note = "Tide events are API-backed; current strength is still inferred from local tide-height movement."
+    elif tide_source in {"tide_events", "tide_events_file"}:
+        confidence = "medium"
+        note = "Tide events are supplied; current strength is inferred from tide-height movement."
+    elif tide_source == "openmeteo_model":
+        confidence = "low"
+        note = "Open-Meteo sea-level is a tide proxy, not measured local current."
+    else:
+        confidence = "low"
+        note = "Current strength is estimated from broad tide timing only."
+
+    proxy = _current_strength_proxy(environment)
+    if proxy is None:
+        proxy = {
+            "low": 0.18,
+            "rising": 0.58,
+            "falling": 0.50,
+            "high": 0.18,
+            "mid": 0.34,
+        }.get(environment.tide_phase, 0.30)
+        if environment.tide_stage == "slack":
+            proxy = min(proxy, 0.18)
+
+    if waterbody_class in {"river_mouth", "tidal_river"} and confidence == "low":
+        note = f"{note} River/estuary current timing can lag tide height, so high scores are capped."
+
+    return {
+        "tide_current_confidence": confidence,
+        "current_strength_proxy": round(_clamp_unit(proxy), 2),
+        "current_source_note": note,
+    }
+
+
+def _water_temperature_context(environment: EnvironmentInputs, fish_profile: str) -> dict[str, Any]:
+    temp = environment.sea_surface_temperature_c
+    delta_24h = environment.sea_surface_temperature_delta_24h
+    delta_72h = environment.sea_surface_temperature_delta_72h
+    if temp is None:
+        return {
+            "signal": "unknown",
+            "trend": "unknown",
+            "confidence": "low",
+            "score_delta": 0,
+            "rules": [{"id": "water_temp_missing", "label": "Water temperature unavailable", "score_delta": 0}],
+        }
+
+    profile_ranges = {
+        "flathead": (15.0, 23.0),
+        "bream_estuary": (13.0, 22.0),
+        "salmon_pelagic": (11.0, 18.5),
+        "mulloway": (16.0, 23.5),
+        "rocks_reef": (12.0, 19.0),
+        "generic_estuary": (13.0, 21.0),
+    }
+    low, high = profile_ranges.get(fish_profile, profile_ranges["generic_estuary"])
+    rules: list[dict[str, Any]] = []
+    score_delta = 0
+    if temp < low - 3.0:
+        signal = "cold"
+        score_delta -= 7
+        _add_rule(rules, "water_temp_cold", -7, "Cold water for target profile")
+    elif temp < low:
+        signal = "cool"
+        score_delta -= 3
+        _add_rule(rules, "water_temp_cool", -3, "Cool water for target profile")
+    elif low <= temp <= high:
+        signal = "optimal"
+        score_delta += 4
+        _add_rule(rules, "water_temp_optimal", 4, "Productive water temperature")
+    elif temp <= high + 3.0:
+        signal = "warm"
+        score_delta -= 1
+        _add_rule(rules, "water_temp_warm", -1, "Warm water for target profile")
+    else:
+        signal = "hot"
+        score_delta -= 5
+        _add_rule(rules, "water_temp_hot", -5, "Very warm water for target profile")
+
+    trend = "stable"
+    if delta_24h is not None and delta_24h <= -1.2:
+        trend = "cooling_fast"
+        score_delta -= 4
+        _add_rule(rules, "water_temp_cooling_fast", -4, "Water temperature has fallen quickly")
+    elif delta_24h is not None and delta_24h >= 1.5:
+        trend = "warming_fast"
+        score_delta -= 2
+        _add_rule(rules, "water_temp_warming_fast", -2, "Water temperature has risen quickly")
+    elif delta_72h is not None and abs(delta_72h) <= 1.0 and signal in {"optimal", "cool", "warm"}:
+        trend = "stable"
+        score_delta += 2
+        _add_rule(rules, "water_temp_stable", 2, "Stable water temperature")
+    elif delta_72h is None and delta_24h is None:
+        trend = "unknown"
+
+    confidence = "medium" if delta_24h is not None or delta_72h is not None else "low"
+    return {
+        "signal": signal,
+        "trend": trend,
+        "confidence": confidence,
+        "score_delta": score_delta,
+        "rules": rules,
+    }
+
+
+def _enrich_environment(
+    environment: EnvironmentInputs,
+    *,
+    classification: WaterbodyClassification,
+    effective_region_slug: str,
+) -> EnvironmentInputs:
+    fish_profile = environment.fish_profile
+    if fish_profile in {"", "generic_estuary"} and classification.waterbody_class != "generic_coastal":
+        fish_profile = _default_fish_profile(classification.waterbody_class)
+
+    current = _tide_current_context(environment, classification.waterbody_class)
+    temp = _water_temperature_context(environment, fish_profile)
+    return replace(
+        environment,
+        waterbody_class=classification.waterbody_class,
+        fish_profile=fish_profile,
+        tide_current_confidence=current["tide_current_confidence"],
+        current_strength_proxy=current["current_strength_proxy"],
+        current_source_note=current["current_source_note"],
+        water_temperature_signal=temp["signal"],
+        water_temperature_trend=temp["trend"],
+        temperature_confidence=temp["confidence"],
+        rule_family=environment.rule_family,
     )
 
 
@@ -530,26 +810,14 @@ def _structure_flow_context(signals: GlobalSignals, tide_movement: float) -> dic
             "category": "complex_edge_with_moving_water",
             "structure_edge_signal": structure_edge_signal,
             "interaction": interaction,
-            "rules": [
-                {
-                    "id": "inferred_edge_flow",
-                    "score_delta": 3,
-                    "label": "Moving water near inferred edges",
-                }
-            ],
+            "rules": [],
         }
     if interaction >= 0.32:
         return {
             "category": "modest_edge_flow",
             "structure_edge_signal": structure_edge_signal,
             "interaction": interaction,
-            "rules": [
-                {
-                    "id": "modest_inferred_edge_flow",
-                    "score_delta": 1,
-                    "label": "Some moving water near inferred edges",
-                }
-            ],
+            "rules": [],
         }
     return {
         "category": "edge_flow_neutral",
@@ -825,6 +1093,10 @@ def _generic_derwent_rules(environment: EnvironmentInputs) -> dict[str, Any]:
         _add_rule(rules, "weak_tide_rate", -5, "Slow tide-height change")
     if environment.tide_height_change_next_2h is not None and environment.tide_height_change_next_2h >= 0.12:
         _add_rule(rules, "strong_local_tide_flow", 4, "Strong local tide movement")
+    if environment.tide_current_confidence == "low" and (
+        environment.current_strength_proxy is None or environment.current_strength_proxy < 0.42
+    ):
+        _add_rule(rules, "low_confidence_current", -2, "Current strength is only weakly supported")
 
     wind_kph = environment.wind_speed_knots * 1.852
     if 5 <= wind_kph <= 12:
@@ -838,11 +1110,11 @@ def _generic_derwent_rules(environment: EnvironmentInputs) -> dict[str, Any]:
 
     if environment.pressure_delta_3h is not None:
         if abs(environment.pressure_delta_3h) < 1.5:
-            _add_rule(rules, "stable_pressure_bonus", 3, "Stable pressure")
+            _add_rule(rules, "stable_pressure_bonus", 2, "Stable pressure")
         elif environment.pressure_delta_3h >= 1.5:
-            _add_rule(rules, "pressure_rising", 4, "Rising pressure")
+            _add_rule(rules, "pressure_rising", 2, "Rising pressure")
         elif environment.pressure_delta_3h <= -1.5:
-            _add_rule(rules, "pressure_falling", 5, "Falling pressure")
+            _add_rule(rules, "pressure_falling", 2, "Falling pressure")
         if abs(environment.pressure_delta_3h) >= 4:
             _add_rule(rules, "sharp_pressure_shift_flag", -2, "Sharp pressure shift")
 
@@ -882,11 +1154,8 @@ def _generic_derwent_rules(environment: EnvironmentInputs) -> dict[str, Any]:
     if environment.wave_height_delta_24h is not None and environment.wave_height_delta_24h <= -0.08:
         _add_rule(rules, "pelagic_settling_window", 2, "Settling sea")
 
-    if environment.sea_surface_temperature_c is not None:
-        if environment.sea_surface_temperature_c < 10:
-            _add_rule(rules, "water_temp_cold", -5, "Cold water")
-        elif 15 <= environment.sea_surface_temperature_c <= 22:
-            _add_rule(rules, "water_temp_optimal", 3, "Productive water temperature")
+    water_temp = _water_temperature_context(environment, environment.fish_profile)
+    rules.extend(water_temp["rules"])
 
     weather_shock_score, shock_rules = _weather_shock_rules(environment)
     rules.extend(shock_rules)
@@ -945,6 +1214,7 @@ def _reason_buckets(tags: set[str]) -> dict[str, int]:
         "cloud_cover_bonus",
         "weather_recovery_window",
         "water_temp_optimal",
+        "water_temp_stable",
         "light_rain_cover",
         "useful_wind_push",
         "side_shore_ripple",
@@ -969,6 +1239,11 @@ def _reason_buckets(tags: set[str]) -> dict[str, int]:
         "open_bay_swell_cap",
         "rough_open_bay_cap",
         "water_temp_cold",
+        "water_temp_cool",
+        "water_temp_hot",
+        "water_temp_cooling_fast",
+        "water_temp_warming_fast",
+        "low_confidence_current",
         "harsh_midday_penalty",
         "small_tide_range",
         "dead_water_2h",
@@ -1178,9 +1453,14 @@ def _local_system_priority_guards(
 ) -> tuple[float, float, float, float, float, list[str]]:
     guard_tags: list[str] = []
     normalized = environment_context.get("normalized", {})
+    inputs = environment_context.get("inputs_used", {})
     flow_strength = float(normalized.get("water_flow_strength", normalized.get("movement_bonus", 0.5)))
     wind_fit = float(normalized.get("wind_system_fit", 0.5))
     weather_shock = float(normalized.get("weather_shock", 0.0))
+    current_confidence = str(inputs.get("tide_current_confidence") or "low")
+    waterbody_class = str(inputs.get("waterbody_class") or "")
+    temp_signal = str(inputs.get("water_temperature_signal") or "unknown")
+    temp_trend = str(inputs.get("water_temperature_trend") or "unknown")
     trend_break = bool(
         tags
         & {
@@ -1215,6 +1495,18 @@ def _local_system_priority_guards(
         presence = min(presence, 56)
         trip_quality = min(trip_quality, 58)
         guard_tags.append("estuary_timing_capped_by_flow")
+
+    if current_confidence == "low" and waterbody_class in {"river_mouth", "tidal_river"} and activity >= 68:
+        activity = min(activity, 66)
+        presence = min(presence, 66)
+        trip_quality = min(trip_quality, 64)
+        guard_tags.append("river_current_confidence_cap")
+
+    if temp_signal == "cold" and temp_trend in {"cooling_fast", "unknown"} and activity >= 62:
+        activity = min(activity, 60)
+        presence = min(presence, 58)
+        roaming = min(roaming, 58)
+        guard_tags.append("cold_water_fish_signal_cap")
 
     if open_like and "recent_weather_shock" in tags and trend_break and (flow_strength < 0.55 or wind_fit < 0.42):
         activity = min(activity, 62)
@@ -1329,6 +1621,9 @@ def _sheltered_estuary_support_lift(
         "strong_wind_shift",
         "recent_heavy_rain_shock",
         "multi_day_rain_disruption",
+        "low_confidence_current",
+        "water_temp_cold",
+        "water_temp_cooling_fast",
     }
     if tags & blocking_tags or weather_shock >= 1.5 or float(ocean_pressure.get("severity", 0.0) or 0.0) > 0:
         return 0.0, []
@@ -1452,7 +1747,9 @@ def _comfort_score(
     wind_gust_knots = inputs_used.get("wind_gust_knots")
     rain_mm = float(inputs_used.get("rain_mm") or 0.0)
     recent_precip = float(inputs_used.get("recent_precipitation_sum_12h") or 0.0)
-    wave_height_m = float(inputs_used.get("wave_height_m") or inputs_used.get("swell_height_m") or 0.0)
+    wave_height_m = float(inputs_used.get("wave_height_m") or 0.0)
+    swell_height_m = float(inputs_used.get("swell_height_m") or 0.0)
+    effective_sea_m = max(wave_height_m, swell_height_m * 0.85)
     cloud_cover_pct = inputs_used.get("cloud_cover_pct")
 
     if temperature_c is not None:
@@ -1513,12 +1810,15 @@ def _comfort_score(
         score -= 6
         factors.append("brisk_wind")
 
-    if wave_height_m >= 2.5:
+    if effective_sea_m >= 2.5:
         score -= 12
         factors.append("rough_seas")
-    elif wave_height_m >= 1.5:
+    elif effective_sea_m >= 1.5:
         score -= 5
         factors.append("notable_seas")
+    elif swell_height_m >= 1.2 and wave_height_m < 1.0:
+        score -= 3
+        factors.append("long_period_swell")
 
     if cloud_cover_pct is not None:
         cloud = float(cloud_cover_pct)
@@ -1621,6 +1921,23 @@ def _safety_flag(
         flag = SAFETY_FLAG_LOW
 
     return flag, factors, risk_points
+
+
+def _trip_reality_score(comfort_score: int, safety_flag: str) -> int:
+    """User-facing trip reality: comfort first, capped by broad safety risk.
+
+    This intentionally excludes bite timing, tide strength, and fish presence.
+    Those belong in fish_outlook/activity; a calm, dry, low-risk day should not
+    receive a poor trip score just because the fish window is weak.
+    """
+    score = float(comfort_score)
+    if safety_flag == SAFETY_FLAG_HAZARDOUS:
+        score = min(score, 35)
+    elif safety_flag == SAFETY_FLAG_ELEVATED:
+        score = min(score, 55)
+    elif safety_flag == SAFETY_FLAG_MODERATE:
+        score = min(score, 70)
+    return _clamp(score)
 
 
 def _derwent_style_score_modes(
@@ -1763,12 +2080,15 @@ def _derwent_style_score_modes(
     wind_gust_knots = inputs.get("wind_gust_knots")
     rain_mm = float(inputs.get("rain_mm") or 0.0)
     recent_precipitation = float(inputs.get("recent_precipitation_sum_12h") or 0.0)
-    wave_height_m = float(inputs.get("wave_height_m") or inputs.get("swell_height_m") or 0.0)
+    wave_height_m = float(inputs.get("wave_height_m") or 0.0)
+    swell_height_m = float(inputs.get("swell_height_m") or 0.0)
     is_daylight = inputs.get("is_daylight")
     exposure = float(environment_context.get("normalized", {}).get("directional_exposure", 0.0))
     weather_stress = float(environment_context.get("normalized", {}).get("weather_stress", 0.0))
     exposed_penalty = float(environment_context.get("normalized", {}).get("exposed_penalty", 0.0))
     exposed_type = dominant_type in {"beach", "rocks"}
+    swell_trip_weight = 1.0 if exposed_type else 0.55 if dominant_type in {"bay_estuary_edge", "jetty"} else 0.75
+    trip_sea_height = max(wave_height_m, swell_height_m * swell_trip_weight)
 
     if temperature_c is not None:
         temp = float(temperature_c)
@@ -1795,10 +2115,16 @@ def _derwent_style_score_modes(
 
     if wind_gust_knots is not None and exposed_type and float(wind_gust_knots) >= 19:
         trip_quality -= 5
-    if exposed_type and wave_height_m >= 1.0:
+    if exposed_type and trip_sea_height >= 1.0:
         trip_quality -= 5
-    elif exposed_type and wave_height_m >= 0.6 and wind_gust_knots is not None and float(wind_gust_knots) >= 12:
+    elif exposed_type and trip_sea_height >= 0.6 and wind_gust_knots is not None and float(wind_gust_knots) >= 12:
         trip_quality -= 4
+    if exposed_type and swell_height_m >= 2.0:
+        trip_quality -= 8
+    elif exposed_type and swell_height_m >= 1.2:
+        trip_quality -= 4
+    elif not exposed_type and swell_height_m >= 2.0:
+        trip_quality -= 3
     if rain_mm >= 0.4 and temperature_c is not None and float(temperature_c) <= 10:
         trip_quality -= 4
     trip_quality -= 5.0 * weather_stress
@@ -1867,11 +2193,13 @@ def _derwent_style_score_modes(
         dominant_type=dominant_type,
         tags=tags,
     )
+    trip_reality = _trip_reality_score(comfort_score, safety_flag)
 
     return {
         "activity_score": final_activity,
         "presence_score": final_presence,
-        "trip_quality_score": final_trip_quality,
+        "trip_quality_score": trip_reality,
+        "fish_window_trip_score": final_trip_quality,
         "resident_opportunity_score": resident,
         "roaming_opportunity_score": roaming,
         "big_fish_near_shore": big,
@@ -1905,7 +2233,12 @@ def _environment_context(
     region_config: RegionConfig,
 ) -> dict[str, Any]:
     wind_factor = _clamp_unit((environment.wind_speed_knots - 6.0) / 18.0) * region_config.exposure_bias
-    swell_factor = _clamp_unit((environment.swell_height_m - 0.35) / 1.8) * region_config.exposure_bias
+    effective_swell_height = environment.swell_height_m if environment.swell_height_m is not None else environment.wave_height_m
+    swell_factor = (
+        0.0
+        if effective_swell_height is None
+        else _clamp_unit((effective_swell_height - 0.35) / 1.8) * region_config.exposure_bias
+    )
     wind_factor = _clamp_unit(wind_factor)
     swell_factor = _clamp_unit(swell_factor)
     pressure_penalty = _clamp_unit(abs(environment.pressure_hpa - 1015.0) / 18.0)
@@ -1936,6 +2269,10 @@ def _environment_context(
     elif environment.tide_movement_rate_m_per_hour is not None and environment.tide_movement_rate_m_per_hour < 0.03:
         tide_movement_factor = 0.55
     tide_movement *= tide_movement_factor
+    if environment.current_strength_proxy is not None:
+        tide_movement = _clamp_unit((0.55 * tide_movement) + (0.45 * environment.current_strength_proxy))
+    if environment.tide_current_confidence == "low" and environment.waterbody_class in {"river_mouth", "tidal_river"}:
+        tide_movement = min(tide_movement, 0.68)
     structure_flow = _structure_flow_context(signals, tide_movement)
     wind_to_shore = _wind_to_shore_context(
         environment=environment,
@@ -1980,7 +2317,10 @@ def _environment_context(
             "swell_direction_deg": environment.swell_direction_deg,
             "wave_height_m": environment.wave_height_m,
             "wave_height_delta_24h": environment.wave_height_delta_24h,
+            "wave_data_source": environment.wave_data_source,
             "sea_surface_temperature_c": environment.sea_surface_temperature_c,
+            "sea_surface_temperature_delta_24h": environment.sea_surface_temperature_delta_24h,
+            "sea_surface_temperature_delta_72h": environment.sea_surface_temperature_delta_72h,
             "pressure_hpa": environment.pressure_hpa,
             "pressure_delta_3h": environment.pressure_delta_3h,
             "pressure_delta_6h": environment.pressure_delta_6h,
@@ -2008,10 +2348,15 @@ def _environment_context(
             "hours_since_low_tide": environment.hours_since_low_tide,
             "hours_since_high_tide": environment.hours_since_high_tide,
             "tide_range_m": environment.tide_range_m,
+            "tide_height_m": environment.tide_height_m,
             "tide_height_change_next_2h": environment.tide_height_change_next_2h,
             "tide_height_change_next_3h": environment.tide_height_change_next_3h,
             "tide_height_change_prev_2h": environment.tide_height_change_prev_2h,
             "tide_movement_rate_m_per_hour": environment.tide_movement_rate_m_per_hour,
+            "tide_source": environment.tide_source,
+            "tide_current_confidence": environment.tide_current_confidence,
+            "current_strength_proxy": environment.current_strength_proxy,
+            "current_source_note": environment.current_source_note,
             "time_window": environment.time_window,
             "hour_of_day": environment.hour_of_day,
             "hours_from_sunrise": environment.hours_from_sunrise,
@@ -2021,6 +2366,11 @@ def _environment_context(
             "moon_phase_fraction": environment.moon_phase_fraction,
             "moon_phase_name": environment.moon_phase_name,
             "moon_illumination_pct": environment.moon_illumination_pct,
+            "waterbody_class": environment.waterbody_class,
+            "fish_profile": environment.fish_profile,
+            "water_temperature_signal": environment.water_temperature_signal,
+            "water_temperature_trend": environment.water_temperature_trend,
+            "temperature_confidence": environment.temperature_confidence,
             "wind_onshore_knots": None if wind_onshore is None else round(wind_onshore, 2),
             "wind_offshore_knots": None if wind_offshore is None else round(wind_offshore, 2),
             "wind_alongshore_knots": None if wind_alongshore is None else round(wind_alongshore, 2),
@@ -2453,7 +2803,14 @@ def build_preview(
 
     nearest_supported_water_km = nearest_water_km or 0.0
     global_signals = _compute_global_signals(lat, lon, nearest_supported_water_km, on_water)
-    region_config = get_region_config(region)
+    waterbody_classification = _classify_waterbody(
+        global_signals,
+        nearest_water_km=nearest_supported_water_km,
+        on_water=on_water,
+        manual_region=region,
+    )
+    effective_region = region or "generic_coastal"
+    region_config = get_region_config(effective_region)
     type_signals = _apply_region_bias(_infer_type_signals(global_signals), region_config)
     is_direct_support = nearest_supported_water_km <= DIRECT_NEARBY_WATER_KM
     is_extended_support = (
@@ -2469,7 +2826,11 @@ def build_preview(
             message="This preview currently supports searched points that are on coastal or tidal water, or very close to it.",
             nearest_supported_water_km=nearest_supported_water_km,
         )
-    normalized_environment = _normalize_environment(environment)
+    normalized_environment = _enrich_environment(
+        _normalize_environment(environment),
+        classification=waterbody_classification,
+        effective_region_slug=region_config.slug,
+    )
     environment_context = _environment_context(normalized_environment, global_signals, region_config)
     nearby_water_types = _score_nearby_water_types(global_signals, type_signals, environment_context, region_config)
 
@@ -2550,6 +2911,15 @@ def build_preview(
             "region": {
                 "slug": region_config.slug,
                 "display_name": region_config.display_name,
+                "manual_region_override": region,
+            },
+            "waterbody_classification": {
+                "waterbody_class": waterbody_classification.waterbody_class,
+                "classification_confidence": waterbody_classification.confidence,
+                "classification_reasons": list(waterbody_classification.reasons),
+                "manual_region_override": region,
+                "recommended_region": waterbody_classification.recommended_region,
+                "effective_region": region_config.slug,
             },
             "support_profile": {
                 "support_mode": support_mode,

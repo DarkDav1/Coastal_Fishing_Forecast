@@ -246,7 +246,7 @@ class AugmentFacilitiesTests(unittest.TestCase):
 
 
 class FrontendResponseIntegrationTests(unittest.TestCase):
-    def test_frontend_response_attaches_pin_forecast_to_supplied_facilities(self) -> None:
+    def test_frontend_response_keeps_facilities_context_only(self) -> None:
         response = build_frontend_forecast_response(
             -41.2530,
             148.3060,
@@ -270,13 +270,7 @@ class FrontendResponseIntegrationTests(unittest.TestCase):
         )
         facilities = response["structure_facilities"]
         self.assertEqual(len(facilities), 1)
-        self.assertIn("pin_forecast", facilities[0])
-        pf = facilities[0]["pin_forecast"]
-        self.assertTrue(pf["available"])
-        self.assertIsInstance(pf["score"], int)
-        self.assertIn("safety_flag", pf)
-        self.assertIn("fish_outlook_score", pf)
-        self.assertGreaterEqual(pf["distance_km_from_search"], 0.0)
+        self.assertNotIn("pin_forecast", facilities[0])
 
     def test_frontend_response_no_facilities_no_pin_forecast(self) -> None:
         response = build_frontend_forecast_response(

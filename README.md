@@ -178,6 +178,10 @@ The replay covers supported coastal examples and explicit rejection examples. Cu
 
 ## Frontend planning
 
+The current end-to-end development guide is documented in:
+
+- `docs/development_guide_2026-05-20.md`
+
 The first standalone frontend plan is documented in:
 
 - `docs/frontend_product_plan_2026-04-28.md`

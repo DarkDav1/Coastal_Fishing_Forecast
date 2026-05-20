@@ -107,7 +107,7 @@ def _range_forecast(
 
 
 class ComboReleaseUnitTests(unittest.TestCase):
-    def test_combo_triggers_when_four_axes_align_with_real_tide(self) -> None:
+    def test_combo_triggers_when_non_structure_axes_align_with_real_tide(self) -> None:
         window = _combo_ready_window()
         forecast = _range_forecast(window)
         original_score = window["preview"]["overall_recommendation"]["score"]
@@ -117,11 +117,11 @@ class ComboReleaseUnitTests(unittest.TestCase):
         boosted = forecast["windows"][0]["preview"]["overall_recommendation"]
         self.assertTrue(summary["applied"])
         self.assertEqual(summary["windows_boosted"], 1)
-        self.assertEqual(summary["best_tag"], "rare_alignment_window")
+        self.assertEqual(summary["best_tag"], "strong_alignment_window")
         self.assertGreater(boosted["score"], original_score)
         self.assertLessEqual(boosted["score"], COMBO_HARD_CEILING)
-        self.assertIn("rare_alignment_window", boosted["reason_tags"])
-        self.assertEqual(boosted["combo_release"]["tag"], "rare_alignment_window")
+        self.assertIn("strong_alignment_window", boosted["reason_tags"])
+        self.assertEqual(boosted["combo_release"]["tag"], "strong_alignment_window")
         self.assertEqual(boosted["combo_release"]["original_score"], original_score)
 
     def test_combo_uses_strong_tag_when_only_three_axes_align(self) -> None:

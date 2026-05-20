@@ -404,6 +404,49 @@ h1 {
   line-height: 1.32;
 }
 
+.hero-score-split {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.hero-score-split div {
+  border: 1px solid rgba(18, 41, 53, 0.12);
+  border-radius: 18px;
+  background: rgba(255, 250, 240, 0.72);
+  padding: 12px;
+}
+
+.hero-score-split span,
+.hero-score-split small {
+  display: block;
+}
+
+.hero-score-split span {
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.hero-score-split strong {
+  color: var(--reef);
+  display: block;
+  font-family: "Archivo", "Manrope", sans-serif;
+  font-size: clamp(2.1rem, 4vw, 3rem);
+  font-weight: 950;
+  line-height: 0.95;
+  margin-top: 7px;
+}
+
+.hero-score-split small {
+  color: #5e7482;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  margin-top: 6px;
+}
+
 .score-reasons {
   display: flex;
   flex-wrap: wrap;
@@ -847,9 +890,10 @@ p.score-factor-summary {
 }
 
 .y-labels span {
-  left: 10px;
+  left: 10%;
   position: absolute;
-  translate: 0 -50%;
+  text-align: right;
+  translate: -100% -50%;
 }
 
 .x-labels span {
@@ -1636,7 +1680,7 @@ p.score-factor-summary {
   padding: 18px;
 }
 
-.weather-map-panel iframe {
+.weather-map-panel iframe.wind-map-frame {
   background: #d6e3de;
   border: 0;
   border-radius: 22px;
@@ -1652,77 +1696,6 @@ p.score-factor-summary {
   font-size: 0.72rem;
   line-height: 1.35;
   margin-top: 9px;
-}
-
-.weather-map-stage {
-  height: 260px;
-  border-radius: 16px;
-  background: #c9d7d2;
-  margin-top: 10px;
-  overflow: hidden;
-  position: relative;
-}
-
-.weather-map-stage .tile-pane {
-  position: absolute;
-  inset: 0;
-}
-
-.weather-map-stage .tile-pane img {
-  image-rendering: auto;
-  position: absolute;
-  user-select: none;
-}
-
-.weather-map-tint {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 50% 52%, rgba(255, 250, 240, 0.18), transparent 34%),
-    linear-gradient(135deg, rgba(50, 115, 148, 0.18), rgba(228, 167, 47, 0.16));
-}
-
-.weather-map-center {
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  border: 3px solid #fffaf0;
-  border-radius: 999px;
-  background: var(--sun);
-  box-shadow: 0 0 0 8px rgba(228, 167, 47, 0.24);
-  translate: -50% -50%;
-  z-index: 3;
-}
-
-.local-wind-field {
-  position: absolute;
-  inset: 0;
-  z-index: 4;
-}
-
-.local-wind-field span {
-  align-items: center;
-  background: rgba(255, 250, 240, 0.82);
-  border: 1px solid rgba(18, 41, 53, 0.12);
-  border-radius: 999px;
-  color: var(--reef);
-  display: flex;
-  height: 30px;
-  justify-content: center;
-  line-height: 1;
-  margin: -15px 0 0 -15px;
-  width: 30px;
-  font-size: 1.15rem;
-  font-weight: 900;
-  position: absolute;
-  box-shadow: 0 8px 18px rgba(18, 41, 53, 0.14);
-}
-
-.local-wind-field span.active {
-  background: var(--reef);
-  color: #fffaf0;
-  transform: scale(1.25);
-  z-index: 5;
 }
 
 .weather-curve-head {
@@ -1751,8 +1724,8 @@ p.score-factor-summary {
 .weather-chart-shell {
   align-items: stretch;
   display: grid;
-  gap: 8px;
-  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 6px;
+  grid-template-columns: 30px minmax(0, 1fr);
   margin-top: 12px;
 }
 
@@ -1769,7 +1742,7 @@ p.score-factor-summary {
   color: #516a62;
   display: block;
   font-family: "Archivo", "Manrope", sans-serif;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   font-weight: 900;
   line-height: 1;
   position: absolute;
@@ -1954,6 +1927,7 @@ p.score-factor-summary {
 :root[data-theme="night"] .candidate-menu button,
 :root[data-theme="night"] .date-strip button,
 :root[data-theme="night"] .score-mix span,
+:root[data-theme="night"] .hero-score-split div,
 :root[data-theme="night"] .formula-grid div,
 :root[data-theme="night"] .spot-row,
 :root[data-theme="night"] .weather-map-panel,
@@ -2070,6 +2044,7 @@ p.score-factor-summary {
   .score-mix,
   .note-grid,
   .score-mode-strip,
+  .hero-score-split,
   .formula-grid,
   .structure-list.compact,
   .weather-visual-grid {
@@ -2100,6 +2075,7 @@ p.score-factor-summary {
   .score-mix,
   .note-grid,
   .score-mode-strip,
+  .hero-score-split,
   .formula-grid,
   .structure-list.compact,
   .weather-visual-grid {

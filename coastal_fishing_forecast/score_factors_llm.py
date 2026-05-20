@@ -113,6 +113,24 @@ def _collect_change_notes(windows: list[Mapping[str, Any]], limit: int = 8) -> l
     return notes
 
 
+def _translate_change_note(note: str, lang: str) -> str:
+    if lang != "zh":
+        return note
+    cleaned = note.strip().rstrip(".。")
+    translations = {
+        "Air temperature has dropped sharply from the recent warm period": "近期由偏暖转为明显降温",
+        "Air temperature has fallen noticeably over the last day": "过去一天明显降温",
+        "Pressure has moved quickly over the last day": "过去一天气压变化较快",
+        "Pressure is changing quickly in the current window": "当前时段气压变化较快，稳定性下降",
+        "Wind direction has shifted strongly in the last half day": "过去半天风向变化明显",
+        "Heavy recent rain may have disrupted inshore water conditions": "近期雨量偏大，近岸水色和盐度可能受影响",
+        "Recent multi-day rain may still be affecting the water": "近期连续降雨可能仍在影响近岸水况",
+        "Recent strong gusts may have unsettled exposed water": "近期阵风偏强，外露水域稳定性较差",
+        "The sea state has changed quickly compared with the previous day": "海况变化较快，单个窗口的参考价值有限",
+    }
+    return translations.get(cleaned, cleaned)
+
+
 def build_score_factors_payload(
     *,
     lang: str,
@@ -120,14 +138,15 @@ def build_score_factors_payload(
     windows: list[Mapping[str, Any]],
 ) -> dict[str, Any]:
     aggregates = aggregate_windows_stats(windows)
-    notes = _collect_change_notes(windows)
+    resolved_lang = lang if lang in {"en", "zh"} else "en"
+    notes = [_translate_change_note(note, resolved_lang) for note in _collect_change_notes(windows)]
     slots = [
         {"time_window": w.get("time_window"), "representative_time": w.get("representative_time")}
         for w in windows[:12]
         if isinstance(w, Mapping)
     ]
     return {
-        "lang": lang if lang in {"en", "zh"} else "en",
+        "lang": resolved_lang,
         "date": date_iso,
         "aggregates": aggregates,
         "weather_change_notes": notes,

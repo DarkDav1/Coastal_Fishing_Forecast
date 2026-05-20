@@ -97,6 +97,21 @@ class ComfortScoreTests(unittest.TestCase):
         self.assertGreaterEqual(score, 0)
         self.assertLessEqual(score, 100)
 
+    def test_comfort_accounts_for_swell_even_when_local_wave_is_small(self) -> None:
+        score, factors = _comfort_score(
+            inputs_used={
+                "temperature_c": 18,
+                "wind_speed_knots": 6,
+                "wind_gust_knots": 9,
+                "rain_mm": 0,
+                "wave_height_m": 0.3,
+                "swell_height_m": 1.4,
+            },
+            normalized={},
+        )
+        self.assertLess(score, 82)
+        self.assertIn("long_period_swell", factors)
+
 
 class SafetyFlagTests(unittest.TestCase):
     def test_safety_low_in_calm_conditions(self) -> None:
@@ -290,6 +305,95 @@ class IntegratedSplitTests(unittest.TestCase):
         overall = result["overall_recommendation"]
         self.assertEqual(overall["safety_flag"], SAFETY_FLAG_LOW)
         self.assertGreaterEqual(overall["comfort_score"], 70)
+
+    def test_trip_quality_tracks_trip_reality_not_fish_window_quality(self) -> None:
+        result = build_preview(
+            -42.8915,
+            147.3320,
+            environment={
+                "wind_speed_knots": 6,
+                "wind_gust_knots": 12,
+                "temperature_c": 14,
+                "rain_mm": 0,
+                "swell_height_m": 0.2,
+                "wave_height_m": 0.3,
+                "tide_phase": "falling",
+                "tide_stage": "ebb",
+                "hours_to_high_tide": 7,
+                "hours_to_low_tide": 3,
+                "tide_height_change_next_2h": 0.02,
+                "tide_range_m": 0.4,
+                "time_window": "dusk",
+                "is_daylight": True,
+            },
+            region="sheltered_estuary",
+        )
+        overall = result["overall_recommendation"]
+        self.assertLess(overall["fish_outlook_score"], 40)
+        self.assertGreaterEqual(overall["trip_quality_score"], 70)
+        self.assertEqual(overall["trip_quality_score"], overall["comfort_score"])
+
+    def test_hazardous_safety_caps_trip_quality_even_when_comfort_is_higher(self) -> None:
+        result = build_preview(
+            -41.2530,
+            148.3060,
+            environment={
+                "wind_speed_knots": 20,
+                "wind_gust_knots": 28,
+                "temperature_c": 14,
+                "rain_mm": 0,
+                "swell_height_m": 2.2,
+                "wave_height_m": 2.7,
+                "tide_phase": "rising",
+                "tide_stage": "flood",
+                "hours_to_high_tide": 1.0,
+                "tide_height_change_next_2h": 0.24,
+                "tide_range_m": 0.8,
+                "time_window": "dawn",
+                "is_daylight": True,
+            },
+            region="open_coast",
+        )
+        overall = result["overall_recommendation"]
+        self.assertEqual(overall["safety_flag"], SAFETY_FLAG_HAZARDOUS)
+        self.assertGreater(overall["comfort_score"], overall["trip_quality_score"])
+        self.assertLessEqual(overall["trip_quality_score"], 35)
+
+    def test_large_swell_lowers_trip_quality_on_open_coast(self) -> None:
+        base_environment = {
+            "wind_speed_knots": 7,
+            "wind_gust_knots": 11,
+            "wind_direction_deg": 110,
+            "swell_direction_deg": 110,
+            "temperature_c": 17,
+            "rain_mm": 0,
+            "wave_height_m": 0.3,
+            "tide_phase": "rising",
+            "tide_stage": "flood",
+            "hours_to_high_tide": 1.0,
+            "tide_height_change_next_2h": 0.24,
+            "tide_range_m": 0.8,
+            "time_window": "dawn",
+            "hours_from_sunrise": 0.4,
+            "is_daylight": True,
+        }
+        calm = build_preview(
+            -41.2530,
+            148.3060,
+            environment={**base_environment, "swell_height_m": 0.4},
+            region="open_coast",
+        )
+        swell = build_preview(
+            -41.2530,
+            148.3060,
+            environment={**base_environment, "swell_height_m": 1.8},
+            region="open_coast",
+        )
+        self.assertLess(
+            swell["overall_recommendation"]["trip_quality_score"],
+            calm["overall_recommendation"]["trip_quality_score"],
+        )
+        self.assertIn(swell["overall_recommendation"]["safety_flag"], {SAFETY_FLAG_MODERATE, SAFETY_FLAG_ELEVATED})
 
 
 if __name__ == "__main__":

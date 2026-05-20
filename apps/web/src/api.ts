@@ -11,9 +11,8 @@ function isoDateOffset(days: number) {
 
 function forecastDefaults() {
   return {
-    start_date: isoDateOffset(-30),
+    start_date: isoDateOffset(-7),
     end_date: isoDateOffset(5),
-    region: "sheltered_estuary",
     planner_provider: "rule_based"
   };
 }

@@ -26,6 +26,8 @@ from coastal_fishing_forecast.tidesatlas import fetch_tidesatlas_events
 FORECAST_CONTRACT_VERSION = "2026-04-27.timeseries.v1"
 DEFAULT_TIMEZONE = ZoneInfo("Australia/Hobart")
 WEATHER_TREND_LOOKBACK_DAYS = 3
+TIDE_INFERENCE_LOOKAHEAD_DAYS = 1
+PROTECTED_WAVE_ESTIMATE_REGIONS = {"sheltered_estuary", "bay_coast", "harbour_access", "river_mouth", "tidal_river"}
 
 
 @dataclass(frozen=True)
@@ -307,6 +309,18 @@ def _moon_phase_info(day: date) -> dict[str, Any]:
     }
 
 
+def _allows_protected_estuary_wave_estimate(region: str | None) -> bool:
+    return (region or "").lower() in PROTECTED_WAVE_ESTIMATE_REGIONS
+
+
+def _condition_fetch_end_date(end: date, condition_source: str) -> date:
+    lookahead = date.fromordinal(end.toordinal() + TIDE_INFERENCE_LOOKAHEAD_DAYS)
+    today = datetime.now(DEFAULT_TIMEZONE).date()
+    if condition_source in {"auto", "archive"} and end < today <= lookahead:
+        return end
+    return lookahead
+
+
 def _window_environment(
     *,
     day: date,
@@ -317,6 +331,7 @@ def _window_environment(
     lon: float,
     tide_events: list[TideEvent],
     tide_event_source_label: str | None = None,
+    region: str | None = None,
 ) -> dict[str, Any]:
     weather_rows = _values_for_window(weather_hourly, "weather", day, window)
     marine_rows = _values_for_window(marine_hourly, "marine", day, window)
@@ -338,6 +353,7 @@ def _window_environment(
         engine_time_window = window.key
     pressure_hpa = round(_mean(_window_numeric_values(weather_hourly, "surface_pressure", weather_indices)) or 1015.0, 1)
     wave_height = _mean(_window_numeric_values(marine_hourly, "wave_height", marine_indices))
+    swell_height = _mean(_window_numeric_values(marine_hourly, "swell_wave_height", marine_indices))
     rain_values = _window_numeric_values(weather_hourly, "rain", weather_indices)
     precipitation_values = _window_numeric_values(weather_hourly, "precipitation", weather_indices)
     temperature_values = _window_numeric_values(weather_hourly, "temperature_2m", weather_indices)
@@ -362,9 +378,22 @@ def _window_environment(
         6,
         72,
     )
+    mean_wind_speed = round(_mean(_window_numeric_values(weather_hourly, "wind_speed_10m", weather_indices)) or 12.0, 1)
+    sea_level_values = _window_numeric_values(marine_hourly, "sea_level_height_msl", marine_indices)
+    sea_temp_values = _window_numeric_values(marine_hourly, "sea_surface_temperature", marine_indices)
+    sea_surface_temperature = None if not sea_temp_values else round(_mean(sea_temp_values) or 0.0, 1)
+    wave_data_source = "openmeteo_marine"
+    if wave_height is None and swell_height is None and sea_level_values and _allows_protected_estuary_wave_estimate(region):
+        wave_data_source = "protected_estuary_estimate"
+        protected_estuary_wave = round(max(0.08, min(0.35, 0.06 + (mean_wind_speed * 0.025))), 2)
+        wave_height = protected_estuary_wave
+        swell_height = protected_estuary_wave
+    elif wave_height is None and swell_height is None:
+        wave_data_source = "unavailable"
+
     environment = {
         "temperature_c": temperature_c,
-        "wind_speed_knots": round(_mean(_window_numeric_values(weather_hourly, "wind_speed_10m", weather_indices)) or 12.0, 1),
+        "wind_speed_knots": mean_wind_speed,
         "wind_direction_deg": None,
         "wind_gust_knots": None
         if not _window_numeric_values(weather_hourly, "wind_gusts_10m", weather_indices)
@@ -372,13 +401,26 @@ def _window_environment(
         "recent_wind_max_12h": None
         if not _recent_numeric_values(weather_hourly, "wind_speed_10m", representative_time, 12)
         else round(max(_recent_numeric_values(weather_hourly, "wind_speed_10m", representative_time, 12)), 1),
-        "swell_height_m": round(_mean(_window_numeric_values(marine_hourly, "swell_wave_height", marine_indices)) or 1.0, 2),
+        "swell_height_m": None if swell_height is None else round(swell_height, 2),
         "swell_direction_deg": None,
         "wave_height_m": None if wave_height is None else round(wave_height, 2),
         "wave_height_delta_24h": _series_delta(marine_hourly, "wave_height", representative_time, wave_height, min_age_hours=24),
-        "sea_surface_temperature_c": None
-        if not _window_numeric_values(marine_hourly, "sea_surface_temperature", marine_indices)
-        else round(_mean(_window_numeric_values(marine_hourly, "sea_surface_temperature", marine_indices)) or 0.0, 1),
+        "wave_data_source": wave_data_source,
+        "sea_surface_temperature_c": sea_surface_temperature,
+        "sea_surface_temperature_delta_24h": _series_delta(
+            marine_hourly,
+            "sea_surface_temperature",
+            representative_time,
+            sea_surface_temperature,
+            min_age_hours=24,
+        ),
+        "sea_surface_temperature_delta_72h": _series_delta(
+            marine_hourly,
+            "sea_surface_temperature",
+            representative_time,
+            sea_surface_temperature,
+            min_age_hours=72,
+        ),
         "pressure_hpa": pressure_hpa,
         "pressure_delta_3h": _pressure_delta_3h(weather_hourly, representative_time, pressure_hpa),
         "pressure_delta_6h": _series_delta(weather_hourly, "surface_pressure", representative_time, pressure_hpa, min_age_hours=6),
@@ -424,6 +466,7 @@ def _window_environment(
         "tide_height_change_next_3h": tide_context.tide_height_change_next_3h,
         "tide_height_change_prev_2h": tide_context.tide_height_change_prev_2h,
         "tide_movement_rate_m_per_hour": tide_context.tide_movement_rate_m_per_hour,
+        "tide_source": display_tide_source,
         "time_window": engine_time_window,
         "hour_of_day": representative_time.hour + (representative_time.minute / 60.0),
         "rule_family": "derwent_generalized_v1",
@@ -463,12 +506,6 @@ def _open_meteo_model_tide_events(conditions: Mapping[str, Any]) -> list[TideEve
 
 def _summarize_windows(windows: list[dict[str, Any]]) -> dict[str, Any]:
     supported = [window for window in windows if window["preview"]["status"] == "ok"]
-    best = sorted(
-        supported,
-        key=lambda window: window["preview"]["overall_recommendation"].get("trip_quality_score")
-        or window["preview"]["overall_recommendation"]["score"],
-        reverse=True,
-    )[:5]
     if not supported:
         return {"best_windows": [], "average_score": None}
 
@@ -497,7 +534,7 @@ def _summarize_windows(windows: list[dict[str, Any]]) -> dict[str, Any]:
                 "label": window["preview"]["overall_recommendation"]["label"],
                 "dominant_inferred_type": window["preview"]["overall_recommendation"]["dominant_inferred_type"],
             }
-            for window in best
+            for window in sorted(supported, key=summary_score, reverse=True)[:5]
         ],
     }
 
@@ -508,6 +545,7 @@ def _build_hourly_activity(
     lon: float,
     days: list[date],
     region: str | None,
+    condition_region: str | None = None,
     weather_hourly: Mapping[str, list[Any]],
     weather_daily: Mapping[str, list[Any]],
     marine_hourly: Mapping[str, list[Any]],
@@ -527,11 +565,17 @@ def _build_hourly_activity(
                 lon=lon,
                 tide_events=tide_events,
                 tide_event_source_label=tide_event_source_label,
+                region=condition_region or region,
             )
             preview = build_preview(lat, lon, environment=window_context["environment"], region=region)
             recommendation = preview.get("overall_recommendation") or {}
             environment = window_context["environment"]
             inputs_used = preview.get("meta", {}).get("environment", {}).get("inputs_used", {})
+
+            def environment_or_input(key: str) -> Any:
+                value = environment.get(key)
+                return value if value is not None else inputs_used.get(key)
+
             hourly_activity.append(
                 {
                     "date": day.isoformat(),
@@ -550,19 +594,29 @@ def _build_hourly_activity(
                     "time_window": window_context["environment"]["time_window"],
                     "tide_phase": window_context["environment"]["tide_phase"],
                     "tide_source": window_context["tide_source"],
-                    "tide_stage": inputs_used.get("tide_stage"),
-                    "tide_range_m": inputs_used.get("tide_range_m"),
-                    "tide_height_m": inputs_used.get("tide_height_m"),
-                    "tide_movement_rate_m_per_hour": inputs_used.get("tide_movement_rate_m_per_hour"),
+                    "tide_stage": environment_or_input("tide_stage"),
+                    "tide_range_m": environment_or_input("tide_range_m"),
+                    "tide_height_m": environment_or_input("tide_height_m"),
+                    "tide_movement_rate_m_per_hour": environment_or_input("tide_movement_rate_m_per_hour"),
+                    "tide_current_confidence": environment_or_input("tide_current_confidence"),
+                    "current_strength_proxy": environment_or_input("current_strength_proxy"),
+                    "current_source_note": environment_or_input("current_source_note"),
                     "wind_speed_knots": environment.get("wind_speed_knots"),
                     "wind_direction_deg": environment.get("wind_direction_deg"),
-                    "wind_gust_knots": inputs_used.get("wind_gust_knots"),
-                    "wave_height_m": inputs_used.get("wave_height_m"),
+                    "wind_gust_knots": environment_or_input("wind_gust_knots"),
+                    "wave_height_m": environment_or_input("wave_height_m"),
                     "swell_height_m": environment.get("swell_height_m"),
-                    "rain_mm": inputs_used.get("rain_mm"),
-                    "precipitation_mm": inputs_used.get("precipitation_mm"),
-                    "temperature_c": inputs_used.get("temperature_c"),
+                    "sea_surface_temperature_c": environment_or_input("sea_surface_temperature_c"),
+                    "sea_surface_temperature_delta_24h": environment_or_input("sea_surface_temperature_delta_24h"),
+                    "water_temperature_signal": environment_or_input("water_temperature_signal"),
+                    "water_temperature_trend": environment_or_input("water_temperature_trend"),
+                    "temperature_confidence": environment_or_input("temperature_confidence"),
+                    "rain_mm": environment_or_input("rain_mm"),
+                    "precipitation_mm": environment_or_input("precipitation_mm"),
+                    "temperature_c": environment_or_input("temperature_c"),
                     "pressure_hpa": environment.get("pressure_hpa"),
+                    "waterbody_class": environment_or_input("waterbody_class"),
+                    "fish_profile": environment_or_input("fish_profile"),
                     "rule_tags": recommendation.get("reason_tags", []),
                 }
             )
@@ -604,6 +658,7 @@ def build_range_forecast(
     start = _parse_date(start_date)
     end = _parse_date(end_date)
     condition_fetch_start = date.fromordinal(start.toordinal() - WEATHER_TREND_LOOKBACK_DAYS)
+    condition_fetch_end = _condition_fetch_end_date(end, condition_source)
     selected_windows = tuple(TIME_WINDOWS[key] for key in windows)
     parsed_tide_events = load_tide_events_file(tide_events_file) if tide_events_file else parse_tide_events(tide_events)
     tide_source_used = "tide_events_file" if tide_events_file else "tide_events" if parsed_tide_events else "astronomical_approximation"
@@ -615,7 +670,7 @@ def build_range_forecast(
         lat=lat,
         lon=lon,
         start_date=condition_fetch_start,
-        end_date=end,
+        end_date=condition_fetch_end,
         source=condition_source,
         cache_enabled=cache_enabled,
         cache_dir=cache_dir,
@@ -657,11 +712,23 @@ def build_range_forecast(
 
     window_tide_source_label = "openmeteo_model" if tide_source_used == "openmeteo_model" else None
     forecast_days = _date_range(start, end)
+    condition_region = region
+    if condition_region is None:
+        try:
+            classification_probe = build_preview(lat, lon)
+            condition_region = (
+                classification_probe.get("meta", {})
+                .get("waterbody_classification", {})
+                .get("recommended_region")
+            )
+        except (KeyError, TypeError, ValueError):
+            condition_region = None
     hourly_activity = _build_hourly_activity(
         lat=lat,
         lon=lon,
         days=forecast_days,
         region=region,
+        condition_region=condition_region,
         weather_hourly=conditions["weather_hourly"],
         weather_daily=conditions.get("weather_daily", {}),
         marine_hourly=conditions["marine_hourly"],
@@ -683,6 +750,7 @@ def build_range_forecast(
                 lon=lon,
                 tide_events=parsed_tide_events,
                 tide_event_source_label=window_tide_source_label,
+                region=condition_region or region,
             )
             preview = build_preview(lat, lon, environment=window_context["environment"], region=region)
             score_cards = preview.get("nearby_water_types", {})
@@ -710,7 +778,8 @@ def build_range_forecast(
             "longitude": lon,
             "start_date": start.isoformat(),
             "end_date": end.isoformat(),
-            "region": region or "generic_coastal",
+            "region": region or "auto",
+            "condition_region": condition_region or "generic_coastal",
             "windows": [window.key for window in selected_windows],
         },
         "data_sources": {
@@ -718,7 +787,9 @@ def build_range_forecast(
             "weather_source": conditions.get("weather_source", "provided"),
             "cache_enabled": cache_enabled,
             "condition_fetch_start": condition_fetch_start.isoformat() if condition_data is None else start.isoformat(),
+            "condition_fetch_end": condition_fetch_end.isoformat() if condition_data is None else end.isoformat(),
             "weather_trend_lookback_days": 0 if condition_data is not None else WEATHER_TREND_LOOKBACK_DAYS,
+            "tide_inference_lookahead_days": 0 if condition_data is not None else (condition_fetch_end - end).days,
             "tide": tide_source_used,
             "tide_provider": tide_provider_meta,
         },

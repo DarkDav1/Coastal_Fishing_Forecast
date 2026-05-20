@@ -148,6 +148,36 @@ class ForecastTests(unittest.TestCase):
         self.assertIsInstance(result["hourly_activity"][13]["score"], int)
         self.assertEqual(result["windows"][0]["environment"]["rule_family"], "derwent_generalized_v1")
         self.assertIn("rule_tags", result["hourly_activity"][13])
+        self.assertEqual(result["hourly_activity"][4]["tide_height_m"], -1.0)
+        self.assertIsNotNone(result["hourly_activity"][4]["tide_movement_rate_m_per_hour"])
+
+    def test_range_forecast_carries_water_temperature_and_classification(self) -> None:
+        conditions = _fixture_conditions()
+        marine_hourly = conditions["marine_hourly"]
+        marine_hourly["sea_surface_temperature"] = [
+            14.0 if str(time_value).startswith("2026-04-20") else 15.2
+            for time_value in marine_hourly["time"]
+        ]
+
+        result = build_range_forecast(
+            -43.1635,
+            146.9735,
+            start_date="2026-04-21",
+            end_date="2026-04-21",
+            windows=("morning",),
+            condition_data=conditions,
+            tide_source="openmeteo_model",
+        )
+
+        window = result["windows"][0]
+        inputs = window["preview"]["meta"]["environment"]["inputs_used"]
+        classification = window["preview"]["meta"]["waterbody_classification"]
+        self.assertIn(classification["waterbody_class"], {"river_mouth", "tidal_river", "sheltered_estuary"})
+        self.assertEqual(inputs["sea_surface_temperature_c"], 15.2)
+        self.assertEqual(inputs["sea_surface_temperature_delta_24h"], 1.2)
+        self.assertIn(inputs["water_temperature_signal"], {"cool", "optimal", "warm"})
+        self.assertIn("waterbody_class", result["hourly_activity"][12])
+        self.assertIn("water_temperature_signal", result["hourly_activity"][12])
 
     def test_hourly_scores_use_derwent_style_light_windows_not_plain_midday(self) -> None:
         result = build_range_forecast(
@@ -208,6 +238,76 @@ class ForecastTests(unittest.TestCase):
         self.assertEqual(result["data_sources"]["tide_provider"]["provider"], "open_meteo")
         self.assertEqual(result["windows"][0]["tide_source"], "openmeteo_model")
         self.assertIn(result["windows"][0]["environment"]["tide_phase"], {"low", "rising", "high", "falling", "mid"})
+        inputs_used = result["windows"][0]["preview"]["meta"]["environment"]["inputs_used"]
+        self.assertIsNotNone(inputs_used["tide_height_m"])
+
+    def test_live_condition_fetch_includes_tide_lookahead_day(self) -> None:
+        with patch(
+            "coastal_fishing_forecast.forecast.fetch_open_meteo_conditions",
+            return_value=_fixture_conditions(),
+        ) as fetch_conditions:
+            result = build_range_forecast(
+                -41.2530,
+                148.3060,
+                start_date="2026-04-20",
+                end_date="2026-04-20",
+                region="open_coast",
+                windows=("morning",),
+                tide_source="openmeteo_model",
+                cache_enabled=False,
+            )
+
+        self.assertEqual(fetch_conditions.call_args.kwargs["start_date"].isoformat(), "2026-04-17")
+        self.assertEqual(fetch_conditions.call_args.kwargs["end_date"].isoformat(), "2026-04-21")
+        self.assertEqual(result["data_sources"]["condition_fetch_end"], "2026-04-21")
+        self.assertEqual(result["data_sources"]["tide_inference_lookahead_days"], 1)
+
+    def test_missing_wave_fields_use_protected_estuary_estimate(self) -> None:
+        conditions = _fixture_conditions()
+        count = len(conditions["marine_hourly"]["time"])
+        conditions["marine_hourly"]["wave_height"] = [None for _ in range(count)]
+        conditions["marine_hourly"]["swell_wave_height"] = [None for _ in range(count)]
+        conditions["marine_hourly"]["swell_wave_direction"] = [None for _ in range(count)]
+
+        result = build_range_forecast(
+            -43.1556251,
+            146.9698095,
+            start_date="2026-04-20",
+            end_date="2026-04-20",
+            region="sheltered_estuary",
+            windows=("morning",),
+            condition_data=conditions,
+            tide_source="openmeteo_model",
+        )
+
+        env = result["windows"][0]["environment"]
+        self.assertEqual(env["wave_data_source"], "protected_estuary_estimate")
+        self.assertIsNotNone(env["wave_height_m"])
+        self.assertLess(env["wave_height_m"], 0.4)
+        self.assertEqual(env["swell_height_m"], env["wave_height_m"])
+
+    def test_missing_wave_fields_are_unavailable_on_open_coast(self) -> None:
+        conditions = _fixture_conditions()
+        count = len(conditions["marine_hourly"]["time"])
+        conditions["marine_hourly"]["wave_height"] = [None for _ in range(count)]
+        conditions["marine_hourly"]["swell_wave_height"] = [None for _ in range(count)]
+        conditions["marine_hourly"]["swell_wave_direction"] = [None for _ in range(count)]
+
+        result = build_range_forecast(
+            -42.8821,
+            147.3272,
+            start_date="2026-04-20",
+            end_date="2026-04-20",
+            region="open_coast",
+            windows=("morning",),
+            condition_data=conditions,
+            tide_source="openmeteo_model",
+        )
+
+        env = result["windows"][0]["environment"]
+        self.assertEqual(env["wave_data_source"], "unavailable")
+        self.assertIsNone(env["wave_height_m"])
+        self.assertIsNone(env["swell_height_m"])
 
     def test_tide_phase_from_events_marks_near_high_or_low(self) -> None:
         events = parse_tide_events(

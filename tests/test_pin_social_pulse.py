@@ -290,7 +290,7 @@ class PinForecastSocialPulseIntegrationTests(unittest.TestCase):
 
 
 class FrontendResponsePinPulseIntegrationTests(unittest.TestCase):
-    def test_response_facilities_carry_recent_social_pulse(self) -> None:
+    def test_response_facilities_remain_context_only(self) -> None:
         response = build_frontend_forecast_response(
             -41.2530,
             148.3060,
@@ -314,9 +314,7 @@ class FrontendResponsePinPulseIntegrationTests(unittest.TestCase):
         )
         facilities = response["structure_facilities"]
         self.assertEqual(len(facilities), 1)
-        pin_pulse = facilities[0]["pin_forecast"]["recent_social_pulse"]
-        self.assertIn("level", pin_pulse)
-        self.assertFalse(pin_pulse["score_adjustment_allowed"])
+        self.assertNotIn("pin_forecast", facilities[0])
 
 
 if __name__ == "__main__":
