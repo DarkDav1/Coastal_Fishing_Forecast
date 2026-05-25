@@ -432,6 +432,59 @@ class StructureFacilityTests(unittest.TestCase):
         self.assertFalse(facilities[1]["planner_eligible"])
         self.assertTrue(facilities[1]["map_eligible"])
 
+    def test_official_fishing_spots_hide_area_style_candidates(self) -> None:
+        rows = [
+            {
+                "id": "supplemental:region:jervis_bay",
+                "jurisdiction": "NSW",
+                "guide_name": "Public guide",
+                "spot_name": "Jervis Bay",
+                "spot_type": "bay",
+                "coordinate_role": "supplemental_spot_candidate",
+                "source_kind": "state_tourism_public_fishing_reference",
+                "latitude": -35.05666,
+                "longitude": 150.726202,
+                "planner_eligible": True,
+                "map_eligible": True,
+                "role": "supplemental_public_fishing_access_candidate",
+                "score_impact": "none",
+            },
+            {
+                "id": "supplemental:plural:tuross_head_jetties",
+                "jurisdiction": "NSW",
+                "guide_name": "Public guide",
+                "spot_name": "Tuross Head jetties",
+                "spot_type": "jetty",
+                "coordinate_role": "supplemental_spot_candidate",
+                "source_kind": "state_tourism_public_fishing_reference",
+                "latitude": -36.059449,
+                "longitude": 150.138117,
+                "planner_eligible": True,
+                "map_eligible": True,
+                "role": "supplemental_public_fishing_access_candidate",
+                "score_impact": "none",
+            },
+            {
+                "id": "supplemental:specific:glenelg_jetty",
+                "jurisdiction": "SA",
+                "guide_name": "Public guide",
+                "spot_name": "Glenelg Jetty",
+                "spot_type": "jetty",
+                "coordinate_role": "supplemental_spot_candidate",
+                "source_kind": "state_tourism_fishing_reference",
+                "latitude": -34.980486,
+                "longitude": 138.509295,
+                "planner_eligible": True,
+                "map_eligible": True,
+                "role": "supplemental_public_fishing_access_candidate",
+                "score_impact": "none",
+            },
+        ]
+
+        facilities = normalize_official_fishing_spots(rows, lat=-34.98, lon=138.509, radius_m=1000000)
+
+        self.assertEqual([facility["label"] for facility in facilities], ["Glenelg Jetty"])
+
     def test_combined_fetch_includes_official_spots_first(self) -> None:
         calls = []
 

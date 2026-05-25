@@ -38,6 +38,41 @@ PLANNER_ELIGIBLE_TYPES = {
 }
 MAP_ELIGIBLE_TYPES = PLANNER_ELIGIBLE_TYPES | {"boat_ramp"}
 NEAR_DUPLICATE_DISTANCE_KM = 0.08
+POINT_SPECIFIC_OFFICIAL_COORDINATE_ROLES = {
+    "official_coordinate",
+    "official_coordinate_reference",
+    "official_map_coordinate",
+    "official_reef_coordinate",
+}
+POINT_SPECIFIC_OFFICIAL_SPOT_TYPES = {
+    "boat_ramp",
+    "artificial_reef",
+    "breakwater",
+    "bridge",
+    "fad",
+    "ferry_wharf",
+    "fishing_platform",
+    "jetty",
+    "kingfish_artificial_reef_module",
+    "pier",
+    "pontoon",
+    "public_jetty",
+    "public_pier",
+    "public_wharf",
+    "wharf",
+}
+POINT_SPECIFIC_OFFICIAL_LABEL_TERMS = (
+    "boat ramp",
+    "breakwater",
+    "bridge",
+    "fishing platform",
+    "jetty",
+    "pier",
+    "pontoon",
+    "ramp",
+    "wharf",
+)
+AREA_STYLE_OFFICIAL_LABEL_TERMS = ("jetties", "wharves")
 WA_PUBLIC_BOAT_RAMPS_LAYERS = {
     "sealed": 49,
     "unsealed": 50,
@@ -187,6 +222,24 @@ def _official_spot_access(row: Mapping[str, Any], facility_type: str) -> str:
     return "public"
 
 
+def _official_spot_is_point_specific(row: Mapping[str, Any]) -> bool:
+    role = _text_value(row.get("role")).lower()
+    if role == "future_freshwater_reference":
+        return False
+
+    coordinate_role = _text_value(row.get("coordinate_role")).lower()
+    if coordinate_role in POINT_SPECIFIC_OFFICIAL_COORDINATE_ROLES:
+        return True
+
+    spot_type = _text_value(row.get("spot_type")).lower()
+    label = _text_value(row.get("spot_name")).lower()
+    if any(term in label for term in AREA_STYLE_OFFICIAL_LABEL_TERMS):
+        return False
+    if spot_type in POINT_SPECIFIC_OFFICIAL_SPOT_TYPES:
+        return True
+    return any(term in label for term in POINT_SPECIFIC_OFFICIAL_LABEL_TERMS)
+
+
 def normalize_official_fishing_spots(
     rows: tuple[Mapping[str, Any], ...] | list[Mapping[str, Any]],
     *,
@@ -197,6 +250,8 @@ def normalize_official_fishing_spots(
     facilities = []
     for row in rows:
         if not row.get("map_eligible", True):
+            continue
+        if not _official_spot_is_point_specific(row):
             continue
         try:
             facility_lat = float(row["latitude"])
