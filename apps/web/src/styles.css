@@ -833,6 +833,10 @@ p.score-factor-summary {
   display: block;
 }
 
+.weather-curve-panel .curve-chart svg {
+  height: 190px;
+}
+
 .curve-plot-bg {
   fill: rgba(50, 115, 148, 0.045);
   pointer-events: none;
@@ -1199,7 +1203,7 @@ p.score-factor-summary {
 }
 
 .map-stage {
-  height: clamp(650px, 58vw, 860px);
+  height: clamp(420px, 48vw, 680px);
   border-radius: 30px;
   background: #c9d7d2;
   overflow: hidden;
@@ -1297,6 +1301,69 @@ p.score-factor-summary {
   border: 3px solid #fff7da;
   font-size: 1rem;
   box-shadow: 0 0 0 9px rgba(228, 167, 47, 0.2), 0 12px 28px rgba(18, 41, 53, 0.22);
+}
+
+.marker.ramp {
+  width: 30px;
+  height: 30px;
+  background: var(--reef);
+  border: 3px solid #e8f5f6;
+  color: #fffaf0;
+  box-shadow: 0 0 0 8px rgba(50, 115, 148, 0.18), 0 12px 28px rgba(18, 41, 53, 0.2);
+}
+
+.marker.reference {
+  width: 24px;
+  height: 24px;
+  background: #fffaf0;
+  border: 3px solid var(--reef);
+  color: var(--reef);
+  box-shadow: 0 0 0 7px rgba(50, 115, 148, 0.14), 0 10px 22px rgba(18, 41, 53, 0.16);
+}
+
+.marker.supplemental {
+  width: 26px;
+  height: 26px;
+  background: #fffaf0;
+  border: 3px solid var(--sun);
+  color: var(--kelp);
+  box-shadow: 0 0 0 7px rgba(228, 167, 47, 0.16), 0 10px 22px rgba(18, 41, 53, 0.16);
+}
+
+.marker.ramp span {
+  position: relative;
+  display: block;
+  width: 17px;
+  height: 15px;
+}
+
+.marker.ramp span::before {
+  content: "";
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  bottom: 3px;
+  height: 7px;
+  border-radius: 2px 2px 6px 6px;
+  background: #fffaf0;
+  clip-path: polygon(6% 18%, 94% 18%, 78% 100%, 22% 100%);
+}
+
+.marker.ramp span::after {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 7px;
+  height: 5px;
+  border-radius: 2px 2px 0 0;
+  background: #fffaf0;
+  box-shadow: 0 10px 0 -2px rgba(255, 250, 240, 0.75);
+}
+
+.marker.reference span,
+.marker.supplemental span {
+  transform: translateY(-1px);
 }
 
 .marker.active {
@@ -1433,6 +1500,20 @@ p.score-factor-summary {
 
 .legend-public {
   background: var(--sun);
+}
+
+.legend-ramp {
+  background: var(--reef);
+}
+
+.legend-reference {
+  background: #fffaf0;
+  border: 2px solid var(--reef);
+}
+
+.legend-supplemental {
+  background: #fffaf0;
+  border: 2px solid var(--sun);
 }
 
 .map-attribution {
@@ -2056,7 +2137,7 @@ p.score-factor-summary {
   }
 
   .map-stage {
-    height: 560px;
+    height: 440px;
   }
 }
 
@@ -2083,7 +2164,7 @@ p.score-factor-summary {
   }
 
   .map-stage {
-    height: 430px;
+    height: 350px;
   }
 
   .map-controls {

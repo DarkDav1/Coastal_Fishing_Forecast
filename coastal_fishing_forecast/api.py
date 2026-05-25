@@ -736,17 +736,108 @@ def _window_card(window: Mapping[str, Any]) -> dict[str, Any]:
     }
 
 
-def _daily_cards(windows: list[Mapping[str, Any]]) -> list[dict[str, Any]]:
+def _fish_signal_from_mapping(value: Mapping[str, Any]) -> float | None:
+    fish = _number(value.get("fish_outlook_score"))
+    if fish is not None:
+        return fish
+    activity = _number(value.get("activity_score"))
+    presence = _number(value.get("presence_score"))
+    if activity is not None and presence is not None:
+        return (activity * 0.55) + (presence * 0.45)
+    return _number(value.get("score"))
+
+
+def _average_float(values: list[float]) -> float | None:
+    return None if not values else sum(values) / len(values)
+
+
+def _daily_fish_signal(
+    day: str,
+    day_windows: list[Mapping[str, Any]],
+    hourly_activity: list[Mapping[str, Any]],
+) -> dict[str, Any]:
+    hourly_values = [
+        value
+        for value in (_fish_signal_from_mapping(point) for point in hourly_activity if point.get("date") == day)
+        if value is not None
+    ]
+    window_values = [
+        value
+        for value in (_fish_signal_from_mapping((window["preview"].get("overall_recommendation") or {})) for window in day_windows)
+        if value is not None
+    ]
+    signal_values = hourly_values or window_values
+    if not signal_values:
+        return {
+            "day_score": None,
+            "fish_day_score": None,
+            "best_window_score": None,
+            "average_window_score": None,
+            "hourly_peak_score": None,
+            "hourly_mean_score": None,
+            "daily_score_note": "No supported fish-signal data for this date.",
+        }
+
+    ordered = sorted(signal_values, reverse=True)
+    peak = ordered[0]
+    top_count = min(4, len(ordered))
+    top_average = sum(ordered[:top_count]) / top_count
+    mean = sum(signal_values) / len(signal_values)
+    score = (peak * 0.48) + (top_average * 0.32) + (mean * 0.20)
+
+    strong_hours = sum(1 for value in signal_values if value >= 60)
+    usable_hours = sum(1 for value in signal_values if value >= 50)
+    if peak < 50:
+        score = min(score, 42)
+    elif peak < 58 and mean < 42:
+        score = min(score, 45)
+    elif peak < 62 and mean < 40:
+        score = min(score, 48)
+    elif peak < 58 and strong_hours == 0:
+        score = min(score, 50)
+    elif strong_hours <= 1 and mean < 45:
+        score = min(score, 50)
+    elif usable_hours <= 3 and mean < 48:
+        score = min(score, 58)
+
+    notes: list[str] = []
+    if strong_hours <= 1:
+        notes.append("Only one short window clears a strong fish signal.")
+    if mean < 45:
+        notes.append("Most of the day remains weak even if one window improves.")
+    if peak < 50:
+        notes.append("No convincing bite window appears in the hourly curve.")
+    if not notes:
+        notes.append("Daily score blends peak window strength with whole-day support.")
+
+    return {
+        "day_score": round(max(0, min(100, score))),
+        "fish_day_score": round(max(0, min(100, score))),
+        "best_window_score": round(max(window_values) if window_values else peak),
+        "average_window_score": None if not window_values else round(_average_float(window_values) or 0),
+        "hourly_peak_score": None if not hourly_values else round(max(hourly_values)),
+        "hourly_mean_score": None if not hourly_values else round(_average_float(hourly_values) or 0),
+        "daily_score_note": " ".join(notes),
+    }
+
+
+def _daily_cards(
+    windows: list[Mapping[str, Any]],
+    hourly_activity: list[Mapping[str, Any]] | None = None,
+) -> list[dict[str, Any]]:
     by_date: dict[str, list[Mapping[str, Any]]] = {}
     for window in windows:
         by_date.setdefault(window["date"], []).append(window)
 
     cards = []
+    hourly = list(hourly_activity or [])
     for day, day_windows in sorted(by_date.items()):
         best = _best_window(list(day_windows))
+        daily_signal = _daily_fish_signal(day, list(day_windows), hourly)
         cards.append(
             {
                 "date": day,
+                **daily_signal,
                 "best_window": None if best is None else _window_card(best),
                 "windows": [_window_card(window) for window in day_windows],
             }
@@ -897,6 +988,14 @@ def _frontend_structure_facility(item: Mapping[str, Any]) -> dict[str, Any]:
         "map_eligible": item.get("map_eligible"),
         "role": item.get("role"),
     }
+    attributes = item.get("attributes")
+    if isinstance(attributes, Mapping):
+        compact["attributes"] = {
+            key: value
+            for key, value in attributes.items()
+            if key in {"jurisdiction", "guide_name", "source_kind", "official_owner", "official_url", "score_impact", "review_status"}
+            and value is not None
+        }
     coordinates = item.get("coordinates")
     if isinstance(coordinates, Mapping):
         compact["coordinates"] = {
@@ -1343,7 +1442,10 @@ def build_frontend_forecast_response(
         "hero": _hero(range_forecast),
         "explanation": _explanation(range_forecast, explanation_provider=explanation_provider),
         "summary": range_forecast["summary"],
-        "daily_forecast": _daily_cards(list(range_forecast["windows"])),
+        "daily_forecast": _daily_cards(
+            list(range_forecast["windows"]),
+            hourly_activity=list(range_forecast.get("hourly_activity", [])),
+        ),
         "hourly_activity": range_forecast.get("hourly_activity", []),
         "structure_facilities": frontend_structure_facilities,
         "structure_data": _frontend_structure_data(structure_data),

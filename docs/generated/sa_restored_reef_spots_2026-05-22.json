@@ -1,0 +1,23 @@
+[
+  {
+    "id": "sa_restored_reef:001:windara_reef",
+    "jurisdiction": "SA",
+    "guide_name": "South Australia restored shellfish reefs",
+    "spot_name": "Windara Reef",
+    "spot_type": "restored_shellfish_reef",
+    "scope": "coastal_estuary",
+    "source_kind": "official_restored_reef_coordinate_reference",
+    "official_owner": "South Australian Government",
+    "official_url": "https://dit.sa.gov.au/news/feed?a=408138",
+    "context_url": "https://www.environment.sa.gov.au/goodliving/posts/2019/05/windara-reef",
+    "latitude": -34.508267,
+    "longitude": 137.899217,
+    "coordinate_role": "official_coordinate_reference",
+    "planner_eligible": false,
+    "map_eligible": true,
+    "role": "reef_context_reference",
+    "score_impact": "none",
+    "review_status": "check_current_marine_park_rules_before_trip",
+    "notes": "Government coordinate reference for Windara Reef. Treat as a context/map reference until current fishing rules and access are verified."
+  }
+]

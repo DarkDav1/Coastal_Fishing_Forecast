@@ -5,6 +5,7 @@ export type StructureFacility = {
   access: string;
   source: string;
   status: string;
+  attributes?: Record<string, unknown>;
   planner_eligible?: boolean;
   map_eligible?: boolean;
   role?: "public_fishing_access" | "public_access_only" | "hidden" | string;
@@ -100,6 +101,13 @@ export type ForecastResponse = {
     };
     daily_forecast: Array<{
       date: string;
+      day_score?: number | null;
+      fish_day_score?: number | null;
+      best_window_score?: number | null;
+      average_window_score?: number | null;
+      hourly_peak_score?: number | null;
+      hourly_mean_score?: number | null;
+      daily_score_note?: string | null;
       best_window: WindowCard | null;
       windows: WindowCard[];
     }>;

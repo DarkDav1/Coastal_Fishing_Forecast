@@ -14,6 +14,18 @@ const MAX_VISIBLE_STRUCTURE_KM = 5;
 type Lang = "en" | "zh";
 type Theme = "day" | "night";
 
+type ForecastDaySummary = {
+  day_score?: number | null;
+  fish_day_score?: number | null;
+  best_window_score?: number | null;
+  average_window_score?: number | null;
+  hourly_peak_score?: number | null;
+  hourly_mean_score?: number | null;
+  daily_score_note?: string | null;
+  best_window: WindowCard | null;
+  windows: WindowCard[];
+};
+
 const UI_TEXT = {
   en: {
     languageToggle: "中文",
@@ -25,8 +37,8 @@ const UI_TEXT = {
     switchToNight: "Switch to night mode",
     brand: "Coastal Fishing Forecast",
     eyebrow: "Generic coastal forecast engine",
-    heroTitle: "Plan the next cast from live coastal signals.",
-    heroCopy: "Search a coastal place, check today’s fish activity, and plan the first move.",
+    heroTitle: "Check the coast before you go.",
+    heroCopy: "Search a spot. See fish potential, trip ease, and public access.",
     searchPlaceholder: "Search a coastal place",
     forecastButton: "Forecast",
     checkingButton: "Checking...",
@@ -41,24 +53,30 @@ const UI_TEXT = {
     strongestNearby: "is the strongest nearby option today.",
     primaryMap: "Primary map",
     selectedMap: "Selected map",
-    publicAccessTitle: "Public fishing access near this search",
+    publicAccessTitle: "Public access near this search",
     unsupportedMapTitle: "Selected location is outside the forecast area",
-    officialAccess: "official or mapped fishing access",
+    officialAccess: "map points",
     supportedSignals: "supported coastal signals at this coordinate",
     mapControls: "Map controls",
     dragMap: "Drag map · tap a point",
-    fishingAccess: "Fishing access",
+    fishingAccess: "Fishing spot",
+    boatRamp: "Boat ramp",
+    mapReference: "Map reference",
+    supplementalSpot: "Public guide",
     mapLeads: "Map leads",
-    mapIntro: "Official fishing map entries and confirmed public fishing access within 5 km.",
+    mapIntro: "Confirmed and guide-sourced points within 5 km. Ramps and offshore references are map-only.",
+    mapOnlyAccess: "Map-only public access nearby",
+    mapOnlyAccessNote: "Use these as access references only; check local rules and suitability before fishing.",
+    mapOnlyScoreLabel: "Map",
     noAccess: "No public fishing access found nearby",
     noAccessMeta: "nothing confirmed within 5 km",
     noAccessNote: "Use the forecast by water style first, then verify access locally.",
     unsupported: "Unsupported",
     unsupportedAdvice: "Move the search to coastal or tidal water.",
-    fishActivity24h: "24-hour fish activity",
-    historyForecast: "Recent history + forecast",
-    dragDates: "Drag sideways to review each day’s average score",
-    dateStripPeakLabel: "avg",
+    fishActivity24h: "Fish activity",
+    historyForecast: "Daily trend",
+    dragDates: "Swipe through daily fish scores",
+    dateStripPeakLabel: "day",
     today: "Today",
     score: "score",
     scoreLayers: "Forecast score layers",
@@ -73,7 +91,7 @@ const UI_TEXT = {
     comfort: "Comfort",
     pressure: "Pressure",
     firstMove: "Today’s move",
-    scoreFactors: "Score factors",
+    scoreFactors: "Why this score",
     scoreFactorsGenerating: "Generating explanation…",
     scoreFactorsPositive: "What's helping",
     scoreFactorsNegative: "What's challenging",
@@ -82,13 +100,13 @@ const UI_TEXT = {
     windTideWaves: "Wind, Tide, Waves & Swell",
     windMap: "Wind map",
     windSpeed: "Wind speed",
-    windyNote: "Live wind layer from Windy. Curves below use the same hourly data as the score.",
+    windyNote: "Windy map plus the same hourly data used by the score.",
     tideHeight: "Tide height",
     tideMovement: "Tide movement",
     tideMovementProxyNote: "This curve shows model-estimated tide movement, not local tide-table height.",
     waveHeight: "Wave height",
     swellHeight: "Swell height",
-    publicPlanNote: "Public fishing access for planning the first move.",
+    publicPlanNote: "Map reference only.",
     exactPlace: "Choose the exact place",
     noPlaceFound: "No matching place found.",
     reset: "Reset",
@@ -111,8 +129,8 @@ const UI_TEXT = {
     switchToNight: "切换到夜间模式",
     brand: "Coastal Fishing Forecast",
     eyebrow: "通用海岸鱼情预测引擎",
-    heroTitle: "用海岸信号判断是否出钓。",
-    heroCopy: "搜索海岸钓点，查看今日鱼情，并决定是否值得出发。",
+    heroTitle: "出发前，先看海况和鱼情。",
+    heroCopy: "搜索地点，查看鱼情、出行条件和公共入口。",
     searchPlaceholder: "搜索海岸地点",
     forecastButton: "查看鱼情",
     checkingButton: "分析中...",
@@ -127,24 +145,30 @@ const UI_TEXT = {
     strongestNearby: "是今天附近更值得看的水域类型。",
     primaryMap: "主要地图",
     selectedMap: "已选地图",
-    publicAccessTitle: "附近可到达的公共钓点",
+    publicAccessTitle: "附近公共入口",
     unsupportedMapTitle: "所选位置不在当前预测范围内",
-    officialAccess: "官方或地图标注钓点入口",
+    officialAccess: "个地图点位",
     supportedSignals: "个受支持的海岸信号",
     mapControls: "地图控制",
     dragMap: "拖动地图 · 点击点位",
-    fishingAccess: "钓点入口",
+    fishingAccess: "钓点",
+    boatRamp: "公共船坡",
+    mapReference: "地图参考",
+    supplementalSpot: "公开指南点",
     mapLeads: "地图线索",
-    mapIntro: "仅显示 5 公里内的官方钓点和确认公共入口。",
+    mapIntro: "显示 5 公里内确认或公开指南点位。船坡和离岸点只作地图参考。",
+    mapOnlyAccess: "附近有地图参考入口",
+    mapOnlyAccessNote: "这些点只说明公共入口或下水位置，能否钓鱼仍需现场确认规则。",
+    mapOnlyScoreLabel: "地图",
     noAccess: "附近没有确认公共钓点入口",
     noAccessMeta: "5 公里内暂无确认点位",
     noAccessNote: "先按水域类型看鱼情，再现场确认入口。",
     unsupported: "暂不支持",
     unsupportedAdvice: "请把搜索点移到海岸或潮汐水域。",
-    fishActivity24h: "全天鱼情曲线",
-    historyForecast: "近期走势 + 预测",
-    dragDates: "横向拖动查看每天的平均表现",
-    dateStripPeakLabel: "平均",
+    fishActivity24h: "鱼情曲线",
+    historyForecast: "每日趋势",
+    dragDates: "横向滑动看每日鱼情分",
+    dateStripPeakLabel: "日分",
     today: "今天",
     score: "评分",
     scoreLayers: "评分拆分",
@@ -159,7 +183,7 @@ const UI_TEXT = {
     comfort: "舒适度",
     pressure: "气压",
     firstMove: "今日建议",
-    scoreFactors: "为什么是这个分",
+    scoreFactors: "分数原因",
     scoreFactorsGenerating: "正在生成说明…",
     scoreFactorsPositive: "加分项",
     scoreFactorsNegative: "扣分项",
@@ -168,13 +192,13 @@ const UI_TEXT = {
     windTideWaves: "风、潮汐、浪与涌浪",
     windMap: "风场地图",
     windSpeed: "风速",
-    windyNote: "风场来自 Windy；下方曲线使用同一组逐小时天气数据。",
+    windyNote: "Windy 风场，下方曲线使用同一组逐小时数据。",
     tideHeight: "潮高",
     tideMovement: "潮汐变化",
     tideMovementProxyNote: "这条曲线看的是潮水流动强弱，不是潮汐表里的潮位高度。",
     waveHeight: "浪高",
     swellHeight: "涌浪高度",
-    publicPlanNote: "可作为规划第一步的公共钓点入口。",
+    publicPlanNote: "仅作地图参考。",
     exactPlace: "选择准确地点",
     noPlaceFound: "没有找到匹配地点。",
     reset: "重置",
@@ -225,16 +249,25 @@ function candidateMeta(candidate: PlaceCandidate) {
 }
 
 const SOURCE_LABELS: Record<string, string> = {
+  official_fishing_spots: "Fishing spot guide",
   list_wildfisheries: "Tasmania Fishing Map",
   list_mast: "Tasmania MAST",
+  nsw_maritime_boat_ramps: "NSW Maritime",
+  nt_public_boat_ramps: "NT Government",
   openmeteo_model: "Open-Meteo model",
   osm_overpass: "OpenStreetMap",
-  tidesatlas: "TidesAtlas"
+  qld_recreational_boating_facilities: "Queensland TMR",
+  sa_boat_ramps: "Location SA",
+  tidesatlas: "TidesAtlas",
+  vic_boating_facilities: "Boating Vic",
+  wa_public_boat_ramps: "WA Department of Transport"
 };
 
 const STRUCTURE_TYPE_LABELS: Record<string, string> = {
+  artificial_reef: "Artificial reef",
   beach_access: "Beach access",
   boat_ramp: "Boat ramp",
+  fad: "FAD",
   fishing_platform: "Fishing platform",
   official_fishing_spot: "Official fishing spot",
   pier: "Pier",
@@ -254,6 +287,7 @@ const WATER_TYPE_LABELS_ZH: Record<string, string> = {
   pre_dawn: "黎明前",
   day: "白天",
   night: "夜间",
+  open_water: "开放水域",
   rising: "涨潮",
   falling: "落潮",
   flood: "涨潮",
@@ -286,8 +320,10 @@ const WATERBODY_CLASS_LABELS_ZH: Record<string, string> = {
 };
 
 const STRUCTURE_TYPE_LABELS_ZH: Record<string, string> = {
+  artificial_reef: "人工鱼礁",
   beach_access: "沙滩入口",
   boat_ramp: "船坡 / 下水点",
+  fad: "FAD 聚鱼装置",
   fishing_platform: "钓鱼平台",
   official_fishing_spot: "官方钓点",
   pier: "栈桥",
@@ -323,13 +359,18 @@ function formatAccess(access?: string | null, lang: Lang = "en") {
 }
 
 function markerKind(structure: StructureFacility) {
+  if (structure.role === "supplemental_public_fishing_access_candidate") return "supplemental";
   if (structure.planner_eligible) return "public";
+  if (structure.type === "boat_ramp" && structure.access === "public" && structure.map_eligible) return "ramp";
+  if (structure.map_eligible) return "reference";
   return "hidden";
 }
 
 function markerLabel(structure: StructureFacility) {
   const kind = markerKind(structure);
   if (kind === "public") return "🎣";
+  if (kind === "supplemental") return "•";
+  if (kind === "reference") return structure.type === "fad" || structure.type === "artificial_reef" ? "◆" : "•";
   return "";
 }
 
@@ -338,8 +379,8 @@ function shouldShowStructure(structure: StructureFacility) {
 }
 
 function mapEligible(structure: StructureFacility) {
-  if (structure.access !== "public") return false;
-  return Boolean(structure.planner_eligible);
+  if (structure.access === "private") return false;
+  return Boolean(structure.map_eligible ?? structure.planner_eligible);
 }
 
 function isWithinVisibleStructureRadius(structure: StructureFacility) {
@@ -623,33 +664,57 @@ function todayForecastDay(forecast: ForecastResponse["forecast"] | undefined) {
   return forecast?.daily_forecast.find((day) => day.date === today) ?? forecast?.daily_forecast[0] ?? null;
 }
 
-function dailyScoreSummary(day?: { best_window: WindowCard | null; windows: WindowCard[] } | null) {
+function windowFishPotential(window: WindowCard | null | undefined) {
+  if (!window) return null;
+  if (window.fish_outlook_score != null) return window.fish_outlook_score;
+  if (window.activity_score != null && window.presence_score != null) {
+    return Math.round(window.activity_score * 0.55 + window.presence_score * 0.45);
+  }
+  return numberOrNull(window.score);
+}
+
+function windowDailyDisplayScore(window: WindowCard | null | undefined) {
+  if (!window) return null;
+  const fish = windowFishPotential(window);
+  const trip = tripRealityScore(window);
+  if (fish == null && trip == null) return selectedWindowScore(window);
+  if (fish == null) return trip;
+  if (trip == null) return fish;
+  return applySafetyRealityCap(Math.round(fish * 0.78 + trip * 0.22), window.safety_flag);
+}
+
+function dailyScoreSummary(day?: ForecastDaySummary | null) {
   const windows = day?.windows ?? [];
   const activity = average(windows.map((window) => window.activity_score ?? window.score));
   const presence = average(windows.map((window) => window.presence_score ?? window.score));
   const safetyFlag = strongestSafetyFlag(windows.map((window) => window.safety_flag));
   const rawTripQuality = average(windows.map(tripRealityScore));
   const tripQuality = applySafetyRealityCap(rawTripQuality, safetyFlag);
-  const fishIndex = average(
-    windows.map((window) => window.fish_outlook_score ?? (window.activity_score != null && window.presence_score != null
-      ? Math.round(window.activity_score * 0.55 + window.presence_score * 0.45)
-      : window.score))
-  );
+  const fishIndex = numberOrNull(day?.fish_day_score) ?? average(windows.map(windowFishPotential));
+  const windowDisplayScores = windows.map(windowDailyDisplayScore);
+  const peakScore = numberOrNull(day?.best_window_score) ?? maxOrNull(windowDisplayScores);
+  const averageScore = numberOrNull(day?.average_window_score) ?? average(windowDisplayScores);
+  const backendDayScore = numberOrNull(day?.day_score);
   const weighted =
-    fishIndex == null || tripQuality == null
+    backendDayScore != null
+      ? backendDayScore
+      : peakScore == null
       ? selectedWindowScore(day?.best_window ?? null)
-      : Math.round(fishIndex * 0.62 + tripQuality * 0.38);
-  return { activity, presence, tripQuality, fishIndex, weighted, safetyFlag };
+      : applySafetyRealityCap(
+          Math.round((peakScore * 0.72) + ((fishIndex ?? peakScore) * 0.20) + ((averageScore ?? peakScore) * 0.08)),
+          safetyFlag
+        );
+  return { activity, presence, tripQuality, fishIndex, weighted, peakScore, averageScore, safetyFlag };
 }
 
-function dayScore(day?: { best_window: WindowCard | null; windows: WindowCard[] } | null) {
+function dayScore(day?: ForecastDaySummary | null) {
   return dailyScoreSummary(day).weighted;
 }
 
-function dayMaxWindowScore(day?: { best_window: WindowCard | null; windows: WindowCard[] } | null): number | null {
+function dayMaxWindowScore(day?: ForecastDaySummary | null): number | null {
   const windows = day?.windows ?? [];
   const scores = windows
-    .map((w) => w.score)
+    .map(windowDailyDisplayScore)
     .filter((s): s is number => typeof s === "number" && Number.isFinite(s));
   if (scores.length) return Math.round(Math.max(...scores));
   const fallback = selectedWindowScore(day?.best_window ?? null);
@@ -697,6 +762,16 @@ function cleanScoreFactorText(line: string) {
     .replace(/\.(?=\S)/g, ". ")
     .replace(/\s+/g, " ")
     .trim();
+}
+
+function compactFactorText(line: string, lang: Lang) {
+  const cleaned = polishChineseCopy(line, lang);
+  const maxLength = lang === "zh" ? 42 : 92;
+  if (cleaned.length <= maxLength) return cleaned;
+  const firstSentence = cleaned.split(/(?<=[。.!?])\s*/)[0]?.trim();
+  if (firstSentence && firstSentence.length <= maxLength + 10) return firstSentence;
+  const clipped = cleaned.slice(0, maxLength).replace(/[,.，、\s]+$/g, "").trim();
+  return `${clipped}…`;
 }
 
 function polishChineseCopy(line: string, lang: Lang) {
@@ -803,17 +878,17 @@ function dayConditionStats(day?: { windows: WindowCard[] } | null) {
 
 function fishIndexMeaning(summary: ReturnType<typeof dailyScoreSummary>, lang: Lang = "en") {
   const fish = summary.fishIndex;
-  if (fish == null) return lang === "zh" ? "鱼情指数还不足以判断全天强弱。" : "Not enough fish-signal data to read the day yet.";
+  if (fish == null) return lang === "zh" ? "数据不足。" : "Not enough data.";
   if (lang === "zh") {
-    if (fish >= 70) return "鱼情指数综合开口活跃度和靠岸可能性；今天整体信号较强。";
-    if (fish >= 55) return "鱼情指数综合开口活跃度和靠岸可能性；今天存在机会，但稳定性一般。";
-    if (fish >= 40) return "鱼情指数综合开口活跃度和靠岸可能性；今天整体一般，主要依赖短窗口。";
-    return "鱼情指数综合开口活跃度和靠岸可能性；今天信号偏弱。";
+    if (fish >= 70) return "鱼情信号强。";
+    if (fish >= 55) return "有机会，但不算稳。";
+    if (fish >= 40) return "整体一般，靠短窗口。";
+    return "鱼情偏弱。";
   }
-  if (fish >= 70) return "Fish index reflects bite activity and near-shore presence; today's fish signal is strong.";
-  if (fish >= 55) return "Fish index reflects bite activity and near-shore presence; today has usable fish signal.";
-  if (fish >= 40) return "Fish index reflects bite activity and near-shore presence; today is mixed and short-window focused.";
-  return "Fish index reflects bite activity and near-shore presence; today's fish signal is weak.";
+  if (fish >= 70) return "Strong fish signal.";
+  if (fish >= 55) return "Usable, not stable.";
+  if (fish >= 40) return "Mixed; short-window day.";
+  return "Weak fish signal.";
 }
 
 type ScoreFactorsBlocks = {
@@ -1360,24 +1435,24 @@ function waterTemperatureNote(stats: ReturnType<typeof dayConditionStats>, lang:
   const signal = stats.waterTempSignal;
   const trend = stats.waterTempTrend;
   if (stats.waterTempAvg == null || !signal || signal === "unknown") {
-    return lang === "zh" ? "水温数据不足，鱼情置信度会降低。" : "Water temperature is incomplete, so fish confidence is lower.";
+    return lang === "zh" ? "水温不足，保守判断。" : "Incomplete, read cautiously.";
   }
   if (lang === "zh") {
-    if (signal === "cold") return "水温明显偏冷，会压低鱼类活跃度。";
-    if (signal === "cool") return "水温偏凉，机会更依赖强水流和好时段。";
-    if (signal === "hot") return "水温偏热，浅水鱼情可能受压。";
-    if (trend === "cooling_fast") return "水温快速下降，鱼情稳定性下降。";
-    if (trend === "warming_fast") return "水温升得较快，需要更保守看待。";
-    if (signal === "optimal" && trend === "stable") return "水温处在合适区间且变化稳定。";
-    return "水温处于可参考范围。";
+    if (signal === "cold") return "偏冷，压低活跃度。";
+    if (signal === "cool") return "偏凉，依赖好窗口。";
+    if (signal === "hot") return "偏热，浅水受压。";
+    if (trend === "cooling_fast") return "快速降温，不稳定。";
+    if (trend === "warming_fast") return "升温较快，需保守。";
+    if (signal === "optimal" && trend === "stable") return "合适且稳定。";
+    return "水温可参考。";
   }
-  if (signal === "cold") return "Water is cold for the target profile and drags down activity.";
-  if (signal === "cool") return "Water is cool, so the day needs stronger movement and timing.";
-  if (signal === "hot") return "Water is hot enough to pressure shallow fish activity.";
-  if (trend === "cooling_fast") return "Water temperature is dropping quickly, reducing stability.";
-  if (trend === "warming_fast") return "Water temperature is rising quickly, so confidence is more cautious.";
-  if (signal === "optimal" && trend === "stable") return "Water temperature is in range and stable.";
-  return "Water temperature is usable but not a standalone reason to score high.";
+  if (signal === "cold") return "Cold; activity reduced.";
+  if (signal === "cool") return "Cool; needs timing.";
+  if (signal === "hot") return "Hot; shallow water pressured.";
+  if (trend === "cooling_fast") return "Cooling fast; unstable.";
+  if (trend === "warming_fast") return "Warming fast; cautious read.";
+  if (signal === "optimal" && trend === "stable") return "In range and stable.";
+  return "Usable, not decisive.";
 }
 
 function DayOverviewPanel({ day, lang }: { day: { best_window: WindowCard | null; windows: WindowCard[] } | null | undefined; lang: Lang }) {
@@ -1391,10 +1466,10 @@ function DayOverviewPanel({ day, lang }: { day: { best_window: WindowCard | null
       : displayWaterType(stats.tidePhases[0], lang);
   const tideNote =
     stats.tideMovementMax >= 0.18
-      ? (lang === "zh" ? "全天水流较明显" : "clear water movement during the day")
+      ? (lang === "zh" ? "水流明显" : "clear movement")
       : stats.tideMovementMax >= 0.08
-        ? (lang === "zh" ? "水流中等，需结合全天条件判断" : "moderate movement; do not rely on time alone")
-        : (lang === "zh" ? "水流偏弱，鱼口稳定性较低" : "weaker movement can make fish activity patchy");
+        ? (lang === "zh" ? "水流中等" : "moderate movement")
+        : (lang === "zh" ? "水流偏弱" : "weak movement");
   const weatherProblems = [
     stats.windAvg != null && stats.windAvg > 16 ? (lang === "zh" ? "平均风偏强" : "windy") : null,
     stats.gustMax > 24 ? (lang === "zh" ? "阵风偏强" : "strong gusts") : null,
@@ -1417,13 +1492,13 @@ function DayOverviewPanel({ day, lang }: { day: { best_window: WindowCard | null
   const rows = [
     {
       icon: "🎣",
-      label: lang === "zh" ? "鱼情整体" : "Fish outlook",
+      label: lang === "zh" ? "鱼情" : "Fish",
       value: `${summary.fishIndex ?? "--"} ${lang === "zh" ? "鱼情" : "fish index"}`,
       note: fishIndexMeaning(summary, lang)
     },
     {
       icon: "🌊",
-      label: lang === "zh" ? "水流/潮水" : "Water movement",
+      label: lang === "zh" ? "水流" : "Movement",
       value: tideLabel,
       note: tideNote
     },
@@ -1438,7 +1513,7 @@ function DayOverviewPanel({ day, lang }: { day: { best_window: WindowCard | null
     },
     {
       icon: "🍃",
-      label: lang === "zh" ? "天气体感" : "Weather comfort",
+      label: lang === "zh" ? "天气" : "Weather",
       value: `${stats.windAvg?.toFixed(1) ?? "--"} kt${stats.temperatureAvg != null ? ` · ${stats.temperatureAvg.toFixed(0)}°C` : ""}`,
       note: weatherProblems.length
         ? (lang === "zh" ? weatherProblems.slice(0, 2).join("、") : weatherProblems.slice(0, 2).join(" and "))
@@ -1446,7 +1521,7 @@ function DayOverviewPanel({ day, lang }: { day: { best_window: WindowCard | null
     },
     {
       icon: "⚠️",
-      label: lang === "zh" ? "浪况/安全" : "Waves + safety",
+      label: lang === "zh" ? "浪/安全" : "Sea",
       value: marineValue,
       note: marineProblems.length
         ? (lang === "zh" ? marineProblems[0] : marineProblems[0])
@@ -1524,24 +1599,24 @@ function potentialSpots(structures: StructureFacility[], window: WindowCard | nu
       scoreLabel: scoreForType(item.type) == null ? "--" : String(scoreForType(item.type)),
       tone: "strong",
       note: lang === "zh"
-        ? (item.source === "list_wildfisheries" ? "本次搜索附近的官方钓点。" : "本次搜索附近的公共钓点入口。")
-        : (item.source === "list_wildfisheries" ? "Official fishing map entry near this search." : "Public fishing access near this search."),
+        ? (item.source === "list_wildfisheries" ? "官方钓点入口。" : "公共入口。")
+        : (item.source === "list_wildfisheries" ? "Official fishing entry." : "Public access."),
       advantage: item.source === "list_wildfisheries"
-        ? (lang === "zh" ? "为什么有帮助：官方点位能提供真实可规划的位置。" : "Why it helps: official spot data gives a real place to plan around.")
-        : (lang === "zh" ? "为什么有帮助：清楚入口靠近边线和水流变化。" : "Why it helps: clear access near edge and current changes.")
+        ? (lang === "zh" ? "入口不参与鱼情加分。" : "Access does not boost fish score.")
+        : (lang === "zh" ? "入口不参与鱼情加分。" : "Access does not boost fish score.")
     }));
 
   return fishingAccess.slice(0, 5);
 }
 
-function publicFishingStructures(structures: StructureFacility[]) {
-  return structures.filter(
-    (structure) => structure.planner_eligible && structure.access === "public" && isWithinVisibleStructureRadius(structure)
-  );
-}
-
 function mapReferenceStructures(structures: StructureFacility[]) {
   return structures.filter(shouldShowStructure);
+}
+
+function publicMapAccessStructures(structures: StructureFacility[]) {
+  return structures.filter(
+    (structure) => structure.access !== "private" && Boolean(structure.map_eligible ?? structure.planner_eligible) && isWithinVisibleStructureRadius(structure)
+  );
 }
 
 function StructureMap({
@@ -1591,7 +1666,7 @@ function StructureMap({
     return () => observer.disconnect();
   }, []);
 
-  const eligible = publicFishingStructures(structures);
+  const mapAccess = publicMapAccessStructures(structures);
   const viewport = viewCenter ? mapViewport(viewCenter, viewZoom, mapDimensions) : null;
   const tiles = viewport ? mapTiles(viewport) : [];
   const searchPosition = center && viewport ? pointOnMap(center, viewport) : null;
@@ -1659,7 +1734,7 @@ function StructureMap({
           </div>
         ) : (
           <div className="structure-summary">
-            <strong>{eligible.length}</strong>
+            <strong>{mapAccess.length}</strong>
             <span>{text.officialAccess}</span>
           </div>
         )}
@@ -1753,6 +1828,9 @@ function StructureMap({
           {!isUnsupported ? (
             <div className="map-legend" aria-label={text.mapLegend}>
               <span><i className="legend-public" />{text.fishingAccess}</span>
+              <span><i className="legend-ramp" />{text.boatRamp}</span>
+              <span><i className="legend-reference" />{text.mapReference}</span>
+              <span><i className="legend-supplemental" />{text.supplementalSpot}</span>
             </div>
           ) : null}
           <a
@@ -1790,7 +1868,23 @@ function StructureMap({
                   <p>{spot.note}</p>
                   <em>{spot.advantage}</em>
                 </div>
-              )) : (
+              )) : mapAccess.length ? (
+                mapAccess.slice(0, 5).map((structure) => (
+                  <div className="spot-row access" key={structure.id}>
+                    <div className="spot-row-head">
+                      <div>
+                        <b>{structure.label}</b>
+                        <small>
+                          {formatStructureType(structure.type, lang)} · {structure.distance_km ?? "?"} km · {formatSource(structure.source, lang)}
+                        </small>
+                      </div>
+                      <strong>{text.mapOnlyScoreLabel}</strong>
+                    </div>
+                    <p>{text.mapOnlyAccess}</p>
+                    <em>{text.mapOnlyAccessNote}</em>
+                  </div>
+                ))
+              ) : (
                 <div className="spot-row caution">
                   <div className="spot-row-head">
                     <div>
@@ -1884,6 +1978,8 @@ function FishingPlanCard({
   }, [selectedDay, lang]);
 
   const scoreFactorsDisplay = mergeScoreFactors(scoreFactorsLlm, scoreFactorsFallback, lang);
+  const visiblePositiveFactors = scoreFactorsDisplay?.positive.map((line) => compactFactorText(line, lang)).slice(0, 3) ?? [];
+  const visibleNegativeFactors = scoreFactorsDisplay?.negative.map((line) => compactFactorText(line, lang)).slice(0, 3) ?? [];
 
   return (
     <section className="plan-card">
@@ -1909,9 +2005,9 @@ function FishingPlanCard({
             <div className="score-factor-lists">
               <div className="score-factor-col score-factor-positive">
                 <h4>{text.scoreFactorsPositive}</h4>
-                {scoreFactorsDisplay.positive.length ? (
+                {visiblePositiveFactors.length ? (
                   <ul>
-                    {scoreFactorsDisplay.positive.map((line) => (
+                    {visiblePositiveFactors.map((line) => (
                       <li key={line}>{line}</li>
                     ))}
                   </ul>
@@ -1921,9 +2017,9 @@ function FishingPlanCard({
               </div>
               <div className="score-factor-col score-factor-negative">
                 <h4>{text.scoreFactorsNegative}</h4>
-                {scoreFactorsDisplay.negative.length ? (
+                {visibleNegativeFactors.length ? (
                   <ul>
-                    {scoreFactorsDisplay.negative.map((line) => (
+                    {visibleNegativeFactors.map((line) => (
                       <li key={line}>{line}</li>
                     ))}
                   </ul>
@@ -1937,7 +2033,7 @@ function FishingPlanCard({
               </div>
             </div>
             {scoreFactorsDisplay.summary ? (
-              <p className="score-factor-summary">{scoreFactorsDisplay.summary}</p>
+              <p className="score-factor-summary">{compactFactorText(scoreFactorsDisplay.summary, lang)}</p>
             ) : null}
           </>
         ) : (
@@ -2731,8 +2827,8 @@ function HeroScoreCard({ data, forecast, lang }: { data: ForecastResponse | null
           <strong>{fishPotential ?? "--"}</strong>
           <small>
             {lang === "zh"
-              ? "只看鱼可能是否更活跃。"
-              : "Fish signal only, before comfort and safety."}
+              ? "只看鱼情。"
+              : "Fish signal only."}
           </small>
         </div>
         <div>
@@ -2740,10 +2836,10 @@ function HeroScoreCard({ data, forecast, lang }: { data: ForecastResponse | null
           <strong>{tripReality ?? "--"}</strong>
           <small>
             {summary.safetyFlag === "hazardous"
-              ? (lang === "zh" ? "安全压力高，出行建议会被压低。" : "Safety risk is high, so trip advice is capped.")
-              : summary.safetyFlag === "elevated"
-                ? (lang === "zh" ? "安全余量一般，需要更保守。" : "Safety margin is reduced, so be more conservative.")
-                : (lang === "zh" ? "全天出行条件均值，安全风险会封顶。" : "Day-average trip ease, capped by safety.")}
+                ? (lang === "zh" ? "安全压力高，出行建议会被压低。" : "Safety risk is high, so trip advice is capped.")
+                : summary.safetyFlag === "elevated"
+                ? (lang === "zh" ? "安全余量一般。" : "Reduced safety margin.")
+                : (lang === "zh" ? "天气、浪和安全。" : "Weather, waves, safety.")}
           </small>
         </div>
       </div>

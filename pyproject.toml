@@ -27,3 +27,6 @@ coastal-score-factors = "coastal_fishing_forecast.score_factors_llm:main"
 
 [tool.setuptools.packages.find]
 include = ["coastal_fishing_forecast*"]
+
+[tool.setuptools.package-data]
+coastal_fishing_forecast = ["resources/*.json"]

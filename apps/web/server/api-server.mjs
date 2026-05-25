@@ -17,6 +17,7 @@ const FEEDBACK_MAX_BODY_BYTES = 32 * 1024;
 const SCORE_FACTORS_MAX_BODY_BYTES = 512 * 1024;
 const API_CACHE_TTL_MS = 15 * 60 * 1000;
 const API_CACHE_MAX_ENTRIES = 80;
+const MAP_STRUCTURE_RADIUS_M = "5000";
 const apiCache = new Map();
 const pendingRequests = new Map();
 
@@ -175,7 +176,7 @@ async function runSearchForecast(url) {
     "--structure-source",
     "auto",
     "--structure-radius-m",
-    "2000",
+    MAP_STRUCTURE_RADIUS_M,
     "--cache-dir",
     ".cache/coastal_fishing_forecast"
   ];
@@ -313,7 +314,7 @@ async function runCoordinateForecast(url) {
     "--structure-source",
     "auto",
     "--structure-radius-m",
-    "2000",
+    MAP_STRUCTURE_RADIUS_M,
     "--cache-dir",
     ".cache/coastal_fishing_forecast"
   ];
