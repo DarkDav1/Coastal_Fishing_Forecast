@@ -96,9 +96,17 @@ function sanitizeCoordinate(value, fallback) {
   return number;
 }
 
+function sanitizeTimestamp(value) {
+  const number = Number(value);
+  if (!Number.isFinite(number)) return null;
+  return Math.round(number);
+}
+
 async function runWindyEmbedProxy(url) {
   const lat = sanitizeCoordinate(url.searchParams.get("lat"), -42.8991).toFixed(4);
   const lon = sanitizeCoordinate(url.searchParams.get("lon"), 147.3390).toFixed(4);
+  const timestamp = sanitizeTimestamp(url.searchParams.get("timestamp"));
+  const zoom = "11";
   const windyUrl = new URL("https://embed.windy.com/embed2.html");
   const params = {
     lat,
@@ -107,7 +115,7 @@ async function runWindyEmbedProxy(url) {
     detailLon: lon,
     width: "760",
     height: "620",
-    zoom: "10",
+    zoom,
     level: "surface",
     overlay: "wind",
     product: "ecmwf",
@@ -135,9 +143,56 @@ async function runWindyEmbedProxy(url) {
   if (!upstream.ok) {
     throw new Error(`Windy embed request failed with ${upstream.status}`);
   }
+  const syncScript = `
+<script>
+(function () {
+  var target = {
+    lat: ${JSON.stringify(Number(lat))},
+    lon: ${JSON.stringify(Number(lon))},
+    zoom: ${JSON.stringify(Number(zoom))},
+    timestamp: ${JSON.stringify(timestamp)}
+  };
+  var attempts = 0;
+  function applyTarget() {
+    attempts += 1;
+    var windy = window.W;
+    if (!windy || !windy.store || !windy.map || !windy.map.map) {
+      if (attempts < 80) window.setTimeout(applyTarget, 150);
+      return;
+    }
+    try {
+      if (target.timestamp !== null) {
+        windy.store.set("timestamp", target.timestamp);
+      }
+      windy.store.set("mapCoords", { lat: target.lat, lon: target.lon, zoom: target.zoom, source: "maps" });
+      if (windy.map.map && typeof windy.map.map.setView === "function") {
+        windy.map.map.setView([target.lat, target.lon], target.zoom, { animate: false });
+      }
+      if (windy.broadcast && typeof windy.broadcast.emit === "function") {
+        windy.broadcast.emit("rqstOpen", "picker", { lat: target.lat, lon: target.lon });
+        windy.broadcast.emit("uiChanged");
+      }
+    } catch (error) {
+      if (attempts < 80) window.setTimeout(applyTarget, 150);
+      return;
+    }
+    window.setTimeout(function () {
+      try {
+        if (target.timestamp !== null) windy.store.set("timestamp", target.timestamp);
+        windy.store.set("mapCoords", { lat: target.lat, lon: target.lon, zoom: target.zoom, source: "maps" });
+        if (windy.map.map && typeof windy.map.map.setView === "function") {
+          windy.map.map.setView([target.lat, target.lon], target.zoom, { animate: false });
+        }
+      } catch (error) {}
+    }, 1200);
+  }
+  applyTarget();
+}());
+</script>`;
   const html = await upstream.text();
   return html
     .replace("<head>", '<head><base href="https://embed.windy.com/">')
+    .replace("</body>", `${syncScript}</body>`)
     .replaceAll('src="/', 'src="https://embed.windy.com/')
     .replaceAll('href="/', 'href="https://embed.windy.com/');
 }

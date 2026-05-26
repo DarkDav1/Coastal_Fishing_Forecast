@@ -49,6 +49,8 @@ const UI_TEXT = {
     tripReality: "Trip reality",
     waterbodyClass: "Water type",
     waterTemp: "Water temp",
+    airTemp: "Air temp",
+    temperature: "Temperature",
     searchResultWaiting: "Search result will appear here.",
     strongestNearby: "is the strongest nearby option today.",
     primaryMap: "Primary map",
@@ -141,6 +143,8 @@ const UI_TEXT = {
     tripReality: "出行现实",
     waterbodyClass: "水域类型",
     waterTemp: "水温",
+    airTemp: "气温",
+    temperature: "温度",
     searchResultWaiting: "搜索后会显示今日判断。",
     strongestNearby: "是今天附近更值得看的水域类型。",
     primaryMap: "主要地图",
@@ -246,6 +250,14 @@ function candidateMeta(candidate: PlaceCandidate) {
   const types = candidate.types?.slice(0, 2).join(" / ");
   const coords = `${candidate.latitude.toFixed(4)}, ${candidate.longitude.toFixed(4)}`;
   return [region, types, coords].filter(Boolean).join(" · ");
+}
+
+function candidateToSelectedPlace(candidate: PlaceCandidate): NonNullable<ForecastResponse["selected_place"]> {
+  return {
+    display_name: candidate.display_name,
+    latitude: candidate.latitude,
+    longitude: candidate.longitude
+  };
 }
 
 const SOURCE_LABELS: Record<string, string> = {
@@ -1601,9 +1613,9 @@ function potentialSpots(structures: StructureFacility[], window: WindowCard | nu
       note: lang === "zh"
         ? (item.source === "list_wildfisheries" ? "官方钓点入口。" : "公共入口。")
         : (item.source === "list_wildfisheries" ? "Official fishing entry." : "Public access."),
-      advantage: item.source === "list_wildfisheries"
-        ? (lang === "zh" ? "入口不参与鱼情加分。" : "Access does not boost fish score.")
-        : (lang === "zh" ? "入口不参与鱼情加分。" : "Access does not boost fish score.")
+      advantage: lang === "zh"
+        ? "作为入口线索使用，出发前确认规则和安全。"
+        : "Use as an access lead; check local rules and safety."
     }));
 
   return fishingAccess.slice(0, 5);
@@ -1624,12 +1636,14 @@ function StructureMap({
   window,
   center,
   lang,
+  loading,
   unsupported
 }: {
   structures: StructureFacility[];
   window: WindowCard | null;
   center: ForecastResponse["selected_place"];
   lang: Lang;
+  loading?: boolean;
   unsupported?: ForecastResponse | null;
 }) {
   const text = copy(lang);
@@ -1734,7 +1748,7 @@ function StructureMap({
           </div>
         ) : (
           <div className="structure-summary">
-            <strong>{mapAccess.length}</strong>
+            <strong>{loading ? "--" : mapAccess.length}</strong>
             <span>{text.officialAccess}</span>
           </div>
         )}
@@ -2597,6 +2611,7 @@ function WeatherCurve({
   points,
   selectedHour,
   onSelectHour,
+  valueClassName,
   note,
   allowNegative = false
 }: {
@@ -2605,6 +2620,7 @@ function WeatherCurve({
   points: WeatherSeriesPoint[];
   selectedHour: number;
   onSelectHour: (hour: number) => void;
+  valueClassName?: string;
   note?: string;
   allowNegative?: boolean;
 }) {
@@ -2636,7 +2652,13 @@ function WeatherCurve({
     <div className="weather-curve-panel">
       <div className="weather-curve-head">
         <span>{label}</span>
-        <b>{selectedValueLabel}</b>
+        <b>{formatCurveTime(selected.hour)}</b>
+      </div>
+      <div className="weather-readout">
+        <span className={valueClassName}>
+          <small>{label}</small>
+          <b>{selected.value.toFixed(decimals)} {unit}</b>
+        </span>
       </div>
       <div className="curve-chart weather-curve-chart">
         <svg
@@ -2659,9 +2681,6 @@ function WeatherCurve({
           <path className="curve-line" d={linePath} />
           <line className="curve-cursor" x1={selectedPoint.x} x2={selectedPoint.x} y1={CURVE_TOP} y2={CURVE_BOTTOM} />
         </svg>
-        <div className="curve-tooltip" style={{ left: `${curveTooltipLeftPercent(selectedPoint.x)}%` }}>
-          {selectedValueLabel}
-        </div>
         <div className="curve-labels y-labels" aria-hidden="true">
           {yAxisTicks.map((tick) => (
             <span key={tick.label} style={{ top: tick.top }}>{tick.label}</span>
@@ -2679,48 +2698,178 @@ function WeatherCurve({
   );
 }
 
-function windyEmbedUrl(center: ForecastResponse["selected_place"]) {
+function weatherSeriesPoint(hour: number, value: number | null | undefined, label: string): WeatherSeriesPoint | null {
+  const numeric = numberOrNull(value);
+  return numeric == null ? null : { hour, value: numeric, label };
+}
+
+function TemperatureCurve({
+  airPoints,
+  waterPoints,
+  selectedHour,
+  onSelectHour,
+  lang
+}: {
+  airPoints: WeatherSeriesPoint[];
+  waterPoints: WeatherSeriesPoint[];
+  selectedHour: number;
+  onSelectHour: (hour: number) => void;
+  lang: Lang;
+}) {
+  const text = copy(lang);
+  const allPoints = [...airPoints, ...waterPoints];
+  if (!allPoints.length) return null;
+  const selectedAir = airPoints.length
+    ? airPoints.reduce((closest, point) => (
+        Math.abs(point.hour - selectedHour) < Math.abs(closest.hour - selectedHour) ? point : closest
+      ), airPoints[0])
+    : null;
+  const selectedWater = waterPoints.length
+    ? waterPoints.reduce((closest, point) => (
+        Math.abs(point.hour - selectedHour) < Math.abs(closest.hour - selectedHour) ? point : closest
+      ), waterPoints[0])
+    : null;
+  const selectedPoint = selectedAir ?? selectedWater ?? allPoints[0];
+  const axis = buildWeatherAxis(allPoints, "°C", true);
+  const airPath = weatherCurvePath(airPoints, axis);
+  const waterPath = weatherCurvePath(waterPoints, axis);
+  const cursorX = CURVE_LEFT + (selectedHour / 23) * CURVE_WIDTH;
+  const yAxisTicks = axis.ticks.map((tick) => ({
+    label: formatAxisTick(tick, axis.decimals),
+    top: `${(weatherValueY(tick, axis) / CURVE_VIEWBOX_HEIGHT) * 100}%`
+  }));
+  const selectedLabel = `${formatCurveTime(selectedPoint.hour)} · ${text.airTemp} ${selectedAir ? `${selectedAir.value.toFixed(1)}°C` : "--"} · ${text.waterTemp} ${selectedWater ? `${selectedWater.value.toFixed(1)}°C` : "--"}`;
+  function updateWeatherHour(event: PointerEvent<SVGSVGElement>) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = Math.max(0, Math.min(rect.width, event.clientX - rect.left));
+    const chartX = (x / rect.width) * CURVE_VIEWBOX_WIDTH;
+    const hour = ((Math.max(CURVE_LEFT, Math.min(CURVE_RIGHT, chartX)) - CURVE_LEFT) / CURVE_WIDTH) * 23;
+    onSelectHour(hour);
+  }
+  return (
+    <div className="weather-curve-panel temperature-curve-panel">
+      <div className="weather-curve-head">
+        <span>{text.temperature}</span>
+        <b>{formatCurveTime(selectedPoint.hour)}</b>
+      </div>
+      <div className="temperature-meta" aria-label={selectedLabel}>
+        <div className="temperature-legend" aria-hidden="true">
+          <span className="air">{text.airTemp}</span>
+          <span className="water">{text.waterTemp}</span>
+        </div>
+        <div className="temperature-readout">
+          <span className="air">
+            <small>{text.airTemp}</small>
+            <b>{selectedAir ? `${selectedAir.value.toFixed(1)}°C` : "--"}</b>
+          </span>
+          <span className="water">
+            <small>{text.waterTemp}</small>
+            <b>{selectedWater ? `${selectedWater.value.toFixed(1)}°C` : "--"}</b>
+          </span>
+        </div>
+      </div>
+      <div className="curve-chart weather-curve-chart">
+        <svg
+          viewBox={`0 0 ${CURVE_VIEWBOX_WIDTH} ${CURVE_VIEWBOX_HEIGHT}`}
+          preserveAspectRatio="none"
+          aria-label={lang === "zh" ? "逐小时气温和水温曲线" : "Hourly air and water temperature curve"}
+          onClick={updateWeatherHour}
+          onPointerMove={updateWeatherHour}
+        >
+          <rect className="curve-plot-bg" x={CURVE_LEFT} y={CURVE_TOP} width={CURVE_WIDTH} height={CURVE_HEIGHT} rx="20" />
+          {axis.ticks.map((tick) => {
+            const y = weatherValueY(tick, axis);
+            return <line className="curve-grid-line" key={tick} x1={CURVE_LEFT} x2={CURVE_RIGHT} y1={y} y2={y} />;
+          })}
+          {CURVE_X_TICKS.map((tick) => {
+            const x = CURVE_LEFT + (tick / 23) * CURVE_WIDTH;
+            return <line className="curve-grid-line vertical" key={tick} x1={x} x2={x} y1={CURVE_TOP} y2={CURVE_BOTTOM} />;
+          })}
+          {airPath ? <path className="temperature-line air" d={airPath} /> : null}
+          {waterPath ? <path className="temperature-line water" d={waterPath} /> : null}
+          <line className="curve-cursor" x1={cursorX} x2={cursorX} y1={CURVE_TOP} y2={CURVE_BOTTOM} />
+        </svg>
+        <div className="curve-labels y-labels" aria-hidden="true">
+          {yAxisTicks.map((tick) => (
+            <span key={tick.label} style={{ top: tick.top }}>{tick.label}</span>
+          ))}
+        </div>
+        <div className="curve-labels x-labels" aria-hidden="true">
+          {CURVE_X_TICKS.map((tick) => {
+            const x = CURVE_LEFT + (tick / 23) * CURVE_WIDTH;
+            return <span key={tick} style={{ left: `${(x / CURVE_VIEWBOX_WIDTH) * 100}%` }}>{String(tick).padStart(2, "0")}</span>;
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function windyTimestamp(date: string | null | undefined, hour: number | null | undefined) {
+  if (!date || typeof hour !== "number" || !Number.isFinite(hour)) return null;
+  const timestampDate = new Date(`${date}T00:00:00`);
+  if (Number.isNaN(timestampDate.getTime())) return null;
+  const roundedHour = Math.max(0, Math.min(23, Math.round(hour)));
+  timestampDate.setHours(roundedHour, 0, 0, 0);
+  return timestampDate.getTime();
+}
+
+function windyEmbedUrl(center: ForecastResponse["selected_place"], date?: string | null, hour?: number | null) {
   if (!center) return null;
   const lat = center.latitude.toFixed(4);
   const lon = center.longitude.toFixed(4);
-  return `/api/windy-embed?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`;
+  const params = new URLSearchParams({ lat, lon });
+  const timestamp = windyTimestamp(date, hour);
+  if (timestamp !== null) params.set("timestamp", String(timestamp));
+  return `/api/windy-embed?${params.toString()}`;
 }
 
 function WindFieldMap({
   points,
   center,
+  date,
+  loading,
   selectedHour,
   lang
 }: {
   points: HourlyActivityPoint[];
   center: ForecastResponse["selected_place"];
+  date?: string | null;
+  loading?: boolean;
   selectedHour: number;
   lang: Lang;
 }) {
   const text = copy(lang);
-  const windyUrl = windyEmbedUrl(center);
-  if (!points.length) return null;
-  const current = points.reduce(
-    (closest, point) => (Math.abs(point.hour - selectedHour) < Math.abs(closest.hour - selectedHour) ? point : closest),
-    points[0]
-  );
+  const windyUrl = windyEmbedUrl(center, date, selectedHour);
+  if (!windyUrl) return null;
+  const current = points.length
+    ? points.reduce(
+        (closest, point) => (Math.abs(point.hour - selectedHour) < Math.abs(closest.hour - selectedHour) ? point : closest),
+        points[0]
+      )
+    : null;
   return (
     <div className="weather-map-panel">
       <div className="weather-curve-head">
         <span>{text.windMap}</span>
-        <b>{formatCurveTime(current.hour)} · {compassLabel(current.wind_direction_deg)} · {(current.wind_gust_knots ?? current.wind_speed_knots ?? 0).toFixed(0)} kt</b>
+        <b>
+          {current
+            ? `${formatCurveTime(current.hour)} · ${compassLabel(current.wind_direction_deg)} · ${(current.wind_gust_knots ?? current.wind_speed_knots ?? 0).toFixed(0)} kt`
+            : loading
+            ? text.checkingButton
+            : "--"}
+        </b>
       </div>
-      {windyUrl ? (
-        <iframe
-          allowFullScreen
-          className="wind-map-frame"
-          loading="eager"
-          referrerPolicy="no-referrer-when-downgrade"
-          src={windyUrl}
-          title={text.windyTitle}
-        />
-      ) : null}
-      <small>{text.windyNote}</small>
+      <iframe
+        allowFullScreen
+        className="wind-map-frame"
+        key={windyUrl}
+        loading="eager"
+        referrerPolicy="no-referrer-when-downgrade"
+        src={windyUrl}
+        title={text.windyTitle}
+      />
+      <small>{current ? text.windyNote : text.checkingButton}</small>
     </div>
   );
 }
@@ -2729,11 +2878,13 @@ function WeatherVisualPanel({
   day,
   hourlyActivity,
   center,
+  loading,
   lang
 }: {
   day: ForecastDay | null;
   hourlyActivity: HourlyActivityPoint[];
   center: ForecastResponse["selected_place"];
+  loading?: boolean;
   lang: Lang;
 }) {
   const text = copy(lang);
@@ -2742,16 +2893,28 @@ function WeatherVisualPanel({
   const selected = day?.best_window ?? windows[0] ?? null;
   const defaultHour = representativeHour(selected) ?? hourly[0]?.hour ?? 0;
   const [activeHour, setActiveHour] = useState(defaultHour);
+  const [windyHour, setWindyHour] = useState(defaultHour);
   useEffect(() => {
     setActiveHour(defaultHour);
+    setWindyHour(defaultHour);
   }, [day?.date, defaultHour]);
-  if (!windows.length && !hourly.length) return null;
+  useEffect(() => {
+    const timeout = window.setTimeout(() => setWindyHour(activeHour), 400);
+    return () => window.clearTimeout(timeout);
+  }, [activeHour, day?.date]);
+  if (!windows.length && !hourly.length && !center) return null;
   const wavePoints = hourly
     .map((point) => ({ hour: point.hour, value: numberOrNull(hourlyWave(point)), label: point.time_window ?? "" }))
     .filter((point): point is WeatherSeriesPoint => point.value != null);
   const windSpeedPoints = hourly
     .map((point) => ({ hour: point.hour, value: numberOrNull(hourlyWindSpeed(point)), label: compassLabel(point.wind_direction_deg) }))
     .filter((point): point is WeatherSeriesPoint => point.value != null);
+  const airTemperaturePoints = hourly
+    .map((point) => weatherSeriesPoint(point.hour, point.temperature_c, text.airTemp))
+    .filter((point): point is WeatherSeriesPoint => point !== null);
+  const waterTemperaturePoints = hourly
+    .map((point) => weatherSeriesPoint(point.hour, point.sea_surface_temperature_c, text.waterTemp))
+    .filter((point): point is WeatherSeriesPoint => point !== null);
   const swellPoints = hourly
     .map((point) => ({ hour: point.hour, value: numberOrNull(hourlySwell(point)), label: point.time_window ?? "" }))
     .filter((point): point is WeatherSeriesPoint => point.value != null);
@@ -2773,11 +2936,27 @@ function WeatherVisualPanel({
       <div className="weather-visual-grid">
         <WindFieldMap
           center={center}
+          date={day?.date}
           lang={lang}
+          loading={loading}
           points={hourly}
-          selectedHour={activeHour}
+          selectedHour={windyHour}
         />
-        <WeatherCurve label={text.windSpeed} unit="kt" points={windSpeedPoints} selectedHour={activeHour} onSelectHour={setActiveHour} />
+        <WeatherCurve
+          label={text.windSpeed}
+          onSelectHour={setActiveHour}
+          points={windSpeedPoints}
+          selectedHour={activeHour}
+          unit="kt"
+          valueClassName="wind"
+        />
+        <TemperatureCurve
+          airPoints={airTemperaturePoints}
+          lang={lang}
+          onSelectHour={setActiveHour}
+          selectedHour={activeHour}
+          waterPoints={waterTemperaturePoints}
+        />
         <WeatherCurve
           label={tideLabel}
           unit={tideUnit}
@@ -2786,15 +2965,42 @@ function WeatherVisualPanel({
           onSelectHour={setActiveHour}
           note={tideNote}
           allowNegative={hasVerifiedTideHeight}
+          valueClassName="tide"
         />
-        <WeatherCurve label={text.waveHeight} unit="m" points={wavePoints} selectedHour={activeHour} onSelectHour={setActiveHour} />
-        <WeatherCurve label={text.swellHeight} unit="m" points={swellPoints} selectedHour={activeHour} onSelectHour={setActiveHour} />
+        <WeatherCurve
+          label={text.waveHeight}
+          onSelectHour={setActiveHour}
+          points={wavePoints}
+          selectedHour={activeHour}
+          unit="m"
+          valueClassName="wave"
+        />
+        <WeatherCurve
+          label={text.swellHeight}
+          onSelectHour={setActiveHour}
+          points={swellPoints}
+          selectedHour={activeHour}
+          unit="m"
+          valueClassName="swell"
+        />
       </div>
     </section>
   );
 }
 
-function HeroScoreCard({ data, forecast, lang }: { data: ForecastResponse | null; forecast: ForecastResponse["forecast"] | undefined; lang: Lang }) {
+function HeroScoreCard({
+  data,
+  forecast,
+  lang,
+  pending,
+  selectedPlace
+}: {
+  data: ForecastResponse | null;
+  forecast: ForecastResponse["forecast"] | undefined;
+  lang: Lang;
+  pending?: boolean;
+  selectedPlace?: ForecastResponse["selected_place"];
+}) {
   const text = copy(lang);
   const todayDay = todayForecastDay(forecast);
   const bestWindow = todayDay?.best_window ?? forecast?.hero.best_window ?? null;
@@ -2812,8 +3018,8 @@ function HeroScoreCard({ data, forecast, lang }: { data: ForecastResponse | null
   return (
     <div className="hero-score">
       <span>{text.selectedPlace}</span>
-      <b>{data?.selected_place?.display_name ?? text.waitingPlace}</b>
-      <div className={`decision-badge ${tone}`}>{recommendationDisplay(label, lang)}</div>
+      <b>{selectedPlace?.display_name ?? data?.selected_place?.display_name ?? text.waitingPlace}</b>
+      <div className={`decision-badge ${tone}`}>{pending ? text.checkingButton : recommendationDisplay(label, lang)}</div>
       <div className="score-readout">
         <strong>{score ?? "--"}</strong>
         <div>
@@ -2866,6 +3072,7 @@ export default function App() {
   const [query, setQuery] = useState(DEMO_QUERY);
   const [data, setData] = useState<ForecastResponse | null>(null);
   const [candidates, setCandidates] = useState<PlaceCandidate[]>([]);
+  const [pendingPlace, setPendingPlace] = useState<ForecastResponse["selected_place"]>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -2877,6 +3084,7 @@ export default function App() {
     setLoading(true);
     setError(null);
     setCandidates([]);
+    setPendingPlace(null);
     try {
       const result = await searchForecast(nextQuery);
       setData(result);
@@ -2912,13 +3120,16 @@ export default function App() {
   }
 
   async function chooseCandidate(candidate: PlaceCandidate) {
+    const optimisticPlace = candidateToSelectedPlace(candidate);
+    setPendingPlace(optimisticPlace);
+    setQuery(candidate.short_name ?? candidate.display_name);
+    setCandidates([]);
     setLoading(true);
     setError(null);
     try {
       const result = await forecastPlace(candidate);
       setData(result);
-      setQuery(candidate.short_name ?? candidate.display_name);
-      setCandidates([]);
+      setPendingPlace(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -2951,10 +3162,11 @@ export default function App() {
     void runCandidateSearch();
   }
 
-  const forecast = data?.forecast;
+  const forecast = pendingPlace ? undefined : data?.forecast;
   const selectedDay = forecast?.daily_forecast.find((day) => day.date === selectedDate) ?? todayForecastDay(forecast);
   const bestWindow = selectedDay?.best_window ?? forecast?.hero.best_window ?? null;
   const structures = forecast?.structure_facilities ?? [];
+  const mapCenter = pendingPlace ?? data?.selected_place ?? null;
 
   return (
     <main className={`lang-${lang} theme-${theme}`}>
@@ -3019,18 +3231,35 @@ export default function App() {
             ) : null}
             {error ? <p className="error">{error}</p> : null}
           </div>
-          <HeroScoreCard data={data} forecast={forecast} lang={lang} />
+          <HeroScoreCard data={data} forecast={forecast} lang={lang} pending={Boolean(pendingPlace)} selectedPlace={mapCenter} />
         </div>
       </header>
 
-      {data?.status === "unsupported_or_no_result" ? (
+      {pendingPlace ? (
+        <>
+          <StructureMap center={pendingPlace} lang={lang} loading={loading} structures={[]} window={null} />
+          <div className="dashboard">
+            <div className="right-column">
+              <WeatherVisualPanel
+                center={pendingPlace}
+                day={null}
+                hourlyActivity={[]}
+                lang={lang}
+                loading={loading}
+              />
+            </div>
+          </div>
+        </>
+      ) : null}
+
+      {!pendingPlace && data?.status === "unsupported_or_no_result" ? (
         <>
           <UnsupportedState data={data} lang={lang} />
           <StructureMap center={data.selected_place} lang={lang} structures={[]} unsupported={data} window={null} />
         </>
       ) : null}
 
-      {data?.status === "ok" && forecast ? (
+      {!pendingPlace && data?.status === "ok" && forecast ? (
         <>
           <StructureMap center={data.selected_place} lang={lang} structures={structures} window={bestWindow} />
           <div className="dashboard">

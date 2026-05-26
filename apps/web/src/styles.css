@@ -1804,6 +1804,129 @@ p.score-factor-summary {
   text-align: right;
 }
 
+.temperature-meta {
+  align-items: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.temperature-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+}
+
+.temperature-legend span {
+  align-items: center;
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 0.68rem;
+  font-weight: 900;
+  gap: 6px;
+  line-height: 1;
+}
+
+.temperature-legend span::before {
+  border-radius: 999px;
+  content: "";
+  display: inline-block;
+  height: 3px;
+  width: 22px;
+}
+
+.temperature-legend .air::before {
+  background: #d66c45;
+}
+
+.temperature-legend .water::before {
+  background: #2f7fb2;
+}
+
+.temperature-line {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3.2;
+  vector-effect: non-scaling-stroke;
+  pointer-events: none;
+}
+
+.temperature-line.air {
+  stroke: #d66c45;
+}
+
+.temperature-line.water {
+  stroke: #2f7fb2;
+}
+
+.weather-readout,
+.temperature-readout {
+  align-items: center;
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: flex-end;
+}
+
+.weather-readout {
+  justify-content: flex-start;
+  margin-top: 6px;
+}
+
+.weather-readout span,
+.temperature-readout span {
+  align-items: center;
+  background: rgba(255, 250, 240, 0.64);
+  border: 1px solid rgba(18, 41, 53, 0.1);
+  border-radius: 999px;
+  display: inline-flex;
+  gap: 6px;
+  padding: 5px 8px;
+}
+
+.weather-readout span::before,
+.temperature-readout span::before {
+  border-radius: 999px;
+  content: "";
+  display: inline-block;
+  height: 7px;
+  width: 7px;
+}
+
+.weather-readout .wind::before,
+.weather-readout .tide::before,
+.weather-readout .wave::before,
+.weather-readout .swell::before {
+  background: var(--reef);
+}
+
+.temperature-readout .air::before {
+  background: #d66c45;
+}
+
+.temperature-readout .water::before {
+  background: #2f7fb2;
+}
+
+.weather-readout small,
+.temperature-readout small {
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.weather-readout b,
+.temperature-readout b {
+  color: var(--kelp);
+  font-size: 0.72rem;
+  line-height: 1;
+}
+
 .weather-chart-shell {
   align-items: stretch;
   display: grid;
