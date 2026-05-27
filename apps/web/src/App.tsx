@@ -236,9 +236,9 @@ function recommendationLabel(score?: number | null) {
 
 function recommendationDisplay(label: string, lang: Lang = "en") {
   if (lang === "zh") {
-    if (label === "go") return "值得去";
-    if (label === "skip") return "建议等";
-    return "可短试";
+    if (label === "go") return "出发吧！";
+    if (label === "skip") return "别抱太大希望";
+    return "值得一试";
   }
   if (label === "go") return "Go";
   if (label === "skip") return "Wait";
@@ -534,11 +534,11 @@ function displayWaterbodyClass(value?: string | null, lang: Lang = "en") {
 
 function scoreMeaning(score?: number | null, lang: Lang = "en") {
   if (lang === "zh") {
-    if (score == null) return "等待预测评分。";
-    if (score >= 70) return "适合认真规划一次出钓";
-    if (score >= 55) return "可以去，但计划要简单";
-    if (score >= 40) return "只适合顺路短试";
-    return "建议等更强的日子";
+    if (score == null) return "请稍等。";
+    if (score >= 70) return "此时不去更待何时？";
+    if (score >= 55) return "值得一试，但别抱太大希望。";
+    if (score >= 40) return "顺路的话可以一试";
+    return "还是改天再去吧";
   }
   if (score == null) return "Waiting for a forecast score.";
   if (score >= 70) return "Good day to plan a proper session";
@@ -736,17 +736,17 @@ function dayMaxWindowScore(day?: ForecastDaySummary | null): number | null {
 function daySummaryText(day?: { best_window: WindowCard | null; windows: WindowCard[] } | null, lang: Lang = "en") {
   const score = dayScore(day);
   if (lang === "zh") {
-    if (score == null) return "选择日期查看全天情况。";
-    if (score >= 70) return "这一天整体条件较强，适合认真规划。";
-    if (score >= 55) return "这一天整体可钓，但计划要清晰。";
-    if (score >= 40) return "这一天整体偏一般，只适合短试或顺路查看。";
-    return "这一天整体偏弱，不适合专门出钓。";
+    if (score == null) return "请选择日期。";
+    if (score >= 70) return "是时候认真规划一场爆钓了。";
+    if (score >= 55) return "适合轻松愉快的钓鱼之旅。";
+    if (score >= 40) return "顺路的话可以试试。";
+    return "建议这天干些别的。";
   }
   if (score == null) return "Select a date to review the whole-day outlook.";
   if (score >= 70) return "This date has strong overall conditions for a proper session.";
-  if (score >= 55) return "This date is fishable overall, but still needs a clear plan.";
+  if (score >= 55) return "This date is fishable overall, good for a relax fishing trip.";
   if (score >= 40) return "This date is mixed overall; keep it short or opportunistic.";
-  return "This date is weak overall for a dedicated trip.";
+  return "This date is weak overall, better try another day.";
 }
 
 function firstWeatherChangeNotes(day?: { windows: WindowCard[] } | null, limit = 2): string[] {
