@@ -145,7 +145,7 @@ class EnvironmentInputs:
     water_temperature_signal: str = "unknown"
     water_temperature_trend: str = "unknown"
     temperature_confidence: str = "low"
-    rule_family: str = "derwent_generalized_v1"
+    rule_family: str = "generic_coastal_v1"
 
 
 def _clamp(value: float, lower: float = 0.0, upper: float = 100.0) -> int:
@@ -546,7 +546,7 @@ def _normalize_environment(environment: Mapping[str, Any] | None) -> Environment
         water_temperature_signal=str(environment.get("water_temperature_signal") or "unknown"),
         water_temperature_trend=str(environment.get("water_temperature_trend") or "unknown"),
         temperature_confidence=str(environment.get("temperature_confidence") or "low"),
-        rule_family=str(environment.get("rule_family", "derwent_generalized_v1")),
+        rule_family=str(environment.get("rule_family", "generic_coastal_v1")),
     )
 
 
@@ -1033,12 +1033,12 @@ def _raw_time_signal_context(environment: EnvironmentInputs) -> dict[str, Any]:
     }
 
 
-def _generic_derwent_rules(environment: EnvironmentInputs) -> dict[str, Any]:
-    """Derwent-style global rules with spot-specific logic removed.
+def _generic_coastal_rules(environment: EnvironmentInputs) -> dict[str, Any]:
+    """Generic coastal rules with spot-specific logic removed.
 
     This keeps the proven rule shape: light changes, moving tide, manageable
     wind, sea state, pressure trend, and seasonal context. It intentionally
-    avoids any Derwent named-spot adjustments.
+    avoids private-engine named-spot adjustments.
     """
     rules: list[dict[str, Any]] = []
 
@@ -1940,13 +1940,13 @@ def _trip_reality_score(comfort_score: int, safety_flag: str) -> int:
     return _clamp(score)
 
 
-def _derwent_style_score_modes(
+def _coastal_score_modes(
     *,
     cards: Mapping[str, dict[str, Any]],
     dominant_type: str,
     environment_context: Mapping[str, Any],
 ) -> dict[str, Any]:
-    """Expose the same score layers as the Derwent engine without local spot rules."""
+    """Build public score layers without local spot rules."""
     rule_context = environment_context["generic_rules"]
     tags = set(rule_context["reason_tags"])
     dominant_card = cards[dominant_type]
@@ -2172,13 +2172,6 @@ def _derwent_style_score_modes(
     )
     guard_tags.extend(system_guard_tags)
 
-    if activity >= 80 and ({"sunrise_window", "sunset_window", "major_moon_phase_bonus", "rising_tide_window"} <= tags):
-        big = "medium"
-    elif activity >= 70 and len({"sunrise_window", "sunset_window", "rising_tide_window", "major_moon_phase_bonus"} & tags) >= 2:
-        big = "medium"
-    else:
-        big = "low"
-
     final_activity = _clamp(activity)
     final_presence = _clamp(presence)
     final_trip_quality = _clamp(trip_quality)
@@ -2200,9 +2193,6 @@ def _derwent_style_score_modes(
         "presence_score": final_presence,
         "trip_quality_score": trip_reality,
         "fish_window_trip_score": final_trip_quality,
-        "resident_opportunity_score": resident,
-        "roaming_opportunity_score": roaming,
-        "big_fish_near_shore": big,
         "score_guard_tags": guard_tags,
         "score_mode_tags": score_mode_tags + ocean_pressure_tags,
         "fish_outlook_score": fish_outlook,
@@ -2281,7 +2271,7 @@ def _environment_context(
         wind_offshore_knots=wind_offshore,
         wind_alongshore_knots=wind_alongshore,
     )
-    rule_context = _generic_derwent_rules(environment)
+    rule_context = _generic_coastal_rules(environment)
     raw_time_signal = _raw_time_signal_context(environment)
     local_geometry_rules = [*structure_flow["rules"], *wind_to_shore["rules"]]
     if local_geometry_rules:
@@ -2835,7 +2825,7 @@ def build_preview(
     nearby_water_types = _score_nearby_water_types(global_signals, type_signals, environment_context, region_config)
 
     dominant_type = _pick_dominant_type(nearby_water_types, region_config)
-    score_modes = _derwent_style_score_modes(
+    score_modes = _coastal_score_modes(
         cards=nearby_water_types,
         dominant_type=dominant_type,
         environment_context=environment_context,
@@ -2884,9 +2874,6 @@ def build_preview(
             "activity_score": score_modes["activity_score"],
             "presence_score": score_modes["presence_score"],
             "trip_quality_score": score_modes["trip_quality_score"],
-            "resident_opportunity_score": score_modes["resident_opportunity_score"],
-            "roaming_opportunity_score": score_modes["roaming_opportunity_score"],
-            "big_fish_near_shore": score_modes["big_fish_near_shore"],
             "fish_outlook_score": score_modes["fish_outlook_score"],
             "comfort_score": score_modes["comfort_score"],
             "comfort_factors": score_modes["comfort_factors"],
@@ -2899,7 +2886,7 @@ def build_preview(
             "score_breakdown": score_breakdown,
             "reason_summary": [
                 "Nearby water types are inferred from broad coastline shape around the searched coordinate.",
-                "Time, tide, wind, swell, and pressure use generic rules adapted from the Derwent rule model.",
+                "Time, tide, wind, swell, and pressure use generic coastal rules.",
                 "Scores are preview-level guidance and should rank below curated local hot spots.",
             ],
         },

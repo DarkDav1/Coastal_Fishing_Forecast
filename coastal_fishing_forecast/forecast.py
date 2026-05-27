@@ -469,7 +469,7 @@ def _window_environment(
         "tide_source": display_tide_source,
         "time_window": engine_time_window,
         "hour_of_day": representative_time.hour + (representative_time.minute / 60.0),
-        "rule_family": "derwent_generalized_v1",
+        "rule_family": "generic_coastal_v1",
     }
     environment.update(_solar_context(day, representative_time, weather_daily))
     environment.update(_moon_phase_info(day))
@@ -588,7 +588,6 @@ def _build_hourly_activity(
                     "fish_outlook_score": recommendation.get("fish_outlook_score"),
                     "comfort_score": recommendation.get("comfort_score"),
                     "safety_flag": recommendation.get("safety_flag"),
-                    "big_fish_near_shore": recommendation.get("big_fish_near_shore"),
                     "label": recommendation.get("label"),
                     "dominant_inferred_type": recommendation.get("dominant_inferred_type"),
                     "time_window": window_context["environment"]["time_window"],

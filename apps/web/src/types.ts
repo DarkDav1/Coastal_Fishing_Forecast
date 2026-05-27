@@ -145,7 +145,6 @@ export type HourlyActivityPoint = {
   fish_outlook_score?: number | null;
   comfort_score?: number | null;
   safety_flag?: string | null;
-  big_fish_near_shore?: string | null;
   label?: string | null;
   dominant_inferred_type?: string | null;
   time_window?: string | null;
@@ -190,7 +189,6 @@ export type WindowCard = {
   comfort_factors?: string[];
   safety_flag?: string | null;
   safety_factors?: string[];
-  big_fish_near_shore?: string | null;
   label: string;
   reason_tags?: string[];
   positive_reason_tags?: string[];
@@ -203,7 +201,6 @@ export type WindowCard = {
   fish_profile?: string | null;
   water_type_scores: Array<{ key: string; label: string; score: number }>;
   expanded_water_types: Array<{ key: string; label: string; score: number; parent: string }>;
-  behavior_groups: Array<{ key: string; label: string; score: number; reason: string }>;
   conditions: {
     wind: {
       speed_knots: number;

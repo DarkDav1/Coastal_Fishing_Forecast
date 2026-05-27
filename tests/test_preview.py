@@ -204,7 +204,7 @@ class PreviewTests(unittest.TestCase):
             70,
         )
 
-    def test_generic_rules_do_not_include_derwent_spot_specific_tags(self) -> None:
+    def test_generic_rules_do_not_include_private_spot_specific_tags(self) -> None:
         result = build_preview(
             -42.8991036,
             147.3389916,
@@ -227,7 +227,7 @@ class PreviewTests(unittest.TestCase):
         }
         tags = set(result["overall_recommendation"]["reason_tags"])
         self.assertFalse(tags & forbidden)
-        self.assertEqual(result["overall_recommendation"]["model_rule_family"], "derwent_generalized_v1")
+        self.assertEqual(result["overall_recommendation"]["model_rule_family"], "generic_coastal_v1")
 
     def test_dead_water_caps_good_timing_score(self) -> None:
         base_environment = {

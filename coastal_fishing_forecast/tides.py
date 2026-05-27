@@ -211,7 +211,7 @@ def resolve_tide_context(
     lon: float,
     tide_events: Iterable[TideEvent] | None = None,
 ) -> TideContext:
-    """Return phase plus Derwent-style tide movement features.
+    """Return phase plus generic coastal tide movement features.
 
     These features are generic: they describe whether water is flooding,
     ebbing, near slack, and how close the window is to the next high/low.

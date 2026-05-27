@@ -83,10 +83,10 @@ const UI_TEXT = {
     score: "score",
     scoreLayers: "Forecast score layers",
     activity: "Activity",
-    presence: "Presence",
+    presence: "Fish signal",
     trip: "Trip",
     biteTiming: "bite timing",
-    fishNearby: "fish nearby",
+    fishNearby: "inshore activity",
     whyWindow: "Day overview",
     bestTime: "Best time",
     tide: "Tide",
@@ -177,10 +177,10 @@ const UI_TEXT = {
     score: "评分",
     scoreLayers: "评分拆分",
     activity: "开口活跃",
-    presence: "靠岸信号",
+    presence: "鱼情信号",
     trip: "出行条件",
     biteTiming: "开口时间",
-    fishNearby: "鱼是否靠近",
+    fishNearby: "近岸活跃参考",
     whyWindow: "全天情况",
     bestTime: "最佳时间",
     tide: "潮汐",
@@ -493,7 +493,7 @@ function waterTypeAdvantage(key: string, label: string, lang: Lang = "en") {
     return "Advantage: structure can concentrate current lines, shade, and bait movement.";
   }
   if (key.includes("beach")) {
-    return "Advantage: beach gutters and edges can suit roaming fish when tide and swell line up.";
+    return "Advantage: beach gutters and edges can suit moving fish when tide and swell line up.";
   }
   if (key.includes("rock")) {
     return "Advantage: hard edges can create wash, cover, and ambush lanes.";
@@ -926,14 +926,14 @@ function negativeRuleReason(rule: ScoreRule, lang: Lang = "en") {
     return `${rule.label} 会降低这个时段的表现。`;
   }
   if (id.includes("harsh_midday")) return "Bright daylight pulls down the weaker window, so the bite depends more on short morning or evening timing.";
-  if (id.includes("recent_weather_shock")) return "Recent weather shock is still weighing on near-shore stability.";
+  if (id.includes("recent_weather_shock")) return "Recent weather shock is still weighing on inshore stability.";
   if (id.includes("slack_tide")) return "Some windows sit near slack water, reducing movement support.";
   if (id.includes("weak_tide") || id.includes("dead_water")) return "Weak tide movement gives less water exchange to spark activity.";
   if (id.includes("gust")) return "Sharp gusts reduce casting comfort and footing confidence.";
   if (id.includes("strong_wind")) return "Stronger wind works against line control and comfort.";
-  if (id.includes("rain")) return "Rain disruption can reduce near-shore water quality and stability.";
+  if (id.includes("rain")) return "Rain disruption can reduce inshore water quality and stability.";
   if (id.includes("cold")) return "Cold air or water reduces the activity signal.";
-  if (id.includes("big_wave") || id.includes("wave")) return "Larger waves cut into comfort and safety margin near shore.";
+  if (id.includes("big_wave") || id.includes("wave")) return "Larger waves cut into comfort and safety margin.";
   return `${rule.label} pulls down this window.`;
 }
 
@@ -973,7 +973,7 @@ function dayScoreFactorsBullets(
     positive.push(
       lang === "zh"
         ? "潮水交换较明显，有利于近岸水流和食物移动。"
-        : "Tide movement is clearly felt—water exchanges well near shore."
+        : "Tide movement is clearly felt, with useful inshore water exchange."
     );
   } else if (stats.tideMovementMax >= 0.08) {
     positive.push(
@@ -1103,7 +1103,7 @@ function dayScoreFactorsBullets(
     negative.push(
       lang === "zh"
         ? "浪况偏大，近岸操作难度和安全压力上升。"
-        : "Seas are fairly rough—comfort and safety margin drop near shore."
+        : "Seas are fairly rough, so comfort and safety margin drop."
     );
   } else if (stats.waveMax >= 1.2) {
     negative.push(
@@ -2079,7 +2079,6 @@ type CurveAnchor = {
   activityScore?: number | null;
   presenceScore?: number | null;
   tripQualityScore?: number | null;
-  bigFishNearShore?: string | null;
   label: string;
   tidePhase?: string | null;
   timeWindow?: string | null;
@@ -2110,19 +2109,6 @@ function curveTooltipLeftPercent(x: number) {
 function formatCurveLabel(item: CurveAnchor, lang: Lang = "en") {
   const label = displayWaterType(item.timeWindow ?? item.label, lang);
   return lang === "zh" ? label : label.replace("Pre Dawn", "Pre-dawn");
-}
-
-function formatBigFishHint(value?: string | null, lang: Lang = "en") {
-  if (lang === "zh") {
-    if (value === "high") return "大鱼机会较高";
-    if (value === "medium") return "有一些大鱼机会";
-    if (value === "low") return "降低期待";
-    return "舒适度";
-  }
-  if (value === "high") return "bigger fish chance";
-  if (value === "medium") return "some bigger fish chance";
-  if (value === "low") return "keep expectations modest";
-  return "comfort";
 }
 
 function compassLabel(degrees?: number | null) {
@@ -2215,7 +2201,6 @@ function interpolateCurve(anchors: CurveAnchor[], hour: number): CurveAnchor {
     activityScore: score,
     presenceScore: interpolateOptionalScore(previous.presenceScore, next.presenceScore, ratio),
     tripQualityScore: interpolateOptionalScore(previous.tripQualityScore, next.tripQualityScore, ratio),
-    bigFishNearShore: nearest.bigFishNearShore,
     label: nearest.label,
     tidePhase: nearest.tidePhase,
     timeWindow: nearest.timeWindow
@@ -2280,7 +2265,6 @@ function FishingCurve({
       activityScore: point.activity_score ?? point.score,
       presenceScore: point.presence_score,
       tripQualityScore: tripRealityScore(point),
-      bigFishNearShore: point.big_fish_near_shore,
       label: point.time_window ?? point.label ?? `${point.hour}:00`,
       tidePhase: point.tide_phase,
       timeWindow: point.time_window
@@ -2294,7 +2278,6 @@ function FishingCurve({
       activityScore: window.activity_score ?? window.score,
       presenceScore: window.presence_score,
       tripQualityScore: tripRealityScore(window),
-      bigFishNearShore: window.big_fish_near_shore,
       label: window.time_window,
       timeWindow: window.time_window
     }));
@@ -2326,7 +2309,6 @@ function FishingCurve({
           activityScore: Math.max(20, curveData[0].score - 12),
           presenceScore: curveData[0].presenceScore,
           tripQualityScore: curveData[0].tripQualityScore,
-          bigFishNearShore: curveData[0].bigFishNearShore,
           label: "night",
           timeWindow: "night"
         },
@@ -2337,7 +2319,6 @@ function FishingCurve({
           activityScore: Math.max(20, curveData[curveData.length - 1].score - 10),
           presenceScore: curveData[curveData.length - 1].presenceScore,
           tripQualityScore: curveData[curveData.length - 1].tripQualityScore,
-          bigFishNearShore: curveData[curveData.length - 1].bigFishNearShore,
           label: "late",
           timeWindow: "night"
         }
@@ -2496,7 +2477,7 @@ function FishingCurve({
         <div>
           <span>🌤 {text.trip}</span>
           <b>{activePointData.tripQualityScore ?? "--"}</b>
-          <small>{formatBigFishHint(activePointData.bigFishNearShore, lang)}</small>
+          <small>{text.comfort}</small>
         </div>
       </div>
       <p>

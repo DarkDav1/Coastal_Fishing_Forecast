@@ -113,11 +113,6 @@ def _recommendation(score: int | None, confidence_label: str) -> dict[str, Any]:
     }
 
 
-def _first_behavior_label(window: Mapping[str, Any]) -> str | None:
-    groups = window.get("behavior_groups") or []
-    return str(groups[0]["label"]) if groups else None
-
-
 def _safe_water_type_text(raw_water_type: Any) -> str:
     if raw_water_type is None:
         return "leading nearby water-type"
@@ -133,13 +128,11 @@ def _primary_action(best_window: Mapping[str, Any] | None, confidence_label: str
     prefix = "Use as a lower-confidence preview: " if confidence_label == "low" else ""
     water_type = best_window.get("dominant_water_type")
     water_type_text = _safe_water_type_text(water_type)
-    behavior = _first_behavior_label(best_window)
     time_window = best_window.get("time_window")
     return {
         "time_window": time_window,
         "representative_time": best_window.get("representative_time"),
         "water_type": water_type,
-        "behavior_group": behavior,
         "score": best_window.get("score"),
         "text": (
             f"{prefix}start with the {water_type_text} signal during {time_window}. "

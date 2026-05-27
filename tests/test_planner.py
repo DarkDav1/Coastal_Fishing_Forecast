@@ -13,7 +13,6 @@ def _payload(**overrides):
                 "time_window": "morning",
                 "dominant_water_type": "beach",
                 "score": 54,
-                "behavior_groups": [{"label": "Beach roaming fish"}],
                 "conditions": {
                     "wind": {"speed_knots": 8},
                     "swell": {"height_m": 1.0},

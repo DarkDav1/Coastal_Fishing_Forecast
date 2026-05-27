@@ -146,7 +146,7 @@ class ForecastTests(unittest.TestCase):
         self.assertEqual(result["hourly_activity"][0]["hour"], 0)
         self.assertIn(result["hourly_activity"][0]["time_window"], {"pre_dawn", "dawn", "day", "dusk", "night"})
         self.assertIsInstance(result["hourly_activity"][13]["score"], int)
-        self.assertEqual(result["windows"][0]["environment"]["rule_family"], "derwent_generalized_v1")
+        self.assertEqual(result["windows"][0]["environment"]["rule_family"], "generic_coastal_v1")
         self.assertIn("rule_tags", result["hourly_activity"][13])
         self.assertEqual(result["hourly_activity"][4]["tide_height_m"], -1.0)
         self.assertIsNotNone(result["hourly_activity"][4]["tide_movement_rate_m_per_hour"])
@@ -179,7 +179,7 @@ class ForecastTests(unittest.TestCase):
         self.assertIn("waterbody_class", result["hourly_activity"][12])
         self.assertIn("water_temperature_signal", result["hourly_activity"][12])
 
-    def test_hourly_scores_use_derwent_style_light_windows_not_plain_midday(self) -> None:
+    def test_hourly_scores_use_generic_coastal_light_windows_not_plain_midday(self) -> None:
         result = build_range_forecast(
             -41.2530,
             148.3060,

@@ -64,10 +64,10 @@ Use this file as the Chinese copy review sheet. Edit the `中文文案` column o
 | score | 评分 |
 | scoreLayers | 评分拆分 |
 | activity | 活跃度 |
-| presence | 靠岸信号 |
+| presence | 鱼情信号 |
 | trip | 出行质量 |
 | biteTiming | 开口时间 |
-| fishNearby | 鱼是否靠岸 |
+| fishNearby | 近岸活跃参考 |
 | whyWindow | 全天情况 |
 | bestTime | 最佳时间 |
 | tide | 潮汐 |
@@ -387,16 +387,7 @@ Use this file as the Chinese copy review sheet. Edit the `中文文案` column o
 | 出行现实说明 | 天气、浪和安全。 |
 | 不支持水域标题 | 当前预测仅支持海岸和潮汐钓鱼区域。 |
 
-## 10. 大鱼机会和舒适度标签
-
-| Condition | 中文文案 |
-| --- | --- |
-| high | 大鱼机会较高 |
-| medium | 有一些大鱼机会 |
-| low | 降低期待 |
-| default | 舒适度 |
-
-## 11. 内部筛选关键词
+## 10. 内部筛选关键词
 
 These words are used to classify generated reasons as positive or negative. They may not appear directly as complete UI sentences, but changing them can affect how reason lists are grouped.
 

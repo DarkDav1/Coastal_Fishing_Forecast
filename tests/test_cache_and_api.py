@@ -47,7 +47,6 @@ class CacheAndApiTests(unittest.TestCase):
         self.assertIsInstance(response["hourly_activity"][13]["score"], int)
         self.assertIn("conditions", response["daily_forecast"][0]["windows"][0])
         self.assertIn("expanded_water_types", response["daily_forecast"][0]["windows"][0])
-        self.assertIn("behavior_groups", response["daily_forecast"][0]["windows"][0])
         self.assertIn("score_breakdown", response["daily_forecast"][0]["windows"][0])
         self.assertIn("raw_time_signal", response["daily_forecast"][0]["windows"][0]["conditions"]["formula"])
         self.assertIn("weather_trend", response["daily_forecast"][0]["windows"][0]["conditions"])
@@ -70,7 +69,6 @@ class CacheAndApiTests(unittest.TestCase):
         self.assertTrue(response["modules"]["tide"])
         self.assertTrue(response["modules"]["plan"])
         self.assertTrue(response["modules"]["expanded_water_types"])
-        self.assertTrue(response["modules"]["behavior_groups"])
         self.assertTrue(response["modules"]["confidence"])
         self.assertTrue(response["modules"]["explanation"])
         self.assertIn("social_pulse", response["modules"])
@@ -102,8 +100,7 @@ class CacheAndApiTests(unittest.TestCase):
         self.assertEqual(response["tide_verification"]["status"], "provided_events")
         self.assertGreaterEqual(response["confidence"]["score"], 55)
         self.assertEqual(response["plan"]["data_source_note"], "Tide data came from supplied tide events.")
-        behavior_keys = {group["key"] for group in response["daily_forecast"][0]["windows"][0]["behavior_groups"]}
-        self.assertIn("beach_roaming_fish", behavior_keys)
+        self.assertNotIn("behavior_groups", response["daily_forecast"][0]["windows"][0])
 
     def test_remote_tidesatlas_station_lowers_tide_verification(self) -> None:
         events = parse_tide_events(

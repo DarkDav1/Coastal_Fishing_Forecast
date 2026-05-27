@@ -497,41 +497,6 @@ def _expanded_water_types(window: Mapping[str, Any]) -> list[dict[str, Any]]:
     )
 
 
-def _behavior_groups(window: Mapping[str, Any]) -> list[dict[str, Any]]:
-    scores = window.get("water_type_scores", {})
-    groups = [
-        {
-            "key": "beach_roaming_fish",
-            "label": "Beach roaming fish",
-            "score": scores.get("beach"),
-            "reason": "Best represented by open beach movement and roaming opportunity.",
-        },
-        {
-            "key": "estuary_resident_fish",
-            "label": "Estuary resident fish",
-            "score": scores.get("bay_estuary_edge"),
-            "reason": "Best represented by bay and estuary-edge holding water.",
-        },
-        {
-            "key": "structure_fish",
-            "label": "Structure fish",
-            "score": max(scores.get("jetty", 0), scores.get("bay_estuary_edge", 0)),
-            "reason": "Best represented by jetties, wharves, edges, and nearby structure.",
-        },
-        {
-            "key": "rock_edge_fish",
-            "label": "Rock edge fish",
-            "score": scores.get("rocks"),
-            "reason": "Best represented by exposed rock-edge opportunity.",
-        },
-    ]
-    return sorted(
-        [group for group in groups if group["score"] is not None],
-        key=lambda group: group["score"],
-        reverse=True,
-    )
-
-
 def _number(value: Any) -> float | None:
     try:
         return None if value is None else float(value)
@@ -716,7 +681,6 @@ def _window_card(window: Mapping[str, Any]) -> dict[str, Any]:
         "comfort_factors": overall.get("comfort_factors", []),
         "safety_flag": overall.get("safety_flag"),
         "safety_factors": overall.get("safety_factors", []),
-        "big_fish_near_shore": overall.get("big_fish_near_shore"),
         "label": overall.get("label"),
         "model_rule_family": overall.get("model_rule_family"),
         "score_breakdown": overall.get("score_breakdown"),
@@ -731,7 +695,6 @@ def _window_card(window: Mapping[str, Any]) -> dict[str, Any]:
         "fish_profile": inputs_used.get("fish_profile"),
         "water_type_scores": water_scores,
         "expanded_water_types": _expanded_water_types(window),
-        "behavior_groups": _behavior_groups(window),
         "conditions": _condition_strip(window),
     }
 
@@ -917,7 +880,6 @@ def _rule_based_explanation(range_forecast: Mapping[str, Any]) -> dict[str, Any]
         "why_this_window": [
             f"{card['time_window']} has the strongest overall score in this forecast range.",
             f"{card['dominant_water_type']} is the leading broad water-type signal.",
-            f"{card['behavior_groups'][0]['label']} is the strongest fish-behavior group.",
         ],
         "risks": risks,
         "alternatives": alternatives,
@@ -1058,7 +1020,6 @@ def _whitelisted_explanation_input(rule_explanation: Mapping[str, Any], range_fo
             "dominant_water_type": card.get("dominant_water_type"),
             "waterbody_class": card.get("waterbody_class"),
             "fish_profile": card.get("fish_profile"),
-            "behavior_groups": card.get("behavior_groups"),
             "plain_score_context": _plain_score_context(card),
         },
         "conditions": _plain_conditions_for_explanation(card.get("conditions")),
@@ -1460,7 +1421,6 @@ def build_frontend_forecast_response(
             "map": bool(frontend_structure_facilities),
             "plan": True,
             "expanded_water_types": True,
-            "behavior_groups": True,
             "confidence": True,
             "explanation": True,
             "social_pulse": bool(social_pulse.get("available")),
